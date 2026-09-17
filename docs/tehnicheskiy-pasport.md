@@ -83,7 +83,7 @@ PaprekolyX — авторская мастерская. Сайт работае�
 ## 4. Структура базы данных
 
 Все таблицы — PostgreSQL в проекте Supabase `wanawtemywrlpnsvwvvh`.
-Схема на 18.09.2026: **15 таблиц, 113 полей, 16 связей**.
+Схема на 18.09.2026: **15 таблиц, 114 полей, 16 связей**.
 
 ### 4.0. Схема связей
 
@@ -106,6 +106,7 @@ erDiagram
     delivery_methods ||--o{ deliveries : "delivery_method_id"
     promo_codes ||--o{ orders : "promo_code_id"
 ```
+
 > Диаграмма выше отображается на GitHub. Там, где Mermaid не поддерживается,
 > связи перечислены таблицей ниже.
 
@@ -269,7 +270,8 @@ erDiagram
 | `code` | `text` | **`UK`** | pickup, metro_msk, boxberry, cdek |
 | `name` | `text` |  | — |
 | `description` | `text` |  | — |
-| `base_price` | `numeric(10,2)` |  | 0 — стоимость уточняется |
+| `base_price` | `numeric(10,2)` |  | минимальная стоимость; 0 — бесплатно или рассчитывается отдельно |
+| `price_max` | `numeric(10,2)` |  | максимум для вилки цен; пусто — цена неизвестна заранее |
 | `is_active` | `boolean` |  | — |
 
 ### 4.12. `deliveries` — Доставки
