@@ -4,11 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FF2D95%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23A855F7%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2240%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FF2D95%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23A855F7%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2240%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E">
+    <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#faf7fc" media="(prefers-color-scheme: light)">
     <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.20/index.min.css" rel="stylesheet">
     <style>
         :root {
             --bg: #0a0a0f;
@@ -366,6 +371,222 @@
         body, .product-card, .bg-card, .bg-soft, nav, footer, .co-input, .co-option, .theme-toggle {
             transition: background-color .35s ease, color .35s ease, border-color .35s ease;
         }
+
+        /* ============================================================
+           МОНОШИРИННЫЙ ШРИФТ С КИРИЛЛИЦЕЙ
+           Стандартный моноширинный шрифт Tailwind не содержит кириллицы,
+           поэтому браузер подставлял для русских букв другой шрифт —
+           текст выглядел разнобоем. JetBrains Mono содержит оба алфавита.
+           Селектор html .font-mono имеет больший вес, чем .font-mono
+           из Tailwind, поэтому !important не нужен.
+           ============================================================ */
+        :root {
+            --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, 'Liberation Mono', monospace;
+        }
+        html .font-mono, html code, html pre {
+            font-family: var(--font-mono);
+            font-size: 0.94em;   /* моноширинные выглядят крупнее при том же кегле */
+            letter-spacing: -0.01em;
+        }
+
+        /* ============================================================
+           ЗНАЧКИ НА ФОТОГРАФИИ ТОВАРА
+           Подложка под ними тёмная в обеих темах, поэтому и текст
+           должен оставаться светлым.
+           ============================================================ */
+        [data-theme="light"] .bg-black\/60.text-gray-400 { color: #d5c9e2; }
+        [data-theme="light"] .bg-black\/60.accent        { color: #ff8ac4; }
+        [data-theme="light"] .bg-black\/60 { border-color: rgba(255, 255, 255, .22); }
+
+        /* ============================================================
+           АВТОЗАПОЛНЕНИЕ БРАУЗЕРА
+           Chrome и Safari подсвечивают autofill-поля ярко-белым или
+           синим, что на тёмном фоне выглядит как дыра. Перекрываем
+           встроенной тенью цвета фона и откладываем сброс фона.
+           ============================================================ */
+        .co-input:-webkit-autofill,
+        .co-input:-webkit-autofill:hover,
+        .co-input:-webkit-autofill:focus {
+            -webkit-text-fill-color: var(--text);
+            -webkit-box-shadow: 0 0 0 1000px var(--bg-soft) inset;
+            caret-color: var(--text);
+            border-color: rgba(255, 45, 149, .35);
+            transition: background-color 99999s ease-in-out 0s;
+        }
+        .co-input:autofill {
+            box-shadow: 0 0 0 1000px var(--bg-soft) inset;
+            -webkit-text-fill-color: var(--text);
+        }
+        /* Плавное появление подсказок автозаполнения вместо резкой вспышки */
+        .co-input { transition: background-color 99999s ease-in-out 0s, border-color .2s, box-shadow .2s; }
+
+        /* ============================================================
+           АККОРДЕОН «УСЛОВИЯ ЗАКАЗА»
+           Подложка заголовка гаснет книзу градиентом и не касается
+           вложенных блоков содержимого.
+           ============================================================ */
+        .accordion-item > button { position: relative; isolation: isolate; }
+        .accordion-item > button::after {
+            content: ''; position: absolute; inset: 0; z-index: -1;
+            border-radius: inherit; opacity: 0; transition: opacity .28s ease;
+            background: linear-gradient(to bottom,
+                rgba(255, 255, 255, .085) 0%,
+                rgba(255, 255, 255, .055) 45%,
+                rgba(255, 255, 255, 0) 92%);
+            pointer-events: none;
+        }
+        .accordion-item > button:hover::after { opacity: 1; }
+        [data-theme="light"] .accordion-item > button::after {
+            background: linear-gradient(to bottom,
+                rgba(28, 20, 36, .055) 0%,
+                rgba(28, 20, 36, .032) 45%,
+                rgba(28, 20, 36, 0) 92%);
+        }
+        [data-theme="light"] .accordion-item button:hover { background: transparent; }
+        /* Отступ содержимого от заголовка, чтобы блоки не соприкасались */
+        .accordion-content > div { padding-top: 4px; }
+
+        /* ============================================================
+           БЛОКИ, КОТОРЫЕ ВСЕГДА ТЁМНЫЕ
+           Примеры применения бренда в брендбуке описывают тёмную упаковку
+           и чёрную бумагу — в светлой теме они теряли смысл.
+           ============================================================ */
+        .always-dark {
+            background: #12101a;
+            border-color: rgba(255, 45, 149, .22);
+            color: #f0e6ff;
+        }
+        [data-theme="light"] .always-dark            { background: #12101a; color: #f0e6ff; }
+        [data-theme="light"] .always-dark .text-white { color: #ffffff; }
+        [data-theme="light"] .always-dark .text-gray-400 { color: #b3a6c2; }
+        [data-theme="light"] .always-dark .text-gray-500 { color: #9184a1; }
+        [data-theme="light"] .always-dark .accent    { color: #ff5fae; }
+        [data-theme="light"] .always-dark .neon-text { text-shadow: 0 0 10px rgba(255,45,149,.5); }
+        [data-theme="light"] .always-dark .bg-black\/40 { background-color: rgba(255,255,255,.06); }
+
+        /* ============================================================
+           АНИМАЦИЯ ГРАДИЕНТОВ (брендбук)
+           ============================================================ */
+        .gradient-anim {
+            background-size: 240% 240%;
+            animation: gradientShift 8s ease-in-out infinite;
+        }
+        @keyframes gradientShift {
+            0%   { background-position: 0% 50%; }
+            50%  { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .gradient-anim { animation: none; background-size: 100% 100%; }
+        }
+
+        /* ============================================================
+           КАРТОЧКИ ТАБЛИЦ БАЗЫ В ПАСПОРТЕ
+           Плотная упаковка без пустых мест: колонки заполняются
+           сверху вниз, карточки не разрываются между колонками.
+           ============================================================ */
+        #schema-cards { column-count: 1; column-gap: 1rem; }
+        @media (min-width: 768px)  { #schema-cards { column-count: 2; } }
+        @media (min-width: 1280px) { #schema-cards { column-count: 3; } }
+        #schema-cards > div { break-inside: avoid; -webkit-column-break-inside: avoid; margin-bottom: 1rem; }
+
+        [data-theme="light"] #schema-cards .bg-black\/30 { background-color: #ffffff; }
+        [data-theme="light"] #schema-cards .border-pink-500\/20 { border-color: rgba(28, 20, 36, .16); }
+        [data-theme="light"] #schema-cards .border-pink-500\/10 { border-color: rgba(28, 20, 36, .09); }
+        [data-theme="light"] #schema-cards .border-pink-500\/30 { border-color: rgba(214, 0, 110, .30); }
+        [data-theme="light"] #schema-cards .text-gray-500 { color: #4a3f57; }
+        [data-theme="light"] #schema-cards .text-gray-400 { color: #3d3348; }
+        [data-theme="light"] #schema-cards .accent-purple { color: #6d28d9; }
+        [data-theme="light"] #schema-cards .text-pink-300 { color: #b3005c; }
+        [data-theme="light"] #schema-cards .text-purple-300 { color: #6d28d9; }
+        [data-theme="light"] #schema-cards .text-blue-300 { color: #1d4ed8; }
+        [data-theme="light"] #schema-cards .text-red-300 { color: #b91c1c; }
+        [data-theme="light"] #schema-cards .bg-pink-500\/20 { background-color: rgba(214, 0, 110, .10); }
+        [data-theme="light"] #schema-cards .bg-purple-500\/20 { background-color: rgba(124, 58, 237, .10); }
+        [data-theme="light"] #schema-cards .bg-blue-500\/20 { background-color: rgba(37, 99, 235, .10); }
+        [data-theme="light"] #schema-cards .bg-white\/10 { background-color: rgba(28, 20, 36, .07); }
+        [data-theme="light"] #schema-cards .from-pink-500\/25 { --tw-gradient-from: rgba(214,0,110,.14); }
+        [data-theme="light"] #schema-cards .to-purple-600\/25 { --tw-gradient-to: rgba(124,58,237,.14); }
+
+        /* ============================================================
+           СОСТАВ ЗАКАЗА: три колонки вместо слипшейся строки
+           ============================================================ */
+        .co-sum-head, .co-sum-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 3.2rem 6rem;
+            gap: 4px 12px;
+            align-items: baseline;
+        }
+        .co-sum-head {
+            font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--text-dim); padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 45, 149, .15); margin-bottom: 10px;
+        }
+        .co-sum-row { padding: 6px 0; border-bottom: 1px dashed rgba(255, 45, 149, .12); }
+        .co-sum-row:last-child { border-bottom: 0; }
+        .co-sum-name { font-size: 13px; color: var(--text); line-height: 1.35; }
+        .co-sum-qty, .co-sum-price {
+            font-size: 13px; color: var(--text-dim); text-align: right;
+            font-variant-numeric: tabular-nums; white-space: nowrap;
+        }
+        .co-sum-price { color: var(--text); }
+        [data-theme="light"] .co-sum-row { border-bottom-color: rgba(28, 20, 36, .10); }
+        [data-theme="light"] .co-sum-head { border-bottom-color: rgba(28, 20, 36, .14); }
+
+        /* ============================================================
+           КОРЗИНА: надпись у иконки и блок с гарантиями
+           ============================================================ */
+        .cart-label {
+            font-size: 13px; font-weight: 500; color: var(--text);
+            transition: color .25s;
+        }
+        .cart-btn:hover .cart-label { color: var(--accent); }
+
+        .cart-note {
+            background: rgba(255, 45, 149, .05);
+            border: 1px solid rgba(255, 45, 149, .18);
+            border-radius: 14px; padding: 14px 16px;
+        }
+        [data-theme="light"] .cart-note {
+            background: rgba(214, 0, 110, .04);
+            border-color: rgba(214, 0, 110, .18);
+        }
+        .cart-note-title {
+            font-size: 11px; letter-spacing: .1em; text-transform: uppercase;
+            color: var(--accent); margin-bottom: 8px; font-weight: 600;
+        }
+        .cart-note ul { list-style: none; padding: 0; margin: 0; }
+        .cart-note li {
+            font-size: 12px; line-height: 1.5; color: var(--text-dim);
+            padding-left: 16px; position: relative; margin-bottom: 6px;
+        }
+        .cart-note li:last-child { margin-bottom: 0; }
+        .cart-note li::before {
+            content: '✦'; position: absolute; left: 0; top: 0;
+            color: var(--accent); font-size: 9px; line-height: 1.9;
+        }
+        .cart-clear {
+            background: transparent; border: 0; color: var(--text-dim);
+            font-size: 11px; cursor: pointer; padding: 4px 8px; border-radius: 8px;
+            transition: all .2s; letter-spacing: .04em;
+        }
+        .cart-clear:hover { color: #fb7185; background: rgba(244, 63, 94, .10); }
+
+        /* Ссылка на политику: если адрес не заполнен, выглядит как обычный текст */
+        .legal-link { text-decoration: underline; text-underline-offset: 2px; }
+        .legal-link:hover { color: var(--accent); }
+        .legal-plain { color: inherit; }
+
+        /* Варианты фона для «всегда тёмных» примеров применения бренда */
+        .always-dark.ex-pink {
+            background: linear-gradient(135deg, rgba(255,45,149,.18), rgba(168,85,247,.14)), #12101a;
+            border-color: rgba(255, 45, 149, .28);
+        }
+        .always-dark.ex-purple {
+            background: linear-gradient(135deg, rgba(168,85,247,.18), rgba(59,130,246,.14)), #12101a;
+            border-color: rgba(168, 85, 247, .28);
+        }
+
     </style>
     <script>
         // Тема применяется до отрисовки страницы, чтобы не было «вспышки» другой темы.
@@ -390,13 +611,13 @@
                     </div>
                     <div>
                         <div class="font-serif text-2xl tracking-wider accent neon-text" data-content="brand.name">PaprekolyX</div>
-                        <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 -mt-1" data-content="brand.tagline">эпоксидная смола и фетр</div>
+                        <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mt-0.5" data-content="brand.tagline">эпоксидная смола и фетр</div>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 sm:space-x-4">
-                    <a href="#catalog" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Каталог</a>
                     <a href="#about" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">О мастерской</a>
-                    <a href="#order-info" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Условия</a>
+                    <a href="#catalog" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Коллекция</a>
+                    <a href="#order-info" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Условия заказа</a>
                     <a href="#contacts" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Контакты</a>
                     <button id="theme-toggle" type="button" onclick="toggleTheme()" class="theme-toggle"
                             aria-label="Переключить светлую и тёмную тему" title="Светлая / тёмная тема">
@@ -413,11 +634,14 @@
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
                         <span class="text-xs">VK</span>
                     </a>
-                    <button onclick="toggleCart()" class="relative p-2 rounded-full hover:bg-white/5 transition group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300 group-hover:text-pink-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <span id="cart-count" class="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform scale-0 transition-transform duration-200">0</span>
+                    <button onclick="toggleCart()" class="cart-btn relative flex items-center gap-2 py-2 pl-4 pr-2 rounded-full hover:bg-white/5 transition group">
+                        <span class="cart-label hidden sm:block">Корзина</span>
+                        <span class="relative flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300 group-hover:text-pink-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            <span id="cart-count" class="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform scale-0 transition-transform duration-200">0</span>
+                        </span>
                     </button>
                 </div>
             </div>
@@ -448,7 +672,7 @@
                             <span data-content="hero.cta_vk">Написать в VK</span>
                         </a>
                     </div>
-                    <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/5">
+                    <div class="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/5">
                         <div>
                             <div class="font-serif text-3xl accent neon-text" id="stat-products">—</div>
                             <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Изделий в коллекции</div>
@@ -456,10 +680,6 @@
                         <div>
                             <div class="font-serif text-3xl accent-purple neon-text" id="stat-categories">—</div>
                             <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Категорий</div>
-                        </div>
-                        <div>
-                            <div class="font-serif text-3xl accent neon-text">1</div>
-                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Экземпляр каждого</div>
                         </div>
                     </div>
                 </div>
@@ -551,9 +771,9 @@
 
             <div class="space-y-4">
                 <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
-                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left transition">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-lg">📩</div>
+                            <div class="w-12 h-12 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-2xl">📩</div>
                             <div>
                                 <div class="font-serif text-xl">Как сделать заказ?</div>
                                 <div class="text-xs text-gray-500 mt-1" data-content="order.howto_subtitle">Форма на сайте или сообщение в ВК</div>
@@ -578,9 +798,9 @@
                 </div>
 
                 <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
-                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left transition">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-lg">💳</div>
+                            <div class="w-12 h-12 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-2xl">💳</div>
                             <div>
                                 <div class="font-serif text-xl">Оплата</div>
                                 <div class="text-xs text-gray-500 mt-1" data-content="order.payment_subtitle">VK Pay, перевод на карту, СБП</div>
@@ -611,9 +831,9 @@
                 </div>
 
                 <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
-                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left transition">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-lg">🚚</div>
+                            <div class="w-12 h-12 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-2xl">🚚</div>
                             <div>
                                 <div class="font-serif text-xl">Доставка</div>
                                 <div class="text-xs text-gray-500 mt-1">По Москве и России</div>
@@ -642,9 +862,9 @@
                 </div>
 
                 <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
-                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left transition">
                         <div class="flex items-center gap-4">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-lg">↩️</div>
+                            <div class="w-12 h-12 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-2xl">↩️</div>
                             <div>
                                 <div class="font-serif text-xl">Возврат</div>
                                 <div class="text-xs text-gray-500 mt-1">Условия возврата</div>
@@ -669,7 +889,7 @@
     <!-- Contacts -->
     <section id="contacts" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="text-center mb-12">
-            <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Связь</div>
+            <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Контакты</div>
             <h2 class="font-serif text-4xl sm:text-5xl mb-4 neon-text">Свяжитесь с нами</h2>
             <div class="divider max-w-xs mx-auto"></div>
         </div>
@@ -682,12 +902,12 @@
                 <div class="font-serif text-xl sm:text-2xl group-hover:text-blue-400 transition" data-content="contacts.vk_label">PaprekolyX</div>
             </a>
             <a href="mailto:Albert23NO@ya.ru" data-content-href="contacts.email_href" class="group bg-card p-8 rounded-2xl border border-pink-500/10 hover:border-pink-500/40 transition">
-                <div class="accent text-3xl mb-3">✉</div>
-                <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Email</div>
+                <div class="accent mb-3"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2.6" y="4.6" width="18.8" height="14.8" rx="2.6"/><path d="M3.4 6.8l8.6 6 8.6-6"/></svg></div>
+                <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">E-mail</div>
                 <div class="font-serif text-xl sm:text-2xl break-all group-hover:accent transition" data-content="contacts.email">Albert23NO@ya.ru</div>
             </a>
             <a href="tel:+79250521900" data-content-href="contacts.phone_href" class="group bg-card p-8 rounded-2xl border border-pink-500/10 hover:border-pink-500/40 transition">
-                <div class="accent-purple text-3xl mb-3">☎</div>
+                <div class="accent-purple mb-3"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.6 3.6h3.1l1.5 3.9-2 1.4a12.4 12.4 0 006 6l1.4-2 3.9 1.5v3.1a1.5 1.5 0 01-1.7 1.5C10.3 18.3 5.7 13.7 3.1 5.3A1.5 1.5 0 014.6 3.6z"/></svg></div>
                 <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Телефон</div>
                 <div class="font-serif text-xl sm:text-2xl group-hover:accent-purple transition" data-content="contacts.phone_display">+7 (925) 052-19-XX</div>
             </a>
@@ -706,7 +926,7 @@
                         </div>
                         <div>
                             <div class="font-serif text-2xl tracking-wider accent neon-text" data-content="brand.name">PaprekolyX</div>
-                            <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 -mt-1" data-content="brand.tagline">эпоксидная смола и фетр</div>
+                            <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 mt-0.5" data-content="brand.tagline">эпоксидная смола и фетр</div>
                         </div>
                     </div>
                     <p class="text-gray-500 text-sm max-w-sm leading-relaxed mb-4" data-content="footer.about">Авторская мастерская: украшения, аксессуары и предметы интерьера из эпоксидной смолы и фетра. Каждое изделие — в одном экземпляре.</p>
@@ -718,8 +938,8 @@
                 <div>
                     <h4 class="font-serif text-lg mb-4 accent">Разделы</h4>
                     <ul class="space-y-2 text-sm text-gray-400">
-                        <li><a href="#catalog" class="hover:text-pink-400 transition">Каталог</a></li>
                         <li><a href="#about" class="hover:text-pink-400 transition">О мастерской</a></li>
+                        <li><a href="#catalog" class="hover:text-pink-400 transition">Коллекция</a></li>
                         <li><a href="#order-info" class="hover:text-pink-400 transition">Условия заказа</a></li>
                         <li><a href="#contacts" class="hover:text-pink-400 transition">Контакты</a></li>
                     </ul>
@@ -735,6 +955,9 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                             Брендбук
                         </button></li>
+                        <li><a id="footer-privacy" href="#" class="legal-plain hover:text-pink-400 transition"
+                               data-content="legal.privacy_label" data-content-href="legal.privacy_url"
+                               >Политика обработки персональных данных</a></li>
                         <li><span class="text-gray-600" data-content="footer.version">v 1.2 · 18.09.2026</span></li>
                     </ul>
                 </div>
@@ -755,11 +978,14 @@
                 <h2 class="font-serif text-2xl neon-text">Корзина</h2>
                 <p class="text-xs text-gray-500 uppercase tracking-wider" id="cart-subtitle">Пусто</p>
             </div>
-            <button onclick="toggleCart()" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
+            <div class="flex items-center gap-1">
+                <button id="cart-clear" onclick="clearCart()" class="cart-clear hidden" title="Удалить все позиции">Очистить</button>
+                <button onclick="toggleCart()" aria-label="Закрыть корзину" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
         </div>
         <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin"></div>
         <div class="p-6 border-t border-pink-500/10 bg-black/30">
@@ -770,6 +996,15 @@
             <div class="flex justify-between mb-5 text-lg font-serif">
                 <span>Итого</span>
                 <span class="accent neon-text" id="cart-total-big">0 ₽</span>
+            </div>
+            <div class="cart-note mb-4">
+                <div class="cart-note-title">Спокойно — ничего не спишется само</div>
+                <ul>
+                    <li>Сумму проверяет мастер, поэтому ошибки в расчёте не будет.</li>
+                    <li>Заказ уходит напрямую в мастерскую, без посредников и наценок.</li>
+                    <li>Оплату и доставку согласуем лично в переписке — автоматически деньги не списываются.</li>
+                    <li>Контакты нужны только для этого заказа и никуда не передаются.</li>
+                </ul>
             </div>
             <button onclick="openCheckout()" class="w-full btn-primary py-3 rounded-full font-medium tracking-wide">Оформить заказ</button>
             <a href="https://vk.ru/paprekolyx" target="_blank" rel="noopener" class="w-full vk-btn py-3 rounded-full font-medium tracking-wide text-center block mt-2">Обсудить в ВК</a>
@@ -817,8 +1052,9 @@
                     <p class="text-sm text-gray-400 leading-relaxed mt-4">
                         Авторская мастерская изделий из эпоксидной смолы и фетра. Сайт работает как витрина
                         с корзиной и формой заказа; детали, оплата и доставка подтверждаются в переписке
-                        сообщества ВКонтакте. Полная редакция документа — в репозитории,
-                        файл <span class="font-mono text-xs accent">docs/tehnicheskiy-pasport.md</span>.
+                        сообщества ВКонтакте. Полная редакция документа —
+                        <a href="https://github.com/paprekolyx/PaprekolyX" target="_blank" rel="noopener"
+                           class="accent legal-link">в репозитории</a>.
                     </p>
                 </section>
 
@@ -850,9 +1086,10 @@
                         </div>
                     </div>
                     <div class="bg-pink-500/5 border border-pink-500/20 rounded-xl p-4 mt-4 text-xs text-gray-400 leading-relaxed">
-                        <span class="accent font-medium">В проекте нет</span> Node.js, Docker, Prisma, Redis и Nginx.
-                        В редакции 1.0 они были указаны ошибочно: сайт статический, а серверная логика
-                        выполняется внутри Supabase на SQL.
+                        <span class="accent font-medium">Серверного кода на отдельном хостинге нет.</span>
+                        Вся серверная логика живёт внутри Supabase: политики RLS решают, кто и какие строки
+                        может прочитать, а функция <span class="font-mono">create_order()</span> принимает заказы
+                        и пересчитывает суммы на стороне базы. Отдельный бэкенд проекту не нужен.
                     </div>
                 </section>
 
@@ -892,24 +1129,36 @@
                         <span class="px-2 py-1 rounded border bg-white/10 text-gray-300 border-white/20">NN — обязательно · CHK — условие</span>
                         <span class="px-2 py-1 rounded border bg-red-500/15 text-red-300 border-red-500/30">уст. — устаревшее</span>
                     </div>
-                    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4 items-start">
+                    <div id="schema-cards">
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">orders</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Заказы · 14 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_phone</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_vk</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_email</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">total</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_cost</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">promo_code_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-red-500/15 text-red-300 border-red-500/30">уст.</span></div></div>
 
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">categories</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Категории каталога</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">slug</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">runy, broshi, podveski — для адресов</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">Руны, Брелоки, Подвески</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">products</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Товары</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">article</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">внутренний артикул: 00099, 30001</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2">в рублях</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">category_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ categories.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">image_url</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">главное фото; пусто — показывается заглушка</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2">false — товар скрыт с сайта, но история заказов цела</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2">по умолчанию now()</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">product_images</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Галерея товара</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ products.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">image_url</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">NN</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">sort_order</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2">порядок в галерее</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_main</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">alt_text</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">для скринридеров и поиска</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">site_content</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Тексты и картинки сайта</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">key</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">hero.subtitle, contacts.email, brand.logo_url</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">value</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">пусто для картинки — показывается заглушка</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">подсказка: где это видно на сайте</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">updated_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2">обновляется триггером</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_statuses</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Справочник статусов</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">new, paid, shipped, delivered</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">Новый, Оплачен, Отправлен</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_final</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2">завершающий статус</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">sort_order</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2">порядок в воронке</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">orders</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Заказы</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2">номер заказа, который видит клиент</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2">по умолчанию now()</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_phone</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_vk</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">ссылка на профиль</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_email</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ order_statuses.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ payment_methods.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ delivery_methods.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">total</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2">сумма изделий, без доставки</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_cost</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">пожелания клиента</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">promo_code_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ promo_codes.id, может быть пустым</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-red-500/15 text-red-300 border-red-500/30">уст.</span><span class="text-gray-500 ml-auto text-right pl-2">старое текстовое поле; не используется, подлежит удалению</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_items</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Позиции заказа</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ orders.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ products.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">quantity</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2">снапшот цены на момент заказа</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_status_history</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Журнал смены статусов</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ orders.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ order_statuses.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">changed_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">changed_by</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">admin / customer / system</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">payment_methods</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Способы оплаты</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">vk_pay, sber, yandex, sbp</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2">неактивные не видны на сайте</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">payments</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Платежи</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ orders.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ payment_methods.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">paid_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_type</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">prepayment / full / topup</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">transaction_id</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">внешний идентификатор</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">по умолчанию success</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">delivery_methods</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Способы доставки</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2">pickup, metro_msk, boxberry, cdek</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">base_price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2">0 — стоимость уточняется</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">deliveries</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Доставки</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ orders.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ delivery_methods.id</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">tracking_number</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">pickup_point</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">адрес ПВЗ или станция метро</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">cost</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">shipped_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivered_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">promo_codes</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Промокоды</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">discount_type</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">percent / fixed</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">discount_value</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">min_order_amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">valid_from</span><span class="font-mono accent-purple flex-shrink-0">date</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">valid_until</span><span class="font-mono accent-purple flex-shrink-0">date</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">usage_limit</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2">пусто — без лимита</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">used_count</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">custom_orders</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Кастомные заказы</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ orders.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_vk</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">NN</span><span class="text-gray-500 ml-auto text-right pl-2">пожелания клиента</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">color_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">shape_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">filling_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">сухоцветы, пигменты, вставки</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">reference_images</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">JSON-массив ссылок</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">prepayment_amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span><span class="text-gray-500 ml-auto text-right pl-2">40% от стоимости</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">prepayment_paid</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">estimated_days</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2">pending / in_progress / ready / done</span></div></div>
-                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">reviews</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Отзывы</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span><span class="text-gray-500 ml-auto text-right pl-2">→ products.id, cascade</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">rating</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">CHK</span><span class="text-gray-500 ml-auto text-right pl-2">от 1 до 5</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span><span class="text-gray-500 ml-auto text-right pl-2"></span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_published</span><span class="font-mono accent-purple flex-shrink-0">boolean</span><span class="text-gray-500 ml-auto text-right pl-2">модерация; политика RLS не даёт опубликовать в обход</span></div></div>
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">custom_orders</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Кастомные заказы · 13 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_vk</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">NN</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">color_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">shape_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">filling_preference</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">reference_images</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">prepayment_amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">prepayment_paid</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">estimated_days</span><span class="font-mono accent-purple flex-shrink-0">int</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
 
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">promo_codes</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Промокоды · 10 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">discount_type</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">discount_value</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">min_order_amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">valid_from</span><span class="font-mono accent-purple flex-shrink-0">date</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">valid_until</span><span class="font-mono accent-purple flex-shrink-0">date</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">usage_limit</span><span class="font-mono accent-purple flex-shrink-0">int</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">used_count</span><span class="font-mono accent-purple flex-shrink-0">int</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">deliveries</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Доставки · 9 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivery_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">tracking_number</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">pickup_point</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">cost</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">shipped_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">delivered_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">products</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Товары · 9 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">article</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">category_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">image_url</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">payments</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Платежи · 8 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_method_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">amount</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">paid_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">payment_type</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">transaction_id</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">delivery_methods</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Способы доставки · 7 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">base_price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">price_max</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">reviews</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Отзывы · 7 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">customer_name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">rating</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">CHK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">created_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_published</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_status_history</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Журнал смены статусов · 6 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">status_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">changed_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">changed_by</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">comment</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_statuses</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Справочник статусов · 6 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_final</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">sort_order</span><span class="font-mono accent-purple flex-shrink-0">int</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">product_images</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Галерея товара · 6 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">image_url</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-white/10 text-gray-300 border-white/20">NN</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">sort_order</span><span class="font-mono accent-purple flex-shrink-0">int</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_main</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">alt_text</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">order_items</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Позиции заказа · 5 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">order_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">product_id</span><span class="font-mono accent-purple flex-shrink-0">int</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">quantity</span><span class="font-mono accent-purple flex-shrink-0">int</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">price</span><span class="font-mono accent-purple flex-shrink-0">numeric(10,2)</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">payment_methods</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Способы оплаты · 5 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">code</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">is_active</span><span class="font-mono accent-purple flex-shrink-0">boolean</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">site_content</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Тексты и картинки сайта · 5 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">key</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">value</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">updated_at</span><span class="font-mono accent-purple flex-shrink-0">timestamptz</span></div></div>
+
+                        <div class="rounded-xl overflow-hidden border border-pink-500/20 bg-black/30"><div class="px-3 py-2 bg-gradient-to-r from-pink-500/25 to-purple-600/25 border-b border-pink-500/30"><div class="font-mono text-sm text-white">categories</div><div class="text-[10px] uppercase tracking-wider text-gray-400">Категории каталога · 4 полей</div></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">id</span><span class="font-mono accent-purple flex-shrink-0">serial</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">slug</span><span class="font-mono accent-purple flex-shrink-0">text</span><span class="inline-block text-[9px] font-mono px-1.5 py-0.5 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">name</span><span class="font-mono accent-purple flex-shrink-0">text</span></div><div class="flex items-baseline gap-2 px-3 py-1.5 border-t border-pink-500/10 text-[11px]"><span class="font-mono text-white flex-shrink-0">description</span><span class="font-mono accent-purple flex-shrink-0">text</span></div></div>
                     </div>
                 </section>
 
@@ -1033,7 +1282,7 @@
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="bg-card p-8 rounded-xl border border-pink-500/10 flex items-center justify-center">
                             <div class="text-center">
-                                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center mb-4 neon-border">
+                                <div class="gradient-anim w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-500 via-purple-600 to-pink-500 flex items-center justify-center mb-4 neon-border">
                                     <span class="text-white font-bold font-serif text-4xl">P</span>
                                 </div>
                                 <div class="font-serif text-3xl accent neon-text mb-1">PaprekolyX</div>
@@ -1044,7 +1293,7 @@
                             <div class="text-sm text-gray-400 space-y-3">
                                 <div>
                                     <div class="text-xs uppercase tracking-wider accent mb-2">Основной логотип</div>
-                                    <p>Круглая эмблема с градиентом от розового к фиолетовому. Буква "P" в центре — символ бренда.</p>
+                                    <p data-content="brand.logo_description">Круглая эмблема с градиентом от розового к фиолетовому. Буква «P» в центре — символ бренда.</p>
                                 </div>
                                 <div>
                                     <div class="text-xs uppercase tracking-wider accent mb-2">Минимальный размер</div>
@@ -1092,8 +1341,8 @@
                     <div class="mt-6 bg-card p-4 rounded-xl border border-pink-500/10">
                         <div class="text-xs uppercase tracking-wider accent mb-2">Градиенты</div>
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="h-16 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600"></div>
-                            <div class="h-16 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500"></div>
+                            <div class="gradient-anim h-16 rounded-lg bg-gradient-to-r from-pink-500 via-purple-600 to-pink-500"></div>
+                            <div class="gradient-anim h-16 rounded-lg bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600"></div>
                         </div>
                     </div>
                 </section>
@@ -1101,12 +1350,6 @@
                 <!-- Themes -->
                 <section class="brandbook-section">
                     <h3 class="font-serif text-2xl mb-4 neon-text">Темы оформления</h3>
-                    <p class="text-sm text-gray-400 leading-relaxed mb-6">
-                        Сайт поддерживает две темы — тёмную (основную) и светлую. Переключатель
-                        находится в шапке справа, рядом со ссылкой на ВКонтакте. Выбор посетителя
-                        сохраняется в браузере, а при первом визите тема подстраивается под
-                        настройки операционной системы.
-                    </p>
 
                     <div class="grid md:grid-cols-2 gap-4 mb-6">
                         <div class="bg-card p-5 rounded-xl border border-pink-500/10">
@@ -1233,22 +1476,6 @@
                         </div>
                     </div>
 
-                    <div class="bg-card p-5 rounded-xl border border-pink-500/10">
-                        <div class="text-xs uppercase tracking-wider accent mb-3">Как добавить новый элемент</div>
-                        <ol class="text-sm text-gray-400 space-y-2 list-decimal pl-5">
-                            <li>Цвет берите из переменных <span class="font-mono text-xs">var(--accent)</span>,
-                                <span class="font-mono text-xs">var(--bg-card)</span>,
-                                <span class="font-mono text-xs">var(--text)</span> — тогда элемент
-                                переключится сам, без дополнительных правил.</li>
-                            <li>Если используется готовый класс Tailwind вроде
-                                <span class="font-mono text-xs">text-gray-400</span> или
-                                <span class="font-mono text-xs">bg-white/5</span>, добавьте для него
-                                переопределение с префиксом
-                                <span class="font-mono text-xs">[data-theme="light"]</span> в блоке «Светлая тема».</li>
-                            <li>Проверьте обе темы: переопределения легко пропустить, если элемент
-                                появляется только в одном состоянии (ошибка, пустая корзина, экран успеха).</li>
-                        </ol>
-                    </div>
                 </section>
 
                 <!-- Typography -->
@@ -1273,6 +1500,34 @@
                                 <div class="text-lg">Body — 16px</div>
                                 <div class="text-sm">Caption — 14px</div>
                                 <div class="text-xs">Small — 12px</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10 md:col-span-2">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Технические подписи</div>
+                            <div class="grid md:grid-cols-2 gap-6">
+                                <div>
+                                    <div class="text-2xl mb-2 font-mono">JetBrains Mono</div>
+                                    <div class="text-sm text-gray-400">Артикулы товаров, ключи базы данных, HEX-коды цветов, технические обозначения.</div>
+                                    <div class="mt-4 space-y-2 font-mono text-sm">
+                                        <div>#00099 · art. 00099</div>
+                                        <div>#FF2D95 · numeric(10,2)</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider accent mb-3">Кириллица обязательна</div>
+                                    <p class="text-sm text-gray-400 leading-relaxed">
+                                        Это правило относится ко всем текстам сайта, а не только к техническим подписям.
+                                        Каждый подключаемый шрифт обязан содержать и кириллицу, и латиницу
+                                        в едином стиле. Если русских букв в шрифте нет, браузер подставит для них
+                                        другой шрифт, и смешанный текст вроде
+                                        <span class="font-mono text-xs">«арт. 00099»</span> будет выглядеть разнобоем —
+                                        буквы разной высоты и насыщенности.
+                                    </p>
+                                    <p class="text-sm text-gray-400 leading-relaxed mt-3">
+                                        Сейчас на сайте три шрифта, все с кириллицей:
+                                        Cormorant Garamond, Inter и JetBrains Mono.
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1317,24 +1572,25 @@
 
                 <!-- Examples -->
                 <section class="brandbook-section">
-                    <h3 class="font-serif text-2xl mb-4 neon-text">Примеры применения</h3>
+                    <h3 class="font-serif text-2xl mb-2 neon-text">Примеры применения</h3>
+                    <p class="text-sm text-gray-500 mb-4">Носители тёмные, поэтому примеры показаны в тёмном оформлении независимо от выбранной темы.</p>
                     <div class="grid md:grid-cols-2 gap-4">
-                        <div class="bg-gradient-to-br from-pink-500/20 to-purple-600/20 p-6 rounded-xl border border-pink-500/20">
+                        <div class="always-dark ex-pink p-6 rounded-xl border">
                             <div class="text-xs uppercase tracking-wider accent mb-2">Социальные сети</div>
                             <div class="font-serif text-2xl neon-text mb-2">PaprekolyX</div>
                             <div class="text-sm text-gray-400">Аватарки, обложки, сторис с неоновыми акцентами</div>
                         </div>
-                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                        <div class="always-dark p-6 rounded-xl border">
                             <div class="text-xs uppercase tracking-wider accent mb-2">Упаковка</div>
                             <div class="font-serif text-2xl mb-2">PaprekolyX</div>
                             <div class="text-sm text-gray-400">Тёмная упаковка с розовым логотипом и свечением</div>
                         </div>
-                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                        <div class="always-dark p-6 rounded-xl border">
                             <div class="text-xs uppercase tracking-wider accent mb-2">Визитки</div>
                             <div class="font-serif text-2xl mb-2">PaprekolyX</div>
                             <div class="text-sm text-gray-400">Матовая чёрная бумага, розовый логотип с тиснением</div>
                         </div>
-                        <div class="bg-gradient-to-br from-purple-600/20 to-blue-500/20 p-6 rounded-xl border border-purple-500/20">
+                        <div class="always-dark ex-purple p-6 rounded-xl border">
                             <div class="text-xs uppercase tracking-wider accent-purple mb-2">Реклама</div>
                             <div class="font-serif text-2xl mb-2">PaprekolyX</div>
                             <div class="text-sm text-gray-400">Баннеры с градиентами и неоновыми эффектами</div>
@@ -1348,23 +1604,23 @@
                     <div class="bg-card p-6 rounded-xl border border-pink-500/10">
                         <div class="grid md:grid-cols-3 gap-4 text-sm">
                             <div>
-                                <div class="text-xs uppercase tracking-wider accent mb-1">Email</div>
-                                <div class="text-gray-400">Albert23NO@ya.ru</div>
+                                <div class="text-xs uppercase tracking-wider accent mb-1">E-mail</div>
+                                <div class="text-gray-400" data-content="contacts.email">Albert23NO@ya.ru</div>
                             </div>
                             <div>
                                 <div class="text-xs uppercase tracking-wider accent mb-1">Телефон</div>
-                                <div class="text-gray-400">+7 (925) 052-19-XX</div>
+                                <div class="text-gray-400" data-content="contacts.phone_display">+7 (925) 052-19-XX</div>
                             </div>
                             <div>
                                 <div class="text-xs uppercase tracking-wider accent mb-1">ВКонтакте</div>
-                                <div class="text-gray-400">vk.ru/paprekolyx</div>
+                                <div class="text-gray-400" data-content="contacts.vk_label">vk.ru/paprekolyx</div>
                             </div>
                         </div>
                     </div>
                 </section>
 
                 <div class="pt-4 text-center text-xs text-gray-600 uppercase tracking-wider">
-                    — Брендбук v1.1 · 18.09.2026 —
+                    — Брендбук v1.2 · 18.09.2026 —
                 </div>
             </div>
         </div>
@@ -1391,7 +1647,12 @@
 
                 <div>
                     <div class="co-label">Состав заказа</div>
-                    <div id="co-summary" class="space-y-2 mb-4"></div>
+                    <div class="co-sum-head">
+                        <span>Изделие</span>
+                        <span style="text-align:right">Кол-во</span>
+                        <span style="text-align:right">Сумма</span>
+                    </div>
+                    <div id="co-summary" class="mb-4"></div>
                     <div class="divider mb-4"></div>
                     <div class="co-line"><span>Изделия</span><span id="co-subtotal">0 ₽</span></div>
                     <div class="co-line mt-1"><span>Доставка</span><span id="co-delivery-cost">—</span></div>
@@ -1399,8 +1660,8 @@
                         <span class="font-serif text-lg">Итого</span>
                         <span class="accent neon-text text-2xl font-serif" id="co-total">0 ₽</span>
                     </div>
-                    <p class="co-hint mt-2">Итоговую сумму подтверждает мастер: цены пересчитываются на сервере,
-                        стоимость доставки может уточняться.</p>
+                    <p class="co-hint mt-2">Итоговую сумму, способ оплаты и срок изготовления
+                        мастер подтвердит в переписке.</p>
                 </div>
 
                 <div>
@@ -1420,7 +1681,7 @@
                 </div>
 
                 <div>
-                    <label class="co-label" for="co-email">E-mail <span class="text-gray-600">(необязательно)</span></label>
+                    <label class="co-label" for="co-email">E-mail</label>
                     <input id="co-email" class="co-input" type="email" placeholder="you@mail.ru" maxlength="200" autocomplete="email" inputmode="email">
                 </div>
 
@@ -1461,8 +1722,10 @@
                             class="btn-ghost w-full py-3 rounded-full font-medium tracking-wide">Вернуться к корзине</button>
                 </div>
 
-                <p class="co-hint text-center">Отправляя заказ, вы соглашаетесь на обработку контактных данных
-                    для его исполнения. Кастомные изделия — предоплата 40%, невозвратная.</p>
+                <p class="co-hint text-center">Нажимая «Отправить заказ», вы соглашаетесь на обработку
+                    контактных данных для его исполнения —
+                    <a href="#" class="legal-plain" data-content-href="legal.privacy_url">политика обработки
+                    персональных данных</a>. Кастомные изделия — предоплата 40%, невозвратная.</p>
             </div>
 
             <!-- -------- Шаг 2: успех -------- -->
@@ -1589,8 +1852,29 @@
                 const value = String(contentMap[el.getAttribute('data-content-href')] || '').trim();
                 if (value) el.setAttribute('href', value);
             });
+            applyPrivacyLinks();
             applyLogoImages();
             setBrandImages();
+        }
+
+        // Политика обработки персональных данных: ссылка появляется только
+        // тогда, когда адрес заполнен в таблице site_content.
+        function applyPrivacyLinks() {
+            const url = String(contentMap['legal.privacy_url'] || '').trim();
+            document.querySelectorAll('[data-content-href="legal.privacy_url"]').forEach(el => {
+                if (url) {
+                    el.setAttribute('href', url);
+                    el.setAttribute('target', '_blank');
+                    el.setAttribute('rel', 'noopener');
+                    el.classList.add('legal-link');
+                    el.classList.remove('legal-plain');
+                } else {
+                    el.removeAttribute('href');
+                    el.removeAttribute('target');
+                    el.classList.remove('legal-link');
+                    el.classList.add('legal-plain');
+                }
+            });
         }
 
         // Логотип: если в базе есть картинка — показываем её, иначе букву P
@@ -1601,6 +1885,13 @@
                 const img = badge.querySelector('.logo-img');
                 if (img && url) img.setAttribute('src', url);
             });
+            // Тот же логотип — значком вкладки браузера
+            if (url) {
+                document.querySelectorAll('link[rel="icon"], link[rel="apple-touch-icon"]').forEach(link => {
+                    link.removeAttribute('type');
+                    link.setAttribute('href', url);
+                });
+            }
         }
 
         // Перерисовка заглушек после смены темы
@@ -1906,6 +2197,14 @@
             showToast('«' + product.name + ' — добавлено в корзину');
         }
 
+        function clearCart() {
+            if (cart.length === 0) return;
+            cart = [];
+            saveCart();
+            updateCartUI();
+            showToast('Корзина очищена');
+        }
+
         function removeFromCart(id) {
             cart = cart.filter(i => i.id !== id);
             saveCart();
@@ -1930,6 +2229,9 @@
             const totalEl = document.getElementById('cart-total');
             const totalBigEl = document.getElementById('cart-total-big');
             const subtitle = document.getElementById('cart-subtitle');
+
+            const clearBtn = document.getElementById('cart-clear');
+            if (clearBtn) clearBtn.classList.toggle('hidden', cart.length === 0);
 
             const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
             countEl.innerText = totalItems;
@@ -2037,7 +2339,7 @@
 
             const [pay, del] = await Promise.all([
                 db.from('payment_methods').select('id, name, description').eq('is_active', true).order('id'),
-                db.from('delivery_methods').select('id, name, description, base_price').eq('is_active', true).order('id')
+                db.from('delivery_methods').select('id, name, description, base_price, price_max').eq('is_active', true).order('id')
             ]);
 
             if (pay.error || del.error) {
@@ -2068,9 +2370,43 @@
             '</label>';
         }
 
+        // Соглашение о данных:
+        //   price_max заполнен и равен 0 вместе с base_price = 0  ->  «бесплатно»
+        //   price_max заполнен и больше base_price                ->  «300–500 ₽»
+        //   price_max пустой и base_price = 0                     ->  «рассчитывается отдельно»
+        // Диапазон цен: «300\u2013500 \u20bd», знак рубля ставится один раз в конце
+        function formatRange(a, b) {
+            const r = x => Math.round(Number(x) || 0).toLocaleString('ru-RU');
+            return r(a) + '\u2013' + r(b) + ' \u20bd';
+        }
+
+        function hasMaxPrice(item) {
+            return item && item.price_max !== null && item.price_max !== undefined && item.price_max !== '';
+        }
+
         function deliveryPriceText(item) {
-            const price = Number(item.base_price) || 0;
-            return price > 0 ? formatPrice(price) : 'стоимость уточняется';
+            const min = Number(item.base_price) || 0;
+            if (!hasMaxPrice(item)) {
+                return min > 0 ? formatPrice(min) : 'рассчитывается отдельно';
+            }
+            const max = Number(item.price_max) || 0;
+            if (min === 0 && max === 0) return 'бесплатно';
+            if (max > min) return formatRange(min, max);
+            return formatPrice(min);
+        }
+
+        // Итоговая сумма с учётом доставки: текст и числа для расчётов
+        function grandTotal(subtotal, item) {
+            const min = item ? (Number(item.base_price) || 0) : 0;
+            if (!item || !hasMaxPrice(item)) {
+                return { text: min > 0 ? formatPrice(subtotal + min) : formatPrice(subtotal) + ' + доставка',
+                         min: subtotal + min, max: null, known: min > 0 };
+            }
+            const max = Number(item.price_max) || 0;
+            if (min === 0 && max === 0) return { text: formatPrice(subtotal), min: subtotal, max: subtotal, known: true };
+            if (max > min) return { text: formatRange(subtotal + min, subtotal + max),
+                                    min: subtotal + min, max: subtotal + max, known: true };
+            return { text: formatPrice(subtotal + min), min: subtotal + min, max: subtotal + min, known: true };
         }
 
         function renderCheckoutOptions() {
@@ -2119,9 +2455,10 @@
         function renderCheckoutSummary() {
             const box = document.getElementById('co-summary');
             box.innerHTML = cart.map(i =>
-                '<div class="co-line">' +
-                    '<span>' + escapeXml(i.name) + ' × ' + i.quantity + '</span>' +
-                    '<span>' + formatPrice(i.price * i.quantity) + '</span>' +
+                '<div class="co-sum-row">' +
+                    '<span class="co-sum-name">' + escapeXml(i.name) + '</span>' +
+                    '<span class="co-sum-qty">' + i.quantity + ' шт.</span>' +
+                    '<span class="co-sum-price">' + formatPrice(i.price * i.quantity) + '</span>' +
                 '</div>'
             ).join('') || '<div class="co-hint">Корзина пуста</div>';
         }
@@ -2129,12 +2466,12 @@
         function updateCheckoutTotals() {
             const subtotal = cartTotal();
             const method = selectedDeliveryMethod();
-            const delivery = method ? (Number(method.base_price) || 0) : 0;
+            const total = grandTotal(subtotal, method);
 
             document.getElementById('co-subtotal').innerText = formatPrice(subtotal);
             document.getElementById('co-delivery-cost').innerText =
-                method ? (delivery > 0 ? formatPrice(delivery) : 'уточняется') : '—';
-            document.getElementById('co-total').innerText = formatPrice(subtotal + delivery);
+                method ? deliveryPriceText(method) : '—';
+            document.getElementById('co-total').innerText = total.text;
         }
 
         // --- открытие и закрытие ---
@@ -2255,9 +2592,10 @@
             document.getElementById('co-order-number').innerText = '№ ' + number;
 
             const itemsCount = Number(result.items_count) || payload.items.length;
-            const grand = Number(result.grand_total) || 0;
+            // Сумму показываем так же, как в форме: с диапазоном, если доставка вилочная
+            const totalText = grandTotal(Number(result.total) || 0, selectedDeliveryMethod()).text;
             document.getElementById('co-success-details').innerHTML =
-                'Позиций: ' + itemsCount + '<br>Сумма: <span class="accent">' + formatPrice(grand) + '</span><br>' +
+                'Позиций: ' + itemsCount + '<br>Сумма: <span class="accent">' + totalText + '</span><br>' +
                 'Мастер свяжется с вами для подтверждения и оплаты.';
 
             lastOrderText = 'Заказ № ' + number + '\n' +
@@ -2265,7 +2603,7 @@
                     const p = products.find(x => x.id === i.product_id);
                     return '• ' + (p ? p.name : 'товар ' + i.product_id) + ' × ' + i.quantity;
                 }).join('\n') +
-                '\n\nИтого: ' + formatPrice(grand) +
+                '\n\nИтого: ' + totalText +
                 '\nИмя: ' + payload.customer_name +
                 (payload.customer_phone ? '\nТелефон: ' + payload.customer_phone : '') +
                 (payload.customer_vk ? '\nВК: ' + payload.customer_vk : '') +
