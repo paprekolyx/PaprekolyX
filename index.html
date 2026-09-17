@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -5,12 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-        const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
     <style>
@@ -1003,212 +999,304 @@ const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     </div>
 
     <script>
-        const products = [
-            // Инициализация
-const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
-const { createClient } = supabase;
-const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        /* ============================================================
+           PaprekolyX — логика сайта
+           Этап 1 «Реанимация»:
+             • исправлен синтаксис (код больше не внутри массива)
+             • убрана несуществующая функция image_gen
+             • вместо фото — аккуратные SVG-заглушки в стиле бренда
+             • категории и товары берутся из Supabase
+             • корзина сохраняется в localStorage (не пропадёт при обновлении)
+           ============================================================ */
 
-// Загрузка товаров при старте
-async function loadProducts() {
-  const { data, error } = await db
-    .from('products')
-    .select(`
-      id, article, name, price, image_url,
-      categories (name)
-    `)
-    .eq('is_active', true)
-    .order('id');
+        // ---------- 1. Подключение к Supabase ----------
+        const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  if (error) {
-    console.error('Не удалось загрузить товары:', error);
-    return;
-  }
+        // ---------- 2. Состояние страницы ----------
+        let products = [];        // товары из базы
+        let categories = [];      // категории из базы
+        let categoryById = {};    // быстрый поиск: id категории -> её название
+        let cart = [];            // корзина
+        let currentFilter = 'all';
 
-  // Преобразуем в формат, который уже использует твой код
-  const products = data.map(p => ({
-    id: p.id,
-    article: p.article,
-    name: p.name,
-    price: p.price,
-    category: p.categories.name,
-    image_url: p.image_url
-  }));
+        const CART_KEY = 'paprekolyx_cart_v1';
+        const VK_GROUP = 'https://vk.ru/paprekolyx';
 
-  renderProducts(products);
-}
+        // ---------- 3. SVG-заглушки вместо фотографий ----------
+        function escapeXml(text) {
+            return String(text == null ? '' : text)
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+        }
 
-document.addEventListener('DOMContentLoaded', loadProducts);
-        ];
-        async function filterProducts(category, btn) {
-  // Обновляем UI кнопок (твой существующий код)
-  document.querySelectorAll('.filter-btn').forEach(b => {
-    b.classList.remove('active');
-    b.classList.add('text-gray-300');
-  });
-  btn.classList.add('active');
-  btn.classList.remove('text-gray-300');
+        function svgPlaceholder(letter, title, subtitle) {
+            const svg =
+                '<svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">' +
+                '<defs>' +
+                '<radialGradient id="bg" cx="50%" cy="32%" r="78%">' +
+                '<stop offset="0%" stop-color="#3b1d4f"/>' +
+                '<stop offset="55%" stop-color="#1a1525"/>' +
+                '<stop offset="100%" stop-color="#0a0a0f"/>' +
+                '</radialGradient>' +
+                '<linearGradient id="ac" x1="0" y1="0" x2="1" y2="1">' +
+                '<stop offset="0%" stop-color="#FF2D95"/>' +
+                '<stop offset="100%" stop-color="#A855F7"/>' +
+                '</linearGradient>' +
+                '</defs>' +
+                '<rect width="600" height="600" fill="url(#bg)"/>' +
+                '<circle cx="300" cy="250" r="128" fill="none" stroke="url(#ac)" stroke-width="2" opacity="0.55"/>' +
+                '<circle cx="300" cy="250" r="92" fill="none" stroke="#FF2D95" stroke-width="1" opacity="0.28"/>' +
+                '<text x="300" y="286" font-family="Georgia, \'Times New Roman\', serif" font-size="104" ' +
+                'fill="url(#ac)" text-anchor="middle">' + escapeXml(letter) + '</text>' +
+                '<text x="300" y="452" font-family="Arial, Helvetica, sans-serif" font-size="27" ' +
+                'fill="#f0e6ff" text-anchor="middle" opacity="0.9">' + escapeXml(title) + '</text>' +
+                '<text x="300" y="490" font-family="Arial, Helvetica, sans-serif" font-size="18" ' +
+                'fill="#8a7a9a" text-anchor="middle">' + escapeXml(subtitle) + '</text>' +
+                '</svg>';
+            return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        }
 
-  // Запрос к БД
-  let query = db
-    .from('products')
-    .select(`id, article, name, price, image_url, categories(name)`)
-    .eq('is_active', true);
+        // Картинка товара: реальное фото из БД, если есть; иначе заглушка
+        function productImage(product) {
+            const url = (product.image_url || '').trim();
+            if (url) return url;
+            const cat = product.category || 'PaprekolyX';
+            return svgPlaceholder(cat.charAt(0).toUpperCase(), cat, 'арт. ' + (product.article || '—'));
+        }
 
-  if (category !== 'all') {
-    query = query.eq('categories.name', category);
-  }
+        // Картинка позиции корзины (товар может быть уже не найден в списке)
+        function cartItemImage(item) {
+            const found = products.find(p => p.id === item.id);
+            if (found) return productImage(found);
+            const cat = item.category || 'PaprekolyX';
+            return svgPlaceholder(cat.charAt(0).toUpperCase(), cat, 'арт. ' + (item.article || '—'));
+        }
 
-  const { data } = await query.order('id');
-
-  const products = data.map(p => ({
-    id: p.id,
-    article: p.article,
-    name: p.name,
-    price: p.price,
-    category: p.categories.name,
-    image_url: p.image_url
-  }));
-
-  renderProducts(products);
-}
-
-        const categoryImages = {};
-        let cart = [];
-        let productImages = {};
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            generateImagesAndRender();
-        });
-
-        async function generateImagesAndRender() {
-            const grid = document.getElementById('product-grid');
-
-            try {
-                const heroRes = await image_gen({ prompt: 'luxury collection of handmade epoxy resin jewelry and pendants with pink and purple inclusions, dark moody background, dramatic studio lighting, premium product photography, neon pink and purple tones' });
-                document.getElementById('hero-img').src = heroRes.url;
-            } catch(e) { console.error(e); }
-
-            try {
-                const aboutRes = await image_gen({ prompt: 'craftsman hands working with epoxy resin, pouring pink and purple resin into mold, workshop atmosphere, warm lighting, artistic process' });
-                document.getElementById('about-img').src = aboutRes.url;
-            } catch(e) {}
-
-            const categoryPrompts = {
-                'Руны': 'ancient runic stones made of transparent epoxy resin with pink and purple dust, mystical dark background, set of runes, product photography',
-                'Броши': 'collection of handmade felt brooches and keychains, cute designs, pastel pink and purple colors, soft texture, studio photo',
-                'Куклы': 'handmade felt dolls with detailed clothes, cozy aesthetic, studio photography',
-                'Подвески': 'collection of epoxy resin pendants with flowers and inclusions, transparent, jewelry photography, dark background with pink lighting',
-                'Кольца': 'epoxy resin rings collection, various colors and inclusions, luxury jewelry photography, dark velvet background',
-                'Игр. кости': 'epoxy resin d6 dice set with colorful inclusions, D&D gaming accessories, dramatic lighting',
-                'Шахматы': 'luxury epoxy resin chess set with ocean wave design, premium handcrafted, dramatic studio lighting'
-            };
-
-            for (const [cat, prompt] of Object.entries(categoryPrompts)) {
-                try {
-                    const res = await image_gen({ prompt });
-                    categoryImages[cat] = res.url;
-                } catch(e) { console.error(e); }
+        function setBrandImages() {
+            const hero = document.getElementById('hero-img');
+            const about = document.getElementById('about-img');
+            if (hero && !hero.getAttribute('src')) {
+                hero.src = svgPlaceholder('✦', 'PaprekolyX', 'эпоксидная смола и фетр');
             }
-
-            const batchSize = 4;
-            for (let i = 0; i < products.length; i += batchSize) {
-                const batch = products.slice(i, i + batchSize);
-                await Promise.all(batch.map(async (p) => {
-                    try {
-                        const res = await image_gen({ prompt: p.imagePrompt });
-                        productImages[p.id] = res.url;
-                    } catch(e) {
-                        productImages[p.id] = null;
-                    }
-                }));
-                renderProducts(products);
+            if (about && !about.getAttribute('src')) {
+                about.src = svgPlaceholder('M', 'Мастерская', 'ручная работа');
             }
         }
 
+        // ---------- 4. Загрузка данных из Supabase ----------
+        async function loadCategories() {
+            const { data, error } = await db
+                .from('categories')
+                .select('id, slug, name, description')
+                .order('id');
+
+            if (error) {
+                console.error('Не удалось загрузить категории:', error);
+                return;
+            }
+            categories = data || [];
+            categoryById = {};
+            categories.forEach(c => { categoryById[c.id] = c.name; });
+            renderFilterButtons();
+        }
+
+        async function loadProducts() {
+            // Загружаем товары БЕЗ вложенного запроса categories(name):
+            // так надёжнее — не зависит от настроек связей в базе.
+            const { data, error } = await db
+                .from('products')
+                .select('id, article, name, price, description, image_url, category_id')
+                .eq('is_active', true)
+                .order('id');
+
+            const grid = document.getElementById('product-grid');
+
+            if (error) {
+                console.error('Ошибка запроса к Supabase:', error);
+                grid.innerHTML = diagnosticBox(
+                    'База данных не ответила',
+                    'Сообщение от Supabase: ' + error.message,
+                    'Скорее всего, в Supabase не созданы политики RLS на чтение (SELECT) ' +
+                    'для анонимных пользователей. Выполните SQL-скрипт из шага 2 инструкции.'
+                );
+                return;
+            }
+
+            products = (data || []).map(p => ({
+                id: p.id,
+                article: p.article,
+                name: p.name,
+                price: Number(p.price) || 0,
+                description: p.description || '',
+                image_url: p.image_url || '',
+                category_id: p.category_id,
+                category: categoryById[p.category_id] || 'Без категории'
+            }));
+
+            if (products.length === 0) {
+                grid.innerHTML = diagnosticBox(
+                    'Товары не получены',
+                    'Запрос прошёл успешно, но база вернула 0 строк.',
+                    'Это значит, что RLS включён, но политика «читать всем» отсутствует — ' +
+                    'запрос молча возвращает пустоту. Выполните SQL-скрипт из шага 2 инструкции.'
+                );
+                return;
+            }
+
+            renderProducts(products);
+        }
+
+        function diagnosticBox(title, line1, line2) {
+            return '<div class="col-span-full max-w-2xl mx-auto text-center py-16 px-6 rounded-2xl ' +
+                'bg-card border border-pink-500/30">' +
+                '<div class="text-3xl accent mb-3">✦</div>' +
+                '<div class="font-serif text-2xl text-white mb-3">' + escapeXml(title) + '</div>' +
+                '<div class="text-sm text-gray-400 mb-2">' + escapeXml(line1) + '</div>' +
+                '<div class="text-sm text-gray-500">' + escapeXml(line2) + '</div>' +
+                '</div>';
+        }
+
+        // ---------- 5. Фильтр по категориям ----------
+        function renderFilterButtons() {
+            const container = document.getElementById('filter-container');
+            if (!container || categories.length === 0) return; // оставляем кнопки из HTML
+
+            const baseClass = 'filter-btn px-5 py-2 rounded-full border border-white/10 text-sm ' +
+                'font-medium transition hover:border-pink-500/50';
+
+            let html = '<button onclick="filterProducts(\'all\', this)" class="' + baseClass + ' active">Все изделия</button>';
+            categories.forEach(c => {
+                html += '<button onclick="filterProducts(\'' + escapeXml(c.name).replace(/'/g, "\\'") +
+                    '\', this)" class="' + baseClass + ' text-gray-300">' + escapeXml(c.name) + '</button>';
+            });
+            container.innerHTML = html;
+        }
+
+        function filterProducts(category, btn) {
+            currentFilter = category;
+
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('text-gray-300');
+            });
+            if (btn) {
+                btn.classList.add('active');
+                btn.classList.remove('text-gray-300');
+            }
+
+            const filtered = category === 'all'
+                ? products
+                : products.filter(p => p.category === category);
+
+            renderProducts(filtered);
+        }
+
+        // ---------- 6. Отрисовка каталога ----------
         function renderProducts(items) {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
 
-            if (items.length === 0) {
-                grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">В этой категории пока нет товаров</div>';
+            if (!items || items.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">' +
+                    'В этой категории пока нет изделий</div>';
                 return;
             }
 
             items.forEach(product => {
-                const imgUrl = productImages[product.id] || categoryImages[product.category] || '';
                 const card = document.createElement('div');
                 card.className = 'product-card rounded-2xl overflow-hidden fade-in flex flex-col';
-                card.innerHTML = `
-                    <div class="aspect-square overflow-hidden relative bg-black">
-                        ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" class="product-img w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-600 text-4xl font-serif">${product.category[0]}</div>`}
-                        <div class="absolute top-3 left-3">
-                            <span class="text-[10px] uppercase tracking-wider bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-pink-500/20 accent">${product.category}</span>
-                        </div>
-                        <div class="absolute top-3 right-3">
-                            <span class="text-[10px] bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-pink-500/20 text-gray-400 font-mono">#${product.article}</span>
-                        </div>
-                    </div>
-                    <div class="p-5 flex-1 flex flex-col">
-                        <h3 class="font-serif text-lg leading-tight mb-2 text-white">${product.name}</h3>
-                        <div class="flex items-end justify-between mt-auto pt-3">
-                            <div>
-                                <div class="text-[10px] uppercase tracking-wider text-gray-500">Цена</div>
-                                <div class="text-xl accent neon-text font-medium">${formatPrice(product.price)}</div>
-                            </div>
-                            <button onclick="addToCart(${product.id})" class="btn-primary px-4 py-2 rounded-full text-xs font-medium tracking-wide flex items-center gap-1.5">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-                                В корзину
-                            </button>
-                        </div>
-                    </div>
-                `;
+                card.innerHTML =
+                    '<div class="aspect-square overflow-hidden relative bg-black">' +
+                        '<img src="' + productImage(product) + '" alt="' + escapeXml(product.name) + '" ' +
+                            'class="product-img w-full h-full object-cover" loading="lazy">' +
+                        '<div class="absolute top-3 left-3">' +
+                            '<span class="text-[10px] uppercase tracking-wider bg-black/60 backdrop-blur ' +
+                            'px-2 py-1 rounded-full border border-pink-500/20 accent">' +
+                            escapeXml(product.category) + '</span>' +
+                        '</div>' +
+                        '<div class="absolute top-3 right-3">' +
+                            '<span class="text-[10px] bg-black/60 backdrop-blur px-2 py-1 rounded-full ' +
+                            'border border-pink-500/20 text-gray-400 font-mono">#' + escapeXml(product.article) + '</span>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="p-5 flex-1 flex flex-col">' +
+                        '<h3 class="font-serif text-lg leading-tight mb-2 text-white">' + escapeXml(product.name) + '</h3>' +
+                        '<div class="flex items-end justify-between mt-auto pt-3">' +
+                            '<div>' +
+                                '<div class="text-[10px] uppercase tracking-wider text-gray-500">Цена</div>' +
+                                '<div class="text-xl accent neon-text font-medium">' + formatPrice(product.price) + '</div>' +
+                            '</div>' +
+                            '<button onclick="addToCart(' + product.id + ')" class="btn-primary px-4 py-2 rounded-full ' +
+                                'text-xs font-medium tracking-wide flex items-center gap-1.5">' +
+                                '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>' +
+                                'В корзину' +
+                            '</button>' +
+                        '</div>' +
+                    '</div>';
                 grid.appendChild(card);
             });
         }
 
         function formatPrice(price) {
-            const rounded = Math.round(price);
+            const rounded = Math.round(Number(price) || 0);
             return rounded.toLocaleString('ru-RU') + ' ₽';
         }
 
-        function filterProducts(category, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => {
-                b.classList.remove('active');
-                b.classList.add('text-gray-300');
-            });
-            btn.classList.add('active');
-            btn.classList.remove('text-gray-300');
+        // ---------- 7. Корзина (localStorage) ----------
+        function saveCart() {
+            try { localStorage.setItem(CART_KEY, JSON.stringify(cart)); }
+            catch (e) { console.warn('Не удалось сохранить корзину', e); }
+        }
 
-            const filtered = category === 'all' ? products : products.filter(p => p.category === category);
-            renderProducts(filtered);
+        function loadCart() {
+            try {
+                const raw = localStorage.getItem(CART_KEY);
+                cart = raw ? JSON.parse(raw) : [];
+                if (!Array.isArray(cart)) cart = [];
+            } catch (e) { cart = []; }
         }
 
         function addToCart(id) {
             const product = products.find(p => p.id === id);
+            if (!product) return;
+
             const existing = cart.find(i => i.id === id);
             if (existing) {
                 existing.quantity += 1;
             } else {
-                cart.push({ ...product, quantity: 1 });
+                cart.push({
+                    id: product.id,
+                    article: product.article,
+                    name: product.name,
+                    price: product.price,
+                    category: product.category,
+                    quantity: 1
+                });
             }
+            saveCart();
             updateCartUI();
-            showToast(`«${product.name}» добавлен в корзину`);
+            showToast('«' + product.name + ' — добавлено в корзину');
         }
 
         function removeFromCart(id) {
             cart = cart.filter(i => i.id !== id);
+            saveCart();
             updateCartUI();
         }
 
         function changeQuantity(id, delta) {
             const item = cart.find(i => i.id === id);
-            if (item) {
-                item.quantity += delta;
-                if (item.quantity <= 0) removeFromCart(id);
-                else updateCartUI();
-            }
+            if (!item) return;
+            item.quantity += delta;
+            if (item.quantity <= 0) removeFromCart(id);
+            else { saveCart(); updateCartUI(); }
+        }
+
+        function cartTotal() {
+            return cart.reduce((s, i) => s + (Number(i.price) || 0) * i.quantity, 0);
         }
 
         function updateCartUI() {
@@ -1224,43 +1312,47 @@ document.addEventListener('DOMContentLoaded', loadProducts);
 
             if (cart.length === 0) {
                 subtitle.innerText = 'Пусто';
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-center py-20">
-                        <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
-                            <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                        </div>
-                        <div class="font-serif text-xl mb-1">Корзина пуста</div>
-                        <div class="text-xs text-gray-500">Добавьте изделия из каталога</div>
-                    </div>`;
+                container.innerHTML =
+                    '<div class="flex flex-col items-center justify-center h-full text-center py-20">' +
+                        '<div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">' +
+                            '<svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" ' +
+                            'd="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>' +
+                        '</div>' +
+                        '<div class="font-serif text-xl mb-1">Корзина пуста</div>' +
+                        '<div class="text-xs text-gray-500">Добавьте изделия из каталога</div>' +
+                    '</div>';
             } else {
-                subtitle.innerText = `${totalItems} ${pluralize(totalItems, 'изделие', 'изделия', 'изделий')}`;
-                container.innerHTML = cart.map(item => {
-                    const img = productImages[item.id] || categoryImages[item.category] || '';
-                    return `
-                    <div class="flex gap-3 bg-card p-3 rounded-xl border border-pink-500/10">
-                        <img src="${img}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-black" alt="${item.name}">
-                        <div class="flex-1 min-w-0">
-                            <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">${item.category}</div>
-                            <div class="text-sm font-medium text-white truncate">${item.name}</div>
-                            <div class="accent text-sm mt-1 neon-text">${formatPrice(item.price * item.quantity)}</div>
-                            <div class="flex items-center gap-2 mt-2">
-                                <button onclick="changeQuantity(${item.id}, -1)" class="w-6 h-6 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">−</button>
-                                <span class="text-xs w-5 text-center">${item.quantity}</span>
-                                <button onclick="changeQuantity(${item.id}, 1)" class="w-6 h-6 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">+</button>
-                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-gray-500 hover:text-red-400 text-xs">удалить</button>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
+                subtitle.innerText = totalItems + ' ' + pluralize(totalItems, 'изделие', 'изделия', 'изделий');
+                container.innerHTML = cart.map(item =>
+                    '<div class="flex gap-3 bg-card p-3 rounded-xl border border-pink-500/10">' +
+                        '<img src="' + cartItemImage(item) + '" class="w-20 h-20 object-cover rounded-lg ' +
+                            'flex-shrink-0 bg-black" alt="' + escapeXml(item.name) + '">' +
+                        '<div class="flex-1 min-w-0">' +
+                            '<div class="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">' + escapeXml(item.category) + '</div>' +
+                            '<div class="text-sm font-medium text-white truncate">' + escapeXml(item.name) + '</div>' +
+                            '<div class="accent text-sm mt-1 neon-text">' + formatPrice(item.price * item.quantity) + '</div>' +
+                            '<div class="flex items-center gap-2 mt-2">' +
+                                '<button onclick="changeQuantity(' + item.id + ', -1)" class="w-6 h-6 rounded-full ' +
+                                    'bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">−</button>' +
+                                '<span class="text-xs w-5 text-center">' + item.quantity + '</span>' +
+                                '<button onclick="changeQuantity(' + item.id + ', 1)" class="w-6 h-6 rounded-full ' +
+                                    'bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">+</button>' +
+                                '<button onclick="removeFromCart(' + item.id + ')" class="ml-auto text-gray-500 ' +
+                                    'hover:text-red-400 text-xs">удалить</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>'
+                ).join('');
             }
 
-            const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-            totalEl.innerText = formatPrice(total);
-            totalBigEl.innerText = formatPrice(total);
+            const total = formatPrice(cartTotal());
+            totalEl.innerText = total;
+            totalBigEl.innerText = total;
         }
 
         function pluralize(n, one, two, five) {
-            let f = ((n % 100) > 10 && (n % 100) < 20) ? 5 : (n % 10);
+            const f = ((n % 100) > 10 && (n % 100) < 20) ? 5 : (n % 10);
             return f === 1 ? one : (f >= 2 && f <= 4 ? two : five);
         }
 
@@ -1288,22 +1380,43 @@ document.addEventListener('DOMContentLoaded', loadProducts);
             }, 2500);
         }
 
+        // ---------- 8. Оформление заказа ----------
+        // ВРЕМЕННО (этап 1): формируем текст заказа, копируем в буфер и открываем ВК.
+        // На этапе 5 здесь появится запись в таблицы orders и order_items.
         function checkout() {
             if (cart.length === 0) {
                 showToast('Корзина пуста');
                 return;
             }
-            const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
-            const items = cart.map(i => `• ${i.name} × ${i.quantity}`).join('\n');
-            alert(`Спасибо за заказ!\n\nСостав:\n${items}\n\nИтого: ${formatPrice(total)}\n\nМастер свяжется с вами по контактам:\nAlbert23NO@ya.ru\n+7 (925) 052-19-XX`);
-            cart = [];
-            updateCartUI();
-            toggleCart();
+
+            const lines = cart.map(i => '• ' + i.name + ' (арт. ' + i.article + ') × ' + i.quantity +
+                ' = ' + formatPrice(i.price * i.quantity));
+            const message = 'Здравствуйте! Хочу заказать:\n' + lines.join('\n') +
+                '\n\nИтого: ' + formatPrice(cartTotal());
+
+            const done = () => {
+                window.open(VK_GROUP, '_blank');
+                showToast('Состав заказа скопирован — вставьте его в сообщении');
+                cart = [];
+                saveCart();
+                updateCartUI();
+                toggleCart();
+            };
+
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(message).then(done).catch(() => {
+                    window.prompt('Скопируйте состав заказа вручную:', message);
+                    done();
+                });
+            } else {
+                window.prompt('Скопируйте состав заказа вручную:', message);
+                done();
+            }
         }
 
+        // ---------- 9. Модальные окна и прочее ----------
         function toggleAccordion(btn) {
-            const item = btn.parentElement;
-            item.classList.toggle('active');
+            btn.parentElement.classList.toggle('active');
         }
 
         function openPassport() {
@@ -1314,10 +1427,6 @@ document.addEventListener('DOMContentLoaded', loadProducts);
             document.getElementById('passport-modal').classList.remove('open');
             document.body.style.overflow = '';
         }
-        document.getElementById('passport-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'passport-modal') closePassport();
-        });
-
         function openBrandbook() {
             document.getElementById('brandbook-modal').classList.add('open');
             document.body.style.overflow = 'hidden';
@@ -1326,10 +1435,13 @@ document.addEventListener('DOMContentLoaded', loadProducts);
             document.getElementById('brandbook-modal').classList.remove('open');
             document.body.style.overflow = '';
         }
+
+        document.getElementById('passport-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'passport-modal') closePassport();
+        });
         document.getElementById('brandbook-modal').addEventListener('click', (e) => {
             if (e.target.id === 'brandbook-modal') closeBrandbook();
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
                 closePassport();
@@ -1338,7 +1450,15 @@ document.addEventListener('DOMContentLoaded', loadProducts);
             }
         });
 
-        updateCartUI();
+        // ---------- 10. Старт ----------
+        document.addEventListener('DOMContentLoaded', async () => {
+            setBrandImages();
+            loadCart();
+            updateCartUI();
+            await loadCategories();   // сначала категории — чтобы знать названия
+            await loadProducts();     // потом товары
+        });
+
     </script>
 </body>
 </html>
