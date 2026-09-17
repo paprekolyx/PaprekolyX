@@ -10,7 +10,14 @@
     <meta name="theme-color" content="#faf7fc" media="(prefers-color-scheme: light)">
     <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Библиотека Supabase лежит в репозитории и не зависит от стороннего CDN.
+         Если файл не загрузился, подключается запасной источник. -->
+    <script src="assets/supabase.min.js"></script>
+    <script>
+        if (!window.supabase) {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+        }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.20/index.min.css" rel="stylesheet">
@@ -1777,7 +1784,28 @@
         // ---------- 1. Подключение к Supabase ----------
         const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
         const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
-        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Если библиотека не загрузилась или база недоступна, страница не должна
+        // «умирать молча» — раньше из-за этого вечно висела надпись «Загрузка коллекции…».
+        let db = null;
+        let dbError = null;
+        try {
+            if (typeof supabase === 'undefined' || !supabase.createClient) {
+                throw new Error('библиотека Supabase не загрузилась');
+            }
+            db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } catch (e) {
+            dbError = (e && e.message) || String(e);
+            console.error('Не удалось подключиться к Supabase:', dbError);
+        }
+
+        function dbUnavailableBox() {
+            return diagnosticBox(
+                'Каталог не загрузился',
+                dbError ? 'Причина: ' + dbError + '.' : 'База данных не ответила.',
+                'Проверьте подключение к интернету и обновите страницу (Ctrl + F5). ' +
+                'Если не помогает — напишите нам в ВКонтакте, каталог также доступен в сообществе.'
+            );
+        }
 
         // ---------- 2. Состояние страницы ----------
         let products = [];        // товары из базы
@@ -1824,6 +1852,7 @@
         let contentMap = {};
 
         async function loadSiteContent() {
+            if (!db) return;   // останутся тексты из HTML
             const { data, error } = await db.from('site_content').select('key, value');
             if (error) {
                 console.warn('Тексты из базы не загружены — показаны значения из HTML:', error.message);
@@ -1990,6 +2019,7 @@
 
         // ---------- 4. Загрузка данных из Supabase ----------
         async function loadCategories() {
+            if (!db) return;
             const { data, error } = await db
                 .from('categories')
                 .select('id, slug, name, description')
@@ -2006,6 +2036,9 @@
         }
 
         async function loadProducts() {
+            const grid = document.getElementById('product-grid');
+            if (!db) { grid.innerHTML = dbUnavailableBox(); return; }
+
             // Загружаем товары БЕЗ вложенного запроса categories(name):
             // так надёжнее — не зависит от настроек связей в базе.
             const { data, error } = await db
@@ -2013,8 +2046,6 @@
                 .select('id, article, name, price, description, image_url, category_id')
                 .eq('is_active', true)
                 .order('id');
-
-            const grid = document.getElementById('product-grid');
 
             if (error) {
                 console.error('Ошибка запроса к Supabase:', error);
@@ -2336,6 +2367,10 @@
         // --- справочники способов оплаты и доставки ---
         async function loadCheckoutRefs() {
             if (refsLoaded) { renderCheckoutOptions(); return; }
+            if (!db) {
+                setCheckoutError('Не удалось подключиться к базе данных. Обновите страницу или напишите нам в ВКонтакте.');
+                return;
+            }
 
             const [pay, del] = await Promise.all([
                 db.from('payment_methods').select('id, name, description').eq('is_active', true).order('id'),
