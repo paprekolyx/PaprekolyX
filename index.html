@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0f;
+            --bg-soft: #12101a;
+            --bg-card: #1a1525;
+            --accent: #ff2d95;
+            --accent-soft: #ff6bb5;
+            --accent-purple: #a855f7;
+            --accent-blue: #3b82f6;
+            --text: #f0e6ff;
+            --text-dim: #8a7a9a;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+        .font-serif { font-family: 'Cormorant Garamond', serif; }
+        .accent { color: var(--accent); }
+        .accent-purple { color: var(--accent-purple); }
+        .bg-accent { background: var(--accent); }
+        .border-accent { border-color: var(--accent); }
+        .bg-soft { background: var(--bg-soft); }
+        .bg-card { background: var(--bg-card); }
+
+        .cart-sidebar { transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cart-sidebar.open { transform: translateX(0); }
+
+        .product-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--bg-card);
+            border: 1px solid rgba(255, 45, 149, 0.15);
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 45, 149, 0.5);
+            box-shadow: 0 20px 40px -15px rgba(255, 45, 149, 0.3);
+        }
+        .product-card:hover .product-img { transform: scale(1.08); }
+        .product-img { transition: transform 0.6s ease; }
+
+        .fade-in { animation: fadeIn 0.6s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            color: white;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(255, 45, 149, 0.3);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+            box-shadow: 0 0 30px rgba(255, 45, 149, 0.5);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            color: white;
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(255, 45, 149, 0.3);
+        }
+
+        .scrollbar-thin::-webkit-scrollbar { width: 6px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: var(--bg-soft); }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+        .hero-gradient {
+            background: radial-gradient(ellipse at top right, rgba(255, 45, 149, 0.2), transparent 60%),
+                        radial-gradient(ellipse at bottom left, rgba(168, 85, 247, 0.15), transparent 60%);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent), var(--accent-purple), transparent);
+        }
+
+        .passport-modal, .brandbook-modal {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .passport-modal.open, .brandbook-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        .passport-content, .brandbook-content {
+            transform: scale(0.95);
+            transition: transform 0.3s;
+        }
+        .passport-modal.open .passport-content, .brandbook-modal.open .brandbook-content {
+            transform: scale(1);
+        }
+
+        .tech-badge {
+            background: rgba(255, 45, 149, 0.1);
+            border: 1px solid rgba(255, 45, 149, 0.3);
+            color: var(--accent);
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+        }
+        .accordion-item.active .accordion-content {
+            max-height: 2000px;
+        }
+        .accordion-item.active .accordion-icon {
+            transform: rotate(180deg);
+        }
+        .accordion-icon {
+            transition: transform 0.3s;
+        }
+
+        .vk-btn {
+            background: linear-gradient(135deg, #0077FF, #0055CC);
+            color: white;
+            transition: all 0.3s;
+        }
+        .vk-btn:hover {
+            background: linear-gradient(135deg, #1a8aff, #0066EE);
+            box-shadow: 0 8px 20px -8px rgba(0, 119, 255, 0.5);
+        }
+
+        .neon-text {
+            text-shadow: 0 0 10px rgba(255, 45, 149, 0.5), 0 0 20px rgba(255, 45, 149, 0.3);
+        }
+
+        .neon-border {
+            box-shadow: 0 0 20px rgba(255, 45, 149, 0.2), inset 0 0 20px rgba(168, 85, 247, 0.1);
+        }
+
+        .color-swatch {
+            transition: transform 0.2s;
+        }
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+
+        .brandbook-section {
+            border-left: 3px solid var(--accent);
+            padding-left: 1.5rem;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="sticky top-0 z-40 bg-soft/95 backdrop-blur-md border-b border-pink-500/10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center cursor-pointer" onclick="window.scrollTo({top:0, behavior:'smooth'})">
+                    <div class="mr-3 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center neon-border">
+                        <span class="text-white font-bold font-serif text-xl">P</span>
+                    </div>
+                    <div>
+                        <div class="font-serif text-2xl tracking-wider accent neon-text">PaprekolyX</div>
+                        <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 -mt-1">handcrafted resin</div>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <a href="#catalog" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Каталог</a>
+                    <a href="#about" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">О мастерской</a>
+                    <a href="#order-info" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Условия</a>
+                    <a href="#contacts" class="hidden md:block text-sm text-gray-400 hover:text-pink-400 transition px-3 py-2">Контакты</a>
+                    <a href="https://vk.ru/paprekolyx" target="_blank" class="hidden sm:flex items-center gap-2 px-3 py-2 rounded-full bg-white/5 hover:bg-white/10 transition text-sm">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                        <span class="text-xs">VK</span>
+                    </a>
+                    <button onclick="toggleCart()" class="relative p-2 rounded-full hover:bg-white/5 transition group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300 group-hover:text-pink-400 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-pink-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform scale-0 transition-transform duration-200">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative hero-gradient overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
+                <div class="fade-in">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-pink-500/30 bg-pink-500/5 mb-6">
+                        <span class="w-1.5 h-1.5 rounded-full bg-pink-400 animate-pulse"></span>
+                        <span class="text-xs uppercase tracking-[0.2em] accent">Ручная работа · Россия</span>
+                    </div>
+                    <h1 class="font-serif text-5xl sm:text-6xl lg:text-7xl leading-[1.05] mb-6 neon-text">
+                        Искусство,<br>
+                        <span class="accent italic">застывшее</span><br>
+                        в смоле
+                    </h1>
+                    <p class="text-lg text-gray-400 mb-8 max-w-lg leading-relaxed">
+                        Уникальные украшения, аксессуары и предметы интерьера из эпоксидной смолы и фетра. Каждое изделие создаётся вручную — второго такого не будет.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <a href="#catalog" class="btn-primary px-8 py-4 rounded-full font-medium tracking-wide">Смотреть коллекцию</a>
+                        <a href="https://vk.ru/paprekolyx" target="_blank" class="vk-btn px-8 py-4 rounded-full font-medium tracking-wide flex items-center gap-2">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                            Написать в VK
+                        </a>
+                    </div>
+                    <div class="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/5">
+                        <div>
+                            <div class="font-serif text-3xl accent neon-text">80+</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Изделий</div>
+                        </div>
+                        <div>
+                            <div class="font-serif text-3xl accent-purple neon-text">9</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Категорий</div>
+                        </div>
+                        <div>
+                            <div class="font-serif text-3xl accent neon-text">100%</div>
+                            <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Handmade</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="absolute -inset-4 bg-gradient-to-tr from-pink-500/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
+                    <img id="hero-img" alt="PaprekolyX resin art" class="relative rounded-3xl shadow-2xl w-full aspect-[4/5] object-cover border border-pink-500/20">
+                    <div class="absolute -bottom-6 -left-6 bg-card border border-pink-500/20 rounded-2xl p-4 shadow-xl backdrop-blur neon-border">
+                        <div class="text-xs uppercase tracking-wider text-gray-500">Эксклюзив</div>
+                        <div class="font-serif text-lg accent neon-text">Каждое изделие уникально</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About / Description -->
+    <section id="about" class="bg-soft py-20 border-y border-pink-500/10">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.3em] accent mb-3">О мастерской</div>
+                    <h2 class="font-serif text-4xl sm:text-5xl mb-6 neon-text">PaprekolyX —<br><span class="italic accent">там, где застывает время</span></h2>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        Мы создаем украшения, брелоки и аксессуары из эпоксидной смолы и фетра, в которых каждый пузырь воздуха и каждый оттенок цвета имеют значение.
+                    </p>
+                    <div class="space-y-4 mb-6">
+                        <div class="flex gap-3">
+                            <div class="accent text-2xl flex-shrink-0">✨</div>
+                            <div>
+                                <div class="font-medium text-white mb-1">Неповторимость</div>
+                                <div class="text-sm text-gray-400">Эпоксидная смола — живой материал. Подчиняясь законам физики и химии, она создает узоры, которые невозможно повторить дважды. Ваше изделие будет единственным в мире.</div>
+                            </div>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="accent-purple text-2xl flex-shrink-0">✨</div>
+                            <div>
+                                <div class="font-medium text-white mb-1">Индивидуальность</div>
+                                <div class="text-sm text-gray-400">Мы не просто продаем товары, мы создаем их под вас. Возможна кастомизация цветов, форм и наполнения, чтобы аксессуар идеально вписался в ваш стиль.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="https://vk.ru/paprekolyx" target="_blank" class="inline-flex items-center gap-2 vk-btn px-6 py-3 rounded-full text-sm font-medium">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                        Написать в сообщения сообщества
+                    </a>
+                </div>
+                <div id="about-img-container" class="relative">
+                    <img id="about-img" alt="Workshop" class="rounded-2xl w-full aspect-square object-cover border border-pink-500/20">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories / Filters -->
+    <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center mb-12">
+            <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Коллекция</div>
+            <h2 class="font-serif text-4xl sm:text-5xl mb-4 neon-text">Наши изделия</h2>
+            <div class="divider max-w-xs mx-auto"></div>
+        </div>
+
+        <div class="flex justify-center flex-wrap gap-2 mb-12" id="filter-container">
+            <button onclick="filterProducts('all', this)" class="filter-btn active px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50">Все изделия</button>
+            <button onclick="filterProducts('Руны', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Руны</button>
+            <button onclick="filterProducts('Броши', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Броши</button>
+            <button onclick="filterProducts('Куклы', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Куклы</button>
+            <button onclick="filterProducts('Подвески', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Подвески</button>
+            <button onclick="filterProducts('Кольца', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Кольца</button>
+            <button onclick="filterProducts('Игр. кости', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Игр. кости</button>
+            <button onclick="filterProducts('Шахматы', this)" class="filter-btn px-5 py-2 rounded-full border border-white/10 text-sm font-medium transition hover:border-pink-500/50 text-gray-300">Шахматы</button>
+        </div>
+
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div class="col-span-full text-center py-20 text-gray-500">
+                <div class="inline-block w-8 h-8 border-2 border-pink-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+                <div>Загрузка коллекции...</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Order Conditions -->
+    <section id="order-info" class="bg-soft py-20 border-y border-pink-500/10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Информация</div>
+                <h2 class="font-serif text-4xl sm:text-5xl mb-4 neon-text">Условия заказа</h2>
+                <div class="divider max-w-xs mx-auto"></div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-lg">📩</div>
+                            <div>
+                                <div class="font-serif text-xl">Как сделать заказ?</div>
+                                <div class="text-xs text-gray-500 mt-1">Простой способ начать</div>
+                            </div>
+                        </div>
+                        <svg class="accordion-icon w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="px-6 pb-6 text-sm text-gray-400 space-y-3">
+                            <p>Напишите нам в личные сообщения — это самый простой и быстрый способ начать. Сделать это можно так:</p>
+                            <ul class="space-y-2 pl-4">
+                                <li class="flex gap-2"><span class="accent">•</span> через кнопку «Сообщение» на главной странице PaprekolyX;</li>
+                                <li class="flex gap-2"><span class="accent">•</span> через кнопку «Написать» в карточке любого товара.</li>
+                            </ul>
+                            <p>В диалоге вам ответит администратор: уточнит детали, ответит на вопросы и поможет определиться с выбором.</p>
+                            <a href="https://vk.ru/paprekolyx" target="_blank" class="inline-flex items-center gap-2 vk-btn px-5 py-2.5 rounded-full text-xs font-medium mt-3">
+                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                                Написать ВКонтакте
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-lg">💳</div>
+                            <div>
+                                <div class="font-serif text-xl">Оплата</div>
+                                <div class="text-xs text-gray-500 mt-1">Удобные способы</div>
+                            </div>
+                        </div>
+                        <svg class="accordion-icon w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="px-6 pb-6 text-sm text-gray-400 space-y-3">
+                            <p>Выбирайте удобный для вас способ:</p>
+                            <ul class="space-y-2 pl-4">
+                                <li class="flex gap-2"><span class="accent">•</span> <strong class="text-white">Онлайн-корзина ВКонтакте</strong> — оплата через VK Pay.</li>
+                                <li class="flex gap-2"><span class="accent">•</span> <strong class="text-white">Перевод на карту</strong> — Сбербанк (МИР) или Яндекс Банк (МИР) по номеру счёта.</li>
+                                <li class="flex gap-2"><span class="accent">•</span> <strong class="text-white">СБП</strong> — перевод по номеру телефона через Систему быстрых платежей.</li>
+                            </ul>
+                            <p>Если вы не уверены, какой вариант вам подходит, администратор подскажет в переписке.</p>
+                            <div class="bg-pink-500/5 border border-pink-500/20 rounded-xl p-4 mt-4">
+                                <div class="flex gap-2">
+                                    <span class="accent text-lg">⚠️</span>
+                                    <div>
+                                        <div class="font-medium text-white text-sm mb-1">Важно</div>
+                                        <div class="text-xs">На все кастомные изделия (сделанные по вашему индивидуальному заказу) действует предоплата 40% от стоимости. Предоплата за такие изделия не возвращается.</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-lg">🚚</div>
+                            <div>
+                                <div class="font-serif text-xl">Доставка</div>
+                                <div class="text-xs text-gray-500 mt-1">По Москве и России</div>
+                            </div>
+                        </div>
+                        <svg class="accordion-icon w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="px-6 pb-6 text-sm text-gray-400 space-y-3">
+                            <div class="grid gap-3">
+                                <div class="bg-white/5 rounded-xl p-4">
+                                    <div class="font-medium text-white mb-1">Самовывоз</div>
+                                    <div class="text-xs">м. Ховрино, <span class="accent">бесплатно</span></div>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-4">
+                                    <div class="font-medium text-white mb-1">Москва, метро</div>
+                                    <div class="text-xs"><span class="accent">300 ₽</span> до любой станции, встреча в центре зала. Пересадка на МЦК или МЦД — <span class="accent">+200 ₽</span></div>
+                                </div>
+                                <div class="bg-white/5 rounded-xl p-4">
+                                    <div class="font-medium text-white mb-1">По всей России</div>
+                                    <div class="text-xs">Отправка через Boxberry или СДЭК до ближайшего к вам пункта выдачи. Стоимость доставки рассчитывается отдельно и оплачивается покупателем.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item bg-card rounded-2xl border border-pink-500/10 overflow-hidden">
+                    <button onclick="toggleAccordion(this)" class="w-full p-6 flex items-center justify-between text-left hover:bg-white/5 transition">
+                        <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center accent-purple text-lg">↩️</div>
+                            <div>
+                                <div class="font-serif text-xl">Возврат</div>
+                                <div class="text-xs text-gray-500 mt-1">Условия возврата</div>
+                            </div>
+                        </div>
+                        <svg class="accordion-icon w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="px-6 pb-6 text-sm text-gray-400 space-y-3">
+                            <ul class="space-y-2 pl-4">
+                                <li class="flex gap-2"><span class="accent">•</span> Товар можно вернуть, если он находится в том же состоянии, в котором был передан вам.</li>
+                                <li class="flex gap-2"><span class="accent">•</span> Предоплата за кастомные изделия возврату не подлежит.</li>
+                                <li class="flex gap-2"><span class="accent">•</span> Рекомендуем проверять качество сразу при получении — так мы сможем быстрее решить любой вопрос, если он возникнет.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="text-center mb-12">
+            <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Связь</div>
+            <h2 class="font-serif text-4xl sm:text-5xl mb-4 neon-text">Свяжитесь с нами</h2>
+            <div class="divider max-w-xs mx-auto"></div>
+        </div>
+        <div class="grid md:grid-cols-3 gap-6">
+            <a href="https://vk.ru/paprekolyx" target="_blank" class="group bg-card p-8 rounded-2xl border border-pink-500/10 hover:border-blue-500/40 transition">
+                <div class="text-3xl mb-3">
+                    <svg class="w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                </div>
+                <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">ВКонтакте</div>
+                <div class="text-lg group-hover:text-blue-400 transition">PaprekolyX</div>
+                <div class="text-sm text-gray-500 mt-2">Сообщество и сообщения</div>
+            </a>
+            <a href="mailto:Albert23NO@ya.ru" class="group bg-card p-8 rounded-2xl border border-pink-500/10 hover:border-pink-500/40 transition">
+                <div class="accent text-3xl mb-3">✉</div>
+                <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Email</div>
+                <div class="text-lg group-hover:accent transition">Albert23NO@ya.ru</div>
+                <div class="text-sm text-gray-500 mt-2">Ответим в течение 24 часов</div>
+            </a>
+            <a href="tel:+79250521900" class="group bg-card p-8 rounded-2xl border border-pink-500/10 hover:border-pink-500/40 transition">
+                <div class="accent-purple text-3xl mb-3">☎</div>
+                <div class="text-xs uppercase tracking-wider text-gray-500 mb-1">Телефон</div>
+                <div class="text-lg group-hover:accent-purple transition">+7 (925) 052-19-XX</div>
+                <div class="text-sm text-gray-500 mt-2">Пн–Сб, 10:00 – 20:00 МСК</div>
+            </a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-soft border-t border-pink-500/10 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-4 gap-8 mb-10">
+                <div class="md:col-span-2">
+                    <div class="flex items-center mb-4">
+                        <div class="mr-3 w-10 h-10 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center neon-border">
+                            <span class="text-white font-bold font-serif text-xl">P</span>
+                        </div>
+                        <div>
+                            <div class="font-serif text-2xl tracking-wider accent neon-text">PaprekolyX</div>
+                            <div class="text-[10px] uppercase tracking-[0.3em] text-gray-500 -mt-1">handcrafted resin</div>
+                        </div>
+                    </div>
+                    <p class="text-gray-500 text-sm max-w-sm leading-relaxed mb-4">Авторская мастерская изделий из эпоксидной смолы и фетра. Уникальные украшения, аксессуары и предметы интерьера ручной работы.</p>
+                    <a href="https://vk.ru/paprekolyx" target="_blank" class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-pink-400 transition">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M15.07 2H8.93C3.33 2 2 3.33 2 8.93v6.14C2 20.67 3.33 22 8.93 22h6.14c5.6 0 6.93-1.33 6.93-6.93V8.93C22 3.33 20.67 2 15.07 2zm3.08 14.27h-1.46c-.55 0-.72-.44-1.71-1.44-.86-.83-1.24-.94-1.45-.94-.3 0-.38.08-.38.5v1.31c0 .35-.11.56-1.03.56-1.52 0-3.2-.92-4.39-2.64C6.12 11.57 5.6 9.5 5.6 9.06c0-.21.08-.38.5-.38h1.46c.37 0 .51.17.65.57.72 2.08 1.92 3.9 2.41 3.9.19 0 .27-.08.27-.55V9.96c-.06-.98-.57-1.06-.57-1.41 0-.17.14-.34.37-.34h2.3c.31 0 .42.17.42.54v2.91c0 .31.14.42.23.42.19 0 .35-.11.7-.46 1.08-1.22 1.85-3.1 1.85-3.1.1-.21.27-.38.64-.38h1.46c.44 0 .54.23.44.54-.18.83-1.92 3.33-1.92 3.33-.15.25-.21.38 0 .65.15.21.64.64.97 1.03.6.69 1.06 1.27 1.18 1.67.13.4-.08.61-.5.61z"/></svg>
+                        vk.ru/paprekolyx
+                    </a>
+                </div>
+                <div>
+                    <h4 class="font-serif text-lg mb-4 accent">Разделы</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#catalog" class="hover:text-pink-400 transition">Каталог</a></li>
+                        <li><a href="#about" class="hover:text-pink-400 transition">О мастерской</a></li>
+                        <li><a href="#order-info" class="hover:text-pink-400 transition">Условия заказа</a></li>
+                        <li><a href="#contacts" class="hover:text-pink-400 transition">Контакты</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-serif text-lg mb-4 accent">Документы</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><button onclick="openPassport()" class="hover:text-pink-400 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            Технический паспорт
+                        </button></li>
+                        <li><button onclick="openBrandbook()" class="hover:text-pink-400 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
+                            Брендбук
+                        </button></li>
+                        <li><span class="text-gray-600">v 1.0 · 17.09.2026</span></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="divider mb-6"></div>
+            <div class="flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <div>© 2026 PaprekolyX. Все изделия авторские. Все права защищены.</div>
+                <div>Albert23NO@ya.ru · +7 (925) 052-19-XX</div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" onclick="toggleCart()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden"></div>
+    <div id="cart-sidebar" class="cart-sidebar fixed top-0 right-0 h-full w-full sm:w-[420px] bg-soft shadow-2xl z-50 flex flex-col border-l border-pink-500/10">
+        <div class="p-6 border-b border-pink-500/10 flex justify-between items-center">
+            <div>
+                <h2 class="font-serif text-2xl neon-text">Корзина</h2>
+                <p class="text-xs text-gray-500 uppercase tracking-wider" id="cart-subtitle">Пусто</p>
+            </div>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin"></div>
+        <div class="p-6 border-t border-pink-500/10 bg-black/30">
+            <div class="flex justify-between mb-2 text-sm text-gray-400">
+                <span>Сумма</span>
+                <span id="cart-total">0 ₽</span>
+            </div>
+            <div class="flex justify-between mb-5 text-lg font-serif">
+                <span>Итого</span>
+                <span class="accent neon-text" id="cart-total-big">0 ₽</span>
+            </div>
+            <a href="https://vk.ru/paprekolyx" target="_blank" class="w-full vk-btn py-3 rounded-full font-medium tracking-wide text-center block mb-2">Оформить через VK</a>
+            <button onclick="checkout()" class="w-full btn-primary py-3 rounded-full font-medium tracking-wide">Или написать мастеру</button>
+            <p class="text-[10px] text-gray-500 text-center mt-3 uppercase tracking-wider">Доставка рассчитывается отдельно</p>
+        </div>
+    </div>
+
+    <!-- Technical Passport Modal -->
+    <div id="passport-modal" class="passport-modal fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="passport-content bg-soft border border-pink-500/20 rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto scrollbar-thin shadow-2xl neon-border">
+            <div class="sticky top-0 bg-soft/95 backdrop-blur-md border-b border-pink-500/10 p-6 flex justify-between items-center z-10">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.3em] accent mb-1">Документация</div>
+                    <h2 class="font-serif text-2xl neon-text">Технический паспорт проекта</h2>
+                </div>
+                <button onclick="closePassport()" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 md:p-8 space-y-8">
+                <section>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        <div class="bg-card p-3 rounded-lg border border-pink-500/10">
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">Проект</div>
+                            <div class="accent font-medium mt-1">PaprekolyX</div>
+                        </div>
+                        <div class="bg-card p-3 rounded-lg border border-pink-500/10">
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">Версия</div>
+                            <div class="accent font-medium mt-1">1.0.0</div>
+                        </div>
+                        <div class="bg-card p-3 rounded-lg border border-pink-500/10">
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">Дата</div>
+                            <div class="accent font-medium mt-1">17.09.2026</div>
+                        </div>
+                        <div class="bg-card p-3 rounded-lg border border-pink-500/10">
+                            <div class="text-xs text-gray-500 uppercase tracking-wider">Тип</div>
+                            <div class="accent font-medium mt-1">E-commerce</div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="font-serif text-2xl mb-4 flex items-center gap-3">
+                        <span class="accent">01.</span> Стек технологий
+                    </h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Frontend</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">HTML5</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">CSS3</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Tailwind CSS</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">JavaScript ES6+</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Fontsource</span>
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Backend (рекомендуемый)</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Node.js</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Express / Next.js</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">REST API</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">JWT Auth</span>
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">База данных</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">PostgreSQL</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Prisma ORM</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Redis (кэш)</span>
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Инфраструктура</div>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Docker</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Nginx</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">Cloudflare CDN</span>
+                                <span class="tech-badge px-3 py-1 rounded-full text-xs">S3-совместимое хранилище</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="font-serif text-2xl mb-4 flex items-center gap-3">
+                        <span class="accent">02.</span> Структура базы данных
+                    </h3>
+                    <p class="text-gray-400 text-sm mb-4">Реляционная БД PostgreSQL. Ниже — основные сущности и связи.</p>
+
+                    <div class="space-y-3">
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">products</div>
+                                <div class="text-xs text-gray-500">Товары</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>article VARCHAR(20) UNIQUE — <span class="text-gray-600">внутренний артикул</span></div>
+                                <div>name VARCHAR(255) NOT NULL</div>
+                                <div>price DECIMAL(10,2) NOT NULL</div>
+                                <div>category_id INT REFERENCES categories(id)</div>
+                                <div>description TEXT</div>
+                                <div>image_url VARCHAR(500)</div>
+                                <div>stock INT DEFAULT 1</div>
+                                <div>is_active BOOLEAN DEFAULT TRUE</div>
+                                <div>created_at TIMESTAMP</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">categories</div>
+                                <div class="text-xs text-gray-500">Категории</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>slug VARCHAR(50) UNIQUE</div>
+                                <div>name VARCHAR(100) NOT NULL</div>
+                                <div>description TEXT</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">users</div>
+                                <div class="text-xs text-gray-500">Пользователи</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>email VARCHAR(255) UNIQUE</div>
+                                <div>password_hash VARCHAR(255)</div>
+                                <div>full_name VARCHAR(200)</div>
+                                <div>phone VARCHAR(20)</div>
+                                <div>role VARCHAR(20) DEFAULT 'customer'</div>
+                                <div>created_at TIMESTAMP</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">orders</div>
+                                <div class="text-xs text-gray-500">Заказы</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>user_id INT REFERENCES users(id)</div>
+                                <div>status VARCHAR(30)</div>
+                                <div>total DECIMAL(10,2)</div>
+                                <div>delivery_address TEXT</div>
+                                <div>contact_phone VARCHAR(20)</div>
+                                <div>comment TEXT</div>
+                                <div>created_at TIMESTAMP</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">order_items</div>
+                                <div class="text-xs text-gray-500">Позиции заказа</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>order_id INT REFERENCES orders(id) ON DELETE CASCADE</div>
+                                <div>product_id INT REFERENCES products(id)</div>
+                                <div>quantity INT NOT NULL</div>
+                                <div>price DECIMAL(10,2)</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-card rounded-xl border border-pink-500/10 overflow-hidden">
+                            <div class="p-4 border-b border-pink-500/10 flex items-center justify-between">
+                                <div class="font-medium accent">cart_items</div>
+                                <div class="text-xs text-gray-500">Корзина</div>
+                            </div>
+                            <div class="text-xs font-mono p-4 space-y-1 text-gray-400">
+                                <div><span class="accent">id</span> SERIAL PRIMARY KEY</div>
+                                <div>user_id INT REFERENCES users(id) ON DELETE CASCADE</div>
+                                <div>product_id INT REFERENCES products(id)</div>
+                                <div>quantity INT DEFAULT 1</div>
+                                <div>UNIQUE(user_id, product_id)</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="font-serif text-2xl mb-4 flex items-center gap-3">
+                        <span class="accent">03.</span> Основные пользовательские пути
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-sm font-bold">1</div>
+                                <div class="font-medium">Просмотр каталога</div>
+                            </div>
+                            <div class="text-sm text-gray-400 leading-relaxed pl-11">
+                                Пользователь открывает главную → прокручивает до секции «Коллекция» → видит сетку товаров с изображениями, названиями и ценами. Может фильтровать по категориям.
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-sm font-bold">2</div>
+                                <div class="font-medium">Добавление в корзину</div>
+                            </div>
+                            <div class="text-sm text-gray-400 leading-relaxed pl-11">
+                                Клик по кнопке «В корзину» → товар добавляется в локальное состояние → счётчик в шапке увеличивается → появляется toast-уведомление.
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-sm font-bold">3</div>
+                                <div class="font-medium">Управление корзиной</div>
+                            </div>
+                            <div class="text-sm text-gray-400 leading-relaxed pl-11">
+                                Клик по иконке корзины → открывается боковая панель → пользователь может менять количество (+/−), удалять позиции. Итоговая сумма пересчитывается автоматически.
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-sm font-bold">4</div>
+                                <div class="font-medium">Оформление заказа</div>
+                            </div>
+                            <div class="text-sm text-gray-400 leading-relaxed pl-11">
+                                Клик «Оформить через VK» → редирект в сообщество ВКонтакте → пользователь пишет в сообщения → администратор уточняет детали, принимает оплату → оформляет доставку.
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-pink-500/10 border border-pink-500/30 flex items-center justify-center accent text-sm font-bold">5</div>
+                                <div class="font-medium">Связь с мастером</div>
+                            </div>
+                            <div class="text-sm text-gray-400 leading-relaxed pl-11">
+                                Пользователь переходит в секцию «Контакты» → выбирает ВКонтакте, email или телефон → связывается для кастомного заказа или консультации.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="pt-4 text-center text-xs text-gray-600 uppercase tracking-wider">
+                    — Конец документа —
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Brandbook Modal -->
+    <div id="brandbook-modal" class="brandbook-modal fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="brandbook-content bg-soft border border-pink-500/20 rounded-2xl max-w-5xl w-full max-h-[90vh] overflow-y-auto scrollbar-thin shadow-2xl neon-border">
+            <div class="sticky top-0 bg-soft/95 backdrop-blur-md border-b border-pink-500/10 p-6 flex justify-between items-center z-10">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.3em] accent mb-1">Бренд-идентика</div>
+                    <h2 class="font-serif text-2xl neon-text">Брендбук PaprekolyX</h2>
+                </div>
+                <button onclick="closeBrandbook()" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="p-6 md:p-8 space-y-8">
+                <!-- Logo -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Логотип</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-card p-8 rounded-xl border border-pink-500/10 flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center mb-4 neon-border">
+                                    <span class="text-white font-bold font-serif text-4xl">P</span>
+                                </div>
+                                <div class="font-serif text-3xl accent neon-text mb-1">PaprekolyX</div>
+                                <div class="text-xs uppercase tracking-[0.3em] text-gray-500">handcrafted resin</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-8 rounded-xl border border-pink-500/10">
+                            <div class="text-sm text-gray-400 space-y-3">
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider accent mb-2">Основной логотип</div>
+                                    <p>Круглая эмблема с градиентом от розового к фиолетовому. Буква "P" в центре — символ бренда.</p>
+                                </div>
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider accent mb-2">Минимальный размер</div>
+                                    <p>32×32 пикселя для цифровых носителей, 10 мм для печати.</p>
+                                </div>
+                                <div>
+                                    <div class="text-xs uppercase tracking-wider accent mb-2">Охранное поле</div>
+                                    <p>Не менее 20% от высоты логотипа со всех сторон.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Colors -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Цветовая палитра</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="text-center">
+                            <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 mb-2 neon-border"></div>
+                            <div class="text-xs font-mono text-gray-400">#FF2D95</div>
+                            <div class="text-xs text-gray-500">Основной</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 mb-2"></div>
+                            <div class="text-xs font-mono text-gray-400">#A855F7</div>
+                            <div class="text-xs text-gray-500">Акцент</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 mb-2"></div>
+                            <div class="text-xs font-mono text-gray-400">#3B82F6</div>
+                            <div class="text-xs text-gray-500">Дополнительный</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-gray-900 to-black mb-2 border border-pink-500/20"></div>
+                            <div class="text-xs font-mono text-gray-400">#0A0A0F</div>
+                            <div class="text-xs text-gray-500">Фон</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-gray-100 to-white mb-2"></div>
+                            <div class="text-xs font-mono text-gray-400">#F0E6FF</div>
+                            <div class="text-xs text-gray-500">Текст</div>
+                        </div>
+                    </div>
+                    <div class="mt-6 bg-card p-4 rounded-xl border border-pink-500/10">
+                        <div class="text-xs uppercase tracking-wider accent mb-2">Градиенты</div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="h-16 rounded-lg bg-gradient-to-r from-pink-500 to-purple-600"></div>
+                            <div class="h-16 rounded-lg bg-gradient-to-r from-purple-600 to-blue-500"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Typography -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Типографика</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Заголовки</div>
+                            <div class="font-serif text-4xl mb-2 neon-text">Cormorant Garamond</div>
+                            <div class="text-sm text-gray-400">Используется для заголовков, названий товаров, акцентных элементов.</div>
+                            <div class="mt-4 space-y-2">
+                                <div class="font-serif text-3xl">H1 — 48-72px</div>
+                                <div class="font-serif text-2xl">H2 — 36-48px</div>
+                                <div class="font-serif text-xl">H3 — 24-32px</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-3">Основной текст</div>
+                            <div class="text-3xl mb-2">Inter</div>
+                            <div class="text-sm text-gray-400">Используется для основного текста, описаний, интерфейсных элементов.</div>
+                            <div class="mt-4 space-y-2">
+                                <div class="text-lg">Body — 16px</div>
+                                <div class="text-sm">Caption — 14px</div>
+                                <div class="text-xs">Small — 12px</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Usage Rules -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Правила использования</h3>
+                    <div class="space-y-4">
+                        <div class="bg-card p-5 rounded-xl border border-pink-500/10">
+                            <div class="flex items-start gap-3">
+                                <div class="accent text-2xl">✓</div>
+                                <div>
+                                    <div class="font-medium text-white mb-1">Допустимо</div>
+                                    <ul class="text-sm text-gray-400 space-y-1">
+                                        <li>• Использовать логотип на тёмном фоне с неоновым свечением</li>
+                                        <li>• Применять градиенты розовый-фиолетовый для акцентов</li>
+                                        <li>• Использовать шрифт Cormorant Garamond для заголовков</li>
+                                        <li>• Добавлять эффект свечения (text-shadow) для ключевых элементов</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-5 rounded-xl border border-red-500/20">
+                            <div class="flex items-start gap-3">
+                                <div class="text-red-400 text-2xl">✗</div>
+                                <div>
+                                    <div class="font-medium text-white mb-1">Недопустимо</div>
+                                    <ul class="text-sm text-gray-400 space-y-1">
+                                        <li>• Использовать логотип на светлом фоне без контрастной обводки</li>
+                                        <li>• Менять цвета логотипа на другие, кроме указанных в палитре</li>
+                                        <li>• Растягивать или искажать пропорции логотипа</li>
+                                        <li>• Использовать другие шрифты для заголовков</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Examples -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Примеры применения</h3>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="bg-gradient-to-br from-pink-500/20 to-purple-600/20 p-6 rounded-xl border border-pink-500/20">
+                            <div class="text-xs uppercase tracking-wider accent mb-2">Социальные сети</div>
+                            <div class="font-serif text-2xl neon-text mb-2">PaprekolyX</div>
+                            <div class="text-sm text-gray-400">Аватарки, обложки, сторис с неоновыми акцентами</div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-2">Упаковка</div>
+                            <div class="font-serif text-2xl mb-2">PaprekolyX</div>
+                            <div class="text-sm text-gray-400">Тёмная упаковка с розовым логотипом и свечением</div>
+                        </div>
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                            <div class="text-xs uppercase tracking-wider accent mb-2">Визитки</div>
+                            <div class="font-serif text-2xl mb-2">PaprekolyX</div>
+                            <div class="text-sm text-gray-400">Матовая чёрная бумага, розовый логотип с тиснением</div>
+                        </div>
+                        <div class="bg-gradient-to-br from-purple-600/20 to-blue-500/20 p-6 rounded-xl border border-purple-500/20">
+                            <div class="text-xs uppercase tracking-wider accent-purple mb-2">Реклама</div>
+                            <div class="font-serif text-2xl mb-2">PaprekolyX</div>
+                            <div class="text-sm text-gray-400">Баннеры с градиентами и неоновыми эффектами</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Contact Info -->
+                <section class="brandbook-section">
+                    <h3 class="font-serif text-2xl mb-4 neon-text">Контактная информация</h3>
+                    <div class="bg-card p-6 rounded-xl border border-pink-500/10">
+                        <div class="grid md:grid-cols-3 gap-4 text-sm">
+                            <div>
+                                <div class="text-xs uppercase tracking-wider accent mb-1">Email</div>
+                                <div class="text-gray-400">Albert23NO@ya.ru</div>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-wider accent mb-1">Телефон</div>
+                                <div class="text-gray-400">+7 (925) 052-19-XX</div>
+                            </div>
+                            <div>
+                                <div class="text-xs uppercase tracking-wider accent mb-1">ВКонтакте</div>
+                                <div class="text-gray-400">vk.ru/paprekolyx</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <div class="pt-4 text-center text-xs text-gray-600 uppercase tracking-wider">
+                    — Брендбук v1.0 · 17.09.2026 —
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-4 bg-card border border-pink-500/30 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-50 flex items-center gap-3 neon-border">
+        <span class="accent">✦</span>
+        <span id="toast-text">Товар добавлен</span>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, article: '00099', name: 'Руны / эпоксидная смола р.9', price: 166.67, category: 'Руны', imagePrompt: 'single runic stone made of transparent epoxy resin with pink and purple inclusions, dark background, mystical lighting, macro photography' },
+            { id: 2, article: '00098', name: 'Руны карамельки (Серый+Красный) — 27 шт.', price: 8000, category: 'Руны', imagePrompt: 'set of 27 epoxy resin rune stones in grey and red colors, arranged neatly, dark moody background with pink lighting' },
+            { id: 3, article: '00097', name: 'Руны хамелеоны (два цвета) — 27 шт.', price: 9500, category: 'Руны', imagePrompt: '27 chameleon color-shifting epoxy resin rune stones, iridescent pink and purple, mystical dark background' },
+            { id: 4, article: '10000', name: 'Фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'minimalist felt keychain brooch, handmade, pink and purple colors, studio photo' },
+            { id: 5, article: '10001', name: 'Фетровый брелок с минималистичным дизайном', price: 700, category: 'Броши', imagePrompt: 'minimalist felt brooch keychain, clean design, pastel pink tones, white background' },
+            { id: 6, article: '10002', name: 'Фетровый брелок Twenty One Pilots', price: 700, category: 'Броши', imagePrompt: 'felt keychain brooch inspired by music band aesthetic, black and red, handmade' },
+            { id: 7, article: '10003', name: '"Лягушонок" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'cute green felt frog keychain brooch, handmade, soft texture, white background' },
+            { id: 8, article: '10004', name: '"I ❤ U" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'red heart felt keychain with I love U design, handmade, soft' },
+            { id: 9, article: '10005', name: '"Котенок?" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'cute kitten felt brooch keychain, handmade, soft pastel colors' },
+            { id: 10, article: '10006', name: '"Небесное око" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'blue eye mystical felt brooch keychain, handmade, dark blue tones' },
+            { id: 11, article: '10007', name: '"Восход в горах" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'mountain sunrise landscape felt brooch, gradient pink to purple, handmade' },
+            { id: 12, article: '20001', name: 'Фетровый человечек', price: 3750, category: 'Куклы', imagePrompt: 'handmade felt humanoid doll figure, cute, soft texture, studio photo' },
+            { id: 13, article: '20002', name: 'Фетровая кукла с одеждой', price: 2500, category: 'Куклы', imagePrompt: 'handmade felt doll with clothes set, detailed, cozy aesthetic' },
+            { id: 14, article: '30001', name: 'Кулон "Чистое сияние"', price: 2060.94, category: 'Подвески', imagePrompt: 'clear transparent epoxy resin pendant with pink light inclusions, glowing, jewelry photography' },
+            { id: 15, article: '30002', name: 'Кулон "Пятицветие"', price: 800, category: 'Подвески', imagePrompt: 'epoxy resin pendant with five colorful layers, vibrant pink and purple, jewelry photo' },
+            { id: 16, article: '30004', name: 'Кулон "Золотая монета"', price: 1000, category: 'Подвески', imagePrompt: 'gold coin epoxy resin pendant, metallic inclusions, luxury jewelry photography' },
+            { id: 17, article: '30008', name: 'Кулон "Сосна"', price: 2000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with real pine tree inside, forest green, nature jewelry' },
+            { id: 18, article: '30009', name: 'Кулон "Лети лепесток"', price: 1000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with flower petal inside, pink and white, delicate jewelry' },
+            { id: 19, article: '30010', name: 'Кулон "Мраморный"', price: 2000, category: 'Подвески', imagePrompt: 'marble pattern epoxy resin pendant, white and grey veins, elegant jewelry' },
+            { id: 20, article: '30012', name: 'Кулон "Одуванчик"', price: 2000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with real dandelion flower inside, transparent, nature jewelry' },
+            { id: 21, article: '30014', name: 'Кулон "Лоллипоп"', price: 5000, category: 'Подвески', imagePrompt: 'candy lollipop swirl epoxy resin pendant, colorful spiral, playful jewelry' },
+            { id: 22, article: '30015', name: 'Кулон "Лунный свет"', price: 800, category: 'Подвески', imagePrompt: 'moon glowing epoxy resin pendant, silver and blue, mystical jewelry' },
+            { id: 23, article: '30020', name: 'Кулон "Живое сердце"', price: 3000, category: 'Подвески', imagePrompt: 'heart shaped epoxy resin pendant with red inclusions, romantic jewelry' },
+            { id: 24, article: '30022', name: 'Кулон "Сапфировый"', price: 3000, category: 'Подвески', imagePrompt: 'sapphire blue deep epoxy resin pendant, gem-like, luxury jewelry' },
+            { id: 25, article: '30027', name: 'Собака-недоумевака', price: 500, category: 'Подвески', imagePrompt: 'cute confused dog figurine in epoxy resin, funny, keychain pendant' },
+            { id: 26, article: '30028', name: 'Кулон "Аквариум"', price: 1000, category: 'Подвески', imagePrompt: 'aquarium themed epoxy resin pendant with tiny fish inside, blue transparent' },
+            { id: 27, article: '31001', name: 'Молочные коты N1', price: 2000, category: 'Подвески', imagePrompt: 'milky white cat figurine in epoxy resin pendant, creamy, cute jewelry' },
+            { id: 28, article: '31007', name: 'Бронзовые коты N6', price: 2000, category: 'Подвески', imagePrompt: 'bronze colored cat figurine in epoxy resin, metallic, pendant' },
+            { id: 29, article: '31013', name: 'Денежная кошка N6', price: 4000, category: 'Подвески', imagePrompt: 'money cat figurine with gold coins in epoxy resin, prosperity pendant' },
+            { id: 30, article: '31015', name: 'Цветочные коты N6', price: 5000, category: 'Подвески', imagePrompt: 'flower cat figurine with real flowers in epoxy resin, pink and green, pendant' },
+            { id: 31, article: '32001', name: 'Знак зодиака — Синий Рак', price: 600, category: 'Подвески', imagePrompt: 'zodiac cancer crab sign pendant in blue epoxy resin, astrological jewelry' },
+            { id: 32, article: '32002', name: 'Знак зодиака — Лев', price: 600, category: 'Подвески', imagePrompt: 'zodiac leo lion sign pendant in golden epoxy resin, astrological jewelry' },
+            { id: 33, article: '60001', name: 'Драконовы кубы с кровью и пеплом', price: 12000, category: 'Игр. кости', imagePrompt: 'epoxy resin d6 dice with dragon blood red and ash black swirls, D&D gaming, dramatic lighting' },
+            { id: 34, article: '60002', name: 'Цветочный к6', price: 1500, category: 'Игр. кости', imagePrompt: 'epoxy resin d6 dice with real dried flowers inside, transparent, pastel, gaming' },
+            { id: 35, article: '40001', name: 'Кольцо "Моя прелесть"', price: 2000, category: 'Кольца', imagePrompt: 'epoxy resin ring with golden inclusions, Gollum inspired, jewelry photography' },
+            { id: 36, article: '40002', name: 'Кольцо "Млеко"', price: 1500, category: 'Кольца', imagePrompt: 'milky white epoxy resin ring, creamy, minimalist jewelry' },
+            { id: 37, article: '40003', name: 'Кольцо "Неон"', price: 1500, category: 'Кольца', imagePrompt: 'neon glowing epoxy resin ring, vibrant pink and blue, UV reactive' },
+            { id: 38, article: '40004', name: 'Кольцо "Ночное небо"', price: 1500, category: 'Кольца', imagePrompt: 'night sky epoxy resin ring with stars and galaxies, dark blue purple, jewelry' },
+            { id: 39, article: '01001', name: 'Шахматный набор из эпоксидной смолы', price: 50000, category: 'Шахматы', imagePrompt: 'luxury epoxy resin chess set, black and white pieces, ocean wave design, dramatic studio lighting, premium' },
+            { id: 40, article: '50001', name: '"Кровавый лёд" из эпоксидной смолы', price: 500, category: 'Подвески', imagePrompt: 'bloody ice epoxy resin pendant, red and white frozen effect, dark horror aesthetic' }
+        ];
+
+        const categoryImages = {};
+        let cart = [];
+        let productImages = {};
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            generateImagesAndRender();
+        });
+
+        async function generateImagesAndRender() {
+            const grid = document.getElementById('product-grid');
+
+            try {
+                const heroRes = await image_gen({ prompt: 'luxury collection of handmade epoxy resin jewelry and pendants with pink and purple inclusions, dark moody background, dramatic studio lighting, premium product photography, neon pink and purple tones' });
+                document.getElementById('hero-img').src = heroRes.url;
+            } catch(e) { console.error(e); }
+
+            try {
+                const aboutRes = await image_gen({ prompt: 'craftsman hands working with epoxy resin, pouring pink and purple resin into mold, workshop atmosphere, warm lighting, artistic process' });
+                document.getElementById('about-img').src = aboutRes.url;
+            } catch(e) {}
+
+            const categoryPrompts = {
+                'Руны': 'ancient runic stones made of transparent epoxy resin with pink and purple dust, mystical dark background, set of runes, product photography',
+                'Броши': 'collection of handmade felt brooches and keychains, cute designs, pastel pink and purple colors, soft texture, studio photo',
+                'Куклы': 'handmade felt dolls with detailed clothes, cozy aesthetic, studio photography',
+                'Подвески': 'collection of epoxy resin pendants with flowers and inclusions, transparent, jewelry photography, dark background with pink lighting',
+                'Кольца': 'epoxy resin rings collection, various colors and inclusions, luxury jewelry photography, dark velvet background',
+                'Игр. кости': 'epoxy resin d6 dice set with colorful inclusions, D&D gaming accessories, dramatic lighting',
+                'Шахматы': 'luxury epoxy resin chess set with ocean wave design, premium handcrafted, dramatic studio lighting'
+            };
+
+            for (const [cat, prompt] of Object.entries(categoryPrompts)) {
+                try {
+                    const res = await image_gen({ prompt });
+                    categoryImages[cat] = res.url;
+                } catch(e) { console.error(e); }
+            }
+
+            const batchSize = 4;
+            for (let i = 0; i < products.length; i += batchSize) {
+                const batch = products.slice(i, i + batchSize);
+                await Promise.all(batch.map(async (p) => {
+                    try {
+                        const res = await image_gen({ prompt: p.imagePrompt });
+                        productImages[p.id] = res.url;
+                    } catch(e) {
+                        productImages[p.id] = null;
+                    }
+                }));
+                renderProducts(products);
+            }
+        }
+
+        function renderProducts(items) {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-500">В этой категории пока нет товаров</div>';
+                return;
+            }
+
+            items.forEach(product => {
+                const imgUrl = productImages[product.id] || categoryImages[product.category] || '';
+                const card = document.createElement('div');
+                card.className = 'product-card rounded-2xl overflow-hidden fade-in flex flex-col';
+                card.innerHTML = `
+                    <div class="aspect-square overflow-hidden relative bg-black">
+                        ${imgUrl ? `<img src="${imgUrl}" alt="${product.name}" class="product-img w-full h-full object-cover">` : `<div class="w-full h-full flex items-center justify-center text-gray-600 text-4xl font-serif">${product.category[0]}</div>`}
+                        <div class="absolute top-3 left-3">
+                            <span class="text-[10px] uppercase tracking-wider bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-pink-500/20 accent">${product.category}</span>
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span class="text-[10px] bg-black/60 backdrop-blur px-2 py-1 rounded-full border border-pink-500/20 text-gray-400 font-mono">#${product.article}</span>
+                        </div>
+                    </div>
+                    <div class="p-5 flex-1 flex flex-col">
+                        <h3 class="font-serif text-lg leading-tight mb-2 text-white">${product.name}</h3>
+                        <div class="flex items-end justify-between mt-auto pt-3">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-wider text-gray-500">Цена</div>
+                                <div class="text-xl accent neon-text font-medium">${formatPrice(product.price)}</div>
+                            </div>
+                            <button onclick="addToCart(${product.id})" class="btn-primary px-4 py-2 rounded-full text-xs font-medium tracking-wide flex items-center gap-1.5">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                В корзину
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function formatPrice(price) {
+            const rounded = Math.round(price);
+            return rounded.toLocaleString('ru-RU') + ' ₽';
+        }
+
+        function filterProducts(category, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => {
+                b.classList.remove('active');
+                b.classList.add('text-gray-300');
+            });
+            btn.classList.add('active');
+            btn.classList.remove('text-gray-300');
+
+            const filtered = category === 'all' ? products : products.filter(p => p.category === category);
+            renderProducts(filtered);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(i => i.id === id);
+            if (existing) {
+                existing.quantity += 1;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            updateCartUI();
+            showToast(`«${product.name}» добавлен в корзину`);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(i => i.id !== id);
+            updateCartUI();
+        }
+
+        function changeQuantity(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) removeFromCart(id);
+                else updateCartUI();
+            }
+        }
+
+        function updateCartUI() {
+            const container = document.getElementById('cart-items');
+            const countEl = document.getElementById('cart-count');
+            const totalEl = document.getElementById('cart-total');
+            const totalBigEl = document.getElementById('cart-total-big');
+            const subtitle = document.getElementById('cart-subtitle');
+
+            const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
+            countEl.innerText = totalItems;
+            countEl.classList.toggle('scale-0', totalItems === 0);
+
+            if (cart.length === 0) {
+                subtitle.innerText = 'Пусто';
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-center py-20">
+                        <div class="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        <div class="font-serif text-xl mb-1">Корзина пуста</div>
+                        <div class="text-xs text-gray-500">Добавьте изделия из каталога</div>
+                    </div>`;
+            } else {
+                subtitle.innerText = `${totalItems} ${pluralize(totalItems, 'изделие', 'изделия', 'изделий')}`;
+                container.innerHTML = cart.map(item => {
+                    const img = productImages[item.id] || categoryImages[item.category] || '';
+                    return `
+                    <div class="flex gap-3 bg-card p-3 rounded-xl border border-pink-500/10">
+                        <img src="${img}" class="w-20 h-20 object-cover rounded-lg flex-shrink-0 bg-black" alt="${item.name}">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[10px] uppercase tracking-wider text-gray-500 mb-0.5">${item.category}</div>
+                            <div class="text-sm font-medium text-white truncate">${item.name}</div>
+                            <div class="accent text-sm mt-1 neon-text">${formatPrice(item.price * item.quantity)}</div>
+                            <div class="flex items-center gap-2 mt-2">
+                                <button onclick="changeQuantity(${item.id}, -1)" class="w-6 h-6 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">−</button>
+                                <span class="text-xs w-5 text-center">${item.quantity}</span>
+                                <button onclick="changeQuantity(${item.id}, 1)" class="w-6 h-6 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-xs">+</button>
+                                <button onclick="removeFromCart(${item.id})" class="ml-auto text-gray-500 hover:text-red-400 text-xs">удалить</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+            totalEl.innerText = formatPrice(total);
+            totalBigEl.innerText = formatPrice(total);
+        }
+
+        function pluralize(n, one, two, five) {
+            let f = ((n % 100) > 10 && (n % 100) < 20) ? 5 : (n % 10);
+            return f === 1 ? one : (f >= 2 && f <= 4 ? two : five);
+        }
+
+        function toggleCart() {
+            const sidebar = document.getElementById('cart-sidebar');
+            const overlay = document.getElementById('cart-overlay');
+            if (sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
+                overlay.classList.add('hidden');
+            } else {
+                overlay.classList.remove('hidden');
+                requestAnimationFrame(() => sidebar.classList.add('open'));
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = msg;
+            toast.classList.remove('opacity-0');
+            toast.style.transform = 'translate(-50%, 0)';
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('opacity-0');
+                toast.style.transform = 'translate(-50%, 20px)';
+            }, 2500);
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                showToast('Корзина пуста');
+                return;
+            }
+            const total = cart.reduce((s, i) => s + i.price * i.quantity, 0);
+            const items = cart.map(i => `• ${i.name} × ${i.quantity}`).join('\n');
+            alert(`Спасибо за заказ!\n\nСостав:\n${items}\n\nИтого: ${formatPrice(total)}\n\nМастер свяжется с вами по контактам:\nAlbert23NO@ya.ru\n+7 (925) 052-19-XX`);
+            cart = [];
+            updateCartUI();
+            toggleCart();
+        }
+
+        function toggleAccordion(btn) {
+            const item = btn.parentElement;
+            item.classList.toggle('active');
+        }
+
+        function openPassport() {
+            document.getElementById('passport-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closePassport() {
+            document.getElementById('passport-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('passport-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'passport-modal') closePassport();
+        });
+
+        function openBrandbook() {
+            document.getElementById('brandbook-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+        function closeBrandbook() {
+            document.getElementById('brandbook-modal').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('brandbook-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'brandbook-modal') closeBrandbook();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closePassport();
+                closeBrandbook();
+                if (document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
+            }
+        });
+
+        updateCartUI();
+    </script>
+</body>
+</html>
