@@ -1,16 +1,55 @@
-## Hi there 👋
+# PaprekolyX
 
-<!--
-**paprekolyx/PaprekolyX** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+Авторская мастерская: изделия ручной работы из эпоксидной смолы и фетра.
+Сайт-витрина с корзиной; общение с клиентом и оплата — через сообщество ВКонтакте.
 
-Here are some ideas to get you started:
+**Сайт:** https://paprekolyx.github.io/PaprekolyX/
+**Сообщество ВК:** https://vk.ru/paprekolyx
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+---
+
+## Стек
+
+| Слой | Технология |
+|---|---|
+| Вёрстка | HTML5, CSS3, JavaScript ES6+ |
+| Стили | Tailwind CSS (CDN) |
+| Шрифты | Cormorant Garamond, Inter |
+| База данных | Supabase (PostgreSQL + RLS) |
+| Хостинг | GitHub Pages (GitHub Actions) |
+
+## Структура репозитория
+
+```
+index.html                 — весь сайт (одна страница)
+supabase/
+  01_catalog_read_access.sql   — политики RLS: чтение каталога и справочников
+  02_schema_and_orders.sql     — схема по техпаспорту + приём заказов
+.github/workflows/
+  static.yml               — автодеплой на GitHub Pages при push в main
+```
+
+## Как вносить изменения
+
+1. Отредактируйте `index.html`.
+2. Загрузите файл в репозиторий (кнопка **Add file → Upload files**) или сделайте коммит.
+3. GitHub Actions автоматически опубликует сайт — подождите 1–2 минуты.
+4. Обновите страницу сайта с очисткой кеша: **Ctrl + F5**.
+
+## Изменения в базе данных
+
+SQL-скрипты из папки `supabase/` выполняются в **Supabase → SQL Editor → New query → Run**.
+Оба скрипта идемпотентны: их можно запускать повторно, данные не удаляются.
+
+Порядок: сначала `01_catalog_read_access.sql`, затем `02_schema_and_orders.sql`.
+
+## Безопасность
+
+- В `index.html` лежит только **публичный** ключ Supabase (`sb_publishable_…`) — так и должно быть.
+- Доступ к данным ограничивает **Row Level Security (RLS)**. Без политик RLS сайт не видит ничего.
+- **Секретный** ключ (`sb_secret_…` / `service_role`) нельзя помещать в репозиторий и в браузерный код.
+- Промокоды намеренно не доступны на чтение анонимным посетителям.
+
+## Документация
+
+Технический паспорт проекта открывается на сайте в футере (модальное окно «Технический паспорт»).
