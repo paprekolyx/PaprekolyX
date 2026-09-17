@@ -133,6 +133,64 @@
             box-shadow: 0 8px 20px -8px rgba(0, 119, 255, 0.5);
         }
 
+        /* ---------- Форма оформления заказа ---------- */
+        .co-label {
+            display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;
+            color: var(--text-dim); margin-bottom: 7px;
+        }
+        .co-input {
+            width: 100%; background: var(--bg-soft); border: 1px solid rgba(255, 45, 149, .18);
+            border-radius: 12px; padding: 11px 14px; color: var(--text);
+            font-size: 14px; font-family: inherit; outline: none; transition: all .2s;
+        }
+        .co-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 45, 149, .12);
+        }
+        .co-input::placeholder { color: #5f5470; }
+        .co-input.invalid { border-color: #f43f5e; box-shadow: 0 0 0 3px rgba(244, 63, 94, .12); }
+        textarea.co-input { resize: vertical; min-height: 76px; }
+
+        .co-option {
+            display: flex; gap: 10px; align-items: flex-start; background: var(--bg-soft);
+            border: 1px solid rgba(255, 45, 149, .15); border-radius: 12px;
+            padding: 11px 13px; cursor: pointer; transition: all .2s;
+        }
+        .co-option:hover { border-color: rgba(255, 45, 149, .45); }
+        .co-option input[type="radio"] { accent-color: var(--accent); margin-top: 3px; flex-shrink: 0; }
+        .co-option.selected {
+            border-color: var(--accent); background: rgba(255, 45, 149, .08);
+            box-shadow: 0 0 16px -6px rgba(255, 45, 149, .5);
+        }
+        .co-option-title { display: block; font-size: 13px; color: var(--text); font-weight: 500; }
+        .co-option-desc { display: block; font-size: 11px; color: var(--text-dim); margin-top: 2px; line-height: 1.45; }
+
+        .co-error {
+            color: #fb7185; font-size: 13px; line-height: 1.5;
+            background: rgba(244, 63, 94, .08); border: 1px solid rgba(244, 63, 94, .25);
+            border-radius: 12px; padding: 11px 14px;
+        }
+        .co-error:empty { display: none; }
+        .co-hint { color: #6f6280; font-size: 12px; line-height: 1.6; }
+
+        .co-line { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
+        .co-line span:first-child { color: var(--text); }
+        .co-line span:last-child { color: var(--text-dim); white-space: nowrap; }
+
+        .btn-ghost {
+            border: 1px solid rgba(255, 255, 255, .12); color: #a99cbb;
+            transition: all .25s; background: transparent;
+        }
+        .btn-ghost:hover { border-color: rgba(255, 45, 149, .45); color: #fff; }
+        .btn-primary:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+
+        .co-spinner {
+            display: inline-block; width: 15px; height: 15px; vertical-align: -3px;
+            border: 2px solid rgba(255, 255, 255, .35); border-top-color: #fff;
+            border-radius: 50%; animation: co-spin .7s linear infinite;
+        }
+        @keyframes co-spin { to { transform: rotate(360deg); } }
+
         .neon-text {
             text-shadow: 0 0 10px rgba(255, 45, 149, 0.5), 0 0 20px rgba(255, 45, 149, 0.3);
         }
@@ -539,8 +597,8 @@
                 <span>Итого</span>
                 <span class="accent neon-text" id="cart-total-big">0 ₽</span>
             </div>
-            <a href="https://vk.ru/paprekolyx" target="_blank" class="w-full vk-btn py-3 rounded-full font-medium tracking-wide text-center block mb-2">Оформить через VK</a>
-            <button onclick="checkout()" class="w-full btn-primary py-3 rounded-full font-medium tracking-wide">Или написать мастеру</button>
+            <button onclick="openCheckout()" class="w-full btn-primary py-3 rounded-full font-medium tracking-wide">Оформить заказ</button>
+            <a href="https://vk.ru/paprekolyx" target="_blank" rel="noopener" class="w-full vk-btn py-3 rounded-full font-medium tracking-wide text-center block mt-2">Обсудить в ВК</a>
             <p class="text-[10px] text-gray-500 text-center mt-3 uppercase tracking-wider">Доставка рассчитывается отдельно</p>
         </div>
     </div>
@@ -992,6 +1050,130 @@
         </div>
     </div>
 
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="passport-modal fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+        <div class="passport-content bg-soft border border-pink-500/20 rounded-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto scrollbar-thin shadow-2xl neon-border">
+
+            <div class="sticky top-0 bg-soft/95 backdrop-blur-md border-b border-pink-500/10 p-6 flex justify-between items-center z-10">
+                <div>
+                    <div class="text-xs uppercase tracking-[0.3em] accent mb-1">Оформление</div>
+                    <h2 class="font-serif text-2xl neon-text">Ваш заказ</h2>
+                </div>
+                <button onclick="closeCheckout()" aria-label="Закрыть" class="text-gray-400 hover:text-pink-400 p-2 rounded-full hover:bg-white/5">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- -------- Шаг 1: форма -------- -->
+            <div id="checkout-form" class="p-6 space-y-6">
+
+                <div>
+                    <div class="co-label">Состав заказа</div>
+                    <div id="co-summary" class="space-y-2 mb-4"></div>
+                    <div class="divider mb-4"></div>
+                    <div class="co-line"><span>Изделия</span><span id="co-subtotal">0 ₽</span></div>
+                    <div class="co-line mt-1"><span>Доставка</span><span id="co-delivery-cost">—</span></div>
+                    <div class="flex justify-between items-end mt-3 pt-3 border-t border-pink-500/10">
+                        <span class="font-serif text-lg">Итого</span>
+                        <span class="accent neon-text text-2xl font-serif" id="co-total">0 ₽</span>
+                    </div>
+                    <p class="co-hint mt-2">Итоговую сумму подтверждает мастер: цены пересчитываются на сервере,
+                        стоимость доставки может уточняться.</p>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-name">Ваше имя <span class="accent">*</span></label>
+                    <input id="co-name" class="co-input" type="text" placeholder="Как к вам обращаться" maxlength="200" autocomplete="name">
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="co-label" for="co-phone">Телефон</label>
+                        <input id="co-phone" class="co-input" type="tel" placeholder="+7 900 000-00-00" maxlength="50" autocomplete="tel" inputmode="tel">
+                    </div>
+                    <div>
+                        <label class="co-label" for="co-vk">Профиль ВКонтакте</label>
+                        <input id="co-vk" class="co-input" type="text" placeholder="https://vk.ru/ваш_профиль" maxlength="300">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-email">E-mail <span class="text-gray-600">(необязательно)</span></label>
+                    <input id="co-email" class="co-input" type="email" placeholder="you@mail.ru" maxlength="200" autocomplete="email" inputmode="email">
+                </div>
+
+                <p class="co-hint"><span class="accent">*</span> Нужен хотя бы один способ связи — телефон, ВКонтакте или e-mail.
+                    Мастер напишет вам, чтобы подтвердить заказ и договориться об оплате.</p>
+
+                <div>
+                    <div class="co-label">Способ оплаты</div>
+                    <div id="co-payments" class="grid sm:grid-cols-2 gap-2">
+                        <div class="co-hint">Загрузка…</div>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="co-label">Способ получения</div>
+                    <div id="co-deliveries" class="grid sm:grid-cols-2 gap-2">
+                        <div class="co-hint">Загрузка…</div>
+                    </div>
+                    <div class="mt-3">
+                        <label class="co-label" for="co-delivery-comment">Комментарий к доставке</label>
+                        <input id="co-delivery-comment" class="co-input" type="text"
+                               placeholder="Станция метро, адрес ПВЗ, удобное время" maxlength="500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-comment">Комментарий к заказу</label>
+                    <textarea id="co-comment" class="co-input" rows="3" maxlength="2000"
+                              placeholder="Пожелания по цвету, наполнению, подарочная упаковка…"></textarea>
+                </div>
+
+                <div id="co-error" class="co-error"></div>
+
+                <div class="flex flex-col gap-2 pt-1">
+                    <button id="co-submit" onclick="submitOrder()" type="button"
+                            class="btn-primary w-full py-3 rounded-full font-medium tracking-wide">Отправить заказ</button>
+                    <button onclick="closeCheckout()" type="button"
+                            class="btn-ghost w-full py-3 rounded-full font-medium tracking-wide">Вернуться к корзине</button>
+                </div>
+
+                <p class="co-hint text-center">Отправляя заказ, вы соглашаетесь на обработку контактных данных
+                    для его исполнения. Кастомные изделия — предоплата 40%, невозвратная.</p>
+            </div>
+
+            <!-- -------- Шаг 2: успех -------- -->
+            <div id="checkout-success" class="hidden p-8 text-center">
+                <div class="w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-5"
+                     style="background: radial-gradient(circle, rgba(255,45,149,.25), rgba(168,85,247,.08)); border:1px solid rgba(255,45,149,.4)">
+                    <svg class="w-9 h-9 accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <h3 class="font-serif text-3xl neon-text mb-2">Заказ принят</h3>
+                <p class="text-gray-400 text-sm mb-6">Номер вашего заказа</p>
+                <div class="inline-block bg-card border border-pink-500/25 rounded-xl px-6 py-3 mb-6">
+                    <span class="font-mono text-2xl accent neon-text" id="co-order-number">—</span>
+                </div>
+                <div id="co-success-details" class="co-hint mb-7"></div>
+                <div class="flex flex-col gap-2">
+                    <a id="co-vk-link" href="https://vk.ru/paprekolyx" target="_blank" rel="noopener"
+                       class="vk-btn w-full py-3 rounded-full font-medium tracking-wide text-center block">
+                        Написать мастеру в ВК
+                    </a>
+                    <button onclick="copyOrderText()" type="button"
+                            class="btn-ghost w-full py-3 rounded-full font-medium tracking-wide">Скопировать состав заказа</button>
+                    <button onclick="closeCheckout()" type="button"
+                            class="btn-ghost w-full py-3 rounded-full font-medium tracking-wide">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
     <!-- Toast -->
     <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 translate-y-4 bg-card border border-pink-500/30 text-white px-6 py-3 rounded-full shadow-2xl opacity-0 transition-all duration-300 pointer-events-none z-50 flex items-center gap-3 neon-border">
         <span class="accent">✦</span>
@@ -1119,7 +1301,7 @@
                     'База данных не ответила',
                     'Сообщение от Supabase: ' + error.message,
                     'Скорее всего, в Supabase не созданы политики RLS на чтение (SELECT) ' +
-                    'для анонимных пользователей. Выполните SQL-скрипт из шага 2 инструкции.'
+                    'для анонимных пользователей. Выполните в Supabase → SQL Editor скрипт supabase/01_catalog_read_access.sql.'
                 );
                 return;
             }
@@ -1140,7 +1322,7 @@
                     'Товары не получены',
                     'Запрос прошёл успешно, но база вернула 0 строк.',
                     'Это значит, что RLS включён, но политика «читать всем» отсутствует — ' +
-                    'запрос молча возвращает пустоту. Выполните SQL-скрипт из шага 2 инструкции.'
+                    'запрос молча возвращает пустоту. Выполните в Supabase → SQL Editor скрипт supabase/01_catalog_read_access.sql.'
                 );
                 return;
             }
@@ -1381,38 +1563,299 @@
         }
 
         // ---------- 8. Оформление заказа ----------
-        // ВРЕМЕННО (этап 1): формируем текст заказа, копируем в буфер и открываем ВК.
-        // На этапе 5 здесь появится запись в таблицы orders и order_items.
-        function checkout() {
-            if (cart.length === 0) {
-                showToast('Корзина пуста');
+        // Заказ создаётся серверной функцией create_order (см. supabase/03_…sql).
+        // Цены считает сервер из таблицы products — присланные с сайта игнорируются.
+
+        let paymentMethods = [];
+        let deliveryMethods = [];
+        let refsLoaded = false;
+        let selectedPayment = null;
+        let selectedDelivery = null;
+        let submitting = false;
+        let lastOrderText = '';
+
+        const CUSTOMER_KEY = 'paprekolyx_customer_v1';
+
+        function readField(id) {
+            const el = document.getElementById(id);
+            return el ? el.value.trim() : '';
+        }
+        function setField(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.value = value;
+        }
+        function setCheckoutError(message) {
+            document.getElementById('co-error').innerText = message || '';
+        }
+
+        // --- справочники способов оплаты и доставки ---
+        async function loadCheckoutRefs() {
+            if (refsLoaded) { renderCheckoutOptions(); return; }
+
+            const [pay, del] = await Promise.all([
+                db.from('payment_methods').select('id, name, description').eq('is_active', true).order('id'),
+                db.from('delivery_methods').select('id, name, description, base_price').eq('is_active', true).order('id')
+            ]);
+
+            if (pay.error || del.error) {
+                const e = pay.error || del.error;
+                console.error('Не удалось загрузить справочники:', e);
+                document.getElementById('co-payments').innerHTML =
+                    '<div class="co-hint">Не удалось загрузить список. Обновите страницу.</div>';
+                document.getElementById('co-deliveries').innerHTML =
+                    '<div class="co-hint">Не удалось загрузить список. Обновите страницу.</div>';
+                setCheckoutError(e.message);
                 return;
             }
 
-            const lines = cart.map(i => '• ' + i.name + ' (арт. ' + i.article + ') × ' + i.quantity +
-                ' = ' + formatPrice(i.price * i.quantity));
-            const message = 'Здравствуйте! Хочу заказать:\n' + lines.join('\n') +
-                '\n\nИтого: ' + formatPrice(cartTotal());
+            paymentMethods = pay.data || [];
+            deliveryMethods = del.data || [];
+            refsLoaded = true;
+            renderCheckoutOptions();
+        }
 
-            const done = () => {
-                window.open(VK_GROUP, '_blank');
-                showToast('Состав заказа скопирован — вставьте его в сообщении');
-                cart = [];
-                saveCart();
-                updateCartUI();
-                toggleCart();
+        function optionCard(group, item, desc) {
+            return '<label class="co-option" data-group="' + group + '" data-id="' + item.id + '">' +
+                '<input type="radio" name="' + group + '" value="' + item.id + '" ' +
+                    'onchange="onOptionChange(\'' + group + '\', ' + item.id + ')">' +
+                '<span>' +
+                    '<span class="co-option-title">' + escapeXml(item.name) + '</span>' +
+                    (desc ? '<span class="co-option-desc">' + escapeXml(desc) + '</span>' : '') +
+                '</span>' +
+            '</label>';
+        }
+
+        function deliveryPriceText(item) {
+            const price = Number(item.base_price) || 0;
+            return price > 0 ? formatPrice(price) : 'стоимость уточняется';
+        }
+
+        function renderCheckoutOptions() {
+            const payBox = document.getElementById('co-payments');
+            const delBox = document.getElementById('co-deliveries');
+
+            payBox.innerHTML = paymentMethods.length
+                ? paymentMethods.map(m => optionCard('payment', m, m.description || '')).join('')
+                : '<div class="co-hint">Способы оплаты не настроены</div>';
+
+            delBox.innerHTML = deliveryMethods.length
+                ? deliveryMethods.map(m => optionCard('delivery', m,
+                    (m.description ? m.description + ' · ' : '') + deliveryPriceText(m))).join('')
+                : '<div class="co-hint">Способы доставки не настроены</div>';
+
+            // выбираем первые варианты по умолчанию — так заказ можно отправить в один клик
+            if (selectedPayment == null && paymentMethods.length) selectedPayment = paymentMethods[0].id;
+            if (selectedDelivery == null && deliveryMethods.length) selectedDelivery = deliveryMethods[0].id;
+
+            markSelected('payment', selectedPayment);
+            markSelected('delivery', selectedDelivery);
+            updateCheckoutTotals();
+        }
+
+        function markSelected(group, id) {
+            document.querySelectorAll('.co-option[data-group="' + group + '"]').forEach(el => {
+                const isOn = String(el.dataset.id) === String(id);
+                el.classList.toggle('selected', isOn);
+                const input = el.querySelector('input');
+                if (input) input.checked = isOn;
+            });
+        }
+
+        function onOptionChange(group, id) {
+            if (group === 'payment') selectedPayment = id;
+            else selectedDelivery = id;
+            markSelected(group, id);
+            updateCheckoutTotals();
+        }
+
+        function selectedDeliveryMethod() {
+            return deliveryMethods.find(m => String(m.id) === String(selectedDelivery)) || null;
+        }
+
+        // --- суммы и состав ---
+        function renderCheckoutSummary() {
+            const box = document.getElementById('co-summary');
+            box.innerHTML = cart.map(i =>
+                '<div class="co-line">' +
+                    '<span>' + escapeXml(i.name) + ' × ' + i.quantity + '</span>' +
+                    '<span>' + formatPrice(i.price * i.quantity) + '</span>' +
+                '</div>'
+            ).join('') || '<div class="co-hint">Корзина пуста</div>';
+        }
+
+        function updateCheckoutTotals() {
+            const subtotal = cartTotal();
+            const method = selectedDeliveryMethod();
+            const delivery = method ? (Number(method.base_price) || 0) : 0;
+
+            document.getElementById('co-subtotal').innerText = formatPrice(subtotal);
+            document.getElementById('co-delivery-cost').innerText =
+                method ? (delivery > 0 ? formatPrice(delivery) : 'уточняется') : '—';
+            document.getElementById('co-total').innerText = formatPrice(subtotal + delivery);
+        }
+
+        // --- открытие и закрытие ---
+        function openCheckout() {
+            if (cart.length === 0) { showToast('Корзина пуста'); return; }
+
+            document.getElementById('checkout-success').classList.add('hidden');
+            document.getElementById('checkout-form').classList.remove('hidden');
+            setCheckoutError('');
+            ['co-name', 'co-phone', 'co-vk', 'co-email', 'co-comment', 'co-delivery-comment']
+                .forEach(id => document.getElementById(id).classList.remove('invalid'));
+
+            // подставляем контакты, сохранённые с прошлого заказа
+            try {
+                const saved = JSON.parse(localStorage.getItem(CUSTOMER_KEY) || '{}');
+                setField('co-name', saved.name || '');
+                setField('co-phone', saved.phone || '');
+                setField('co-vk', saved.vk || '');
+                setField('co-email', saved.email || '');
+            } catch (e) { /* игнорируем повреждённые данные */ }
+
+            renderCheckoutSummary();
+            updateCheckoutTotals();
+
+            if (document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
+
+            document.getElementById('checkout-modal').classList.add('open');
+            document.body.style.overflow = 'hidden';
+
+            loadCheckoutRefs();
+        }
+
+        function closeCheckout() {
+            const modal = document.getElementById('checkout-modal');
+            if (!modal) return;
+            modal.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        // --- отправка ---
+        function validateCheckoutForm(data) {
+            let firstBad = null;
+            const mark = id => {
+                document.getElementById(id).classList.add('invalid');
+                if (!firstBad) firstBad = id;
+            };
+            ['co-name', 'co-phone', 'co-vk', 'co-email']
+                .forEach(id => document.getElementById(id).classList.remove('invalid'));
+
+            if (!data.customer_name) mark('co-name');
+            if (!data.customer_phone && !data.customer_vk && !data.customer_email) {
+                mark('co-phone'); mark('co-vk');
+            }
+            if (data.customer_email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(data.customer_email)) mark('co-email');
+
+            if (firstBad) {
+                document.getElementById(firstBad).focus();
+                return !data.customer_name
+                    ? 'Укажите, пожалуйста, ваше имя'
+                    : (!data.customer_phone && !data.customer_vk && !data.customer_email)
+                        ? 'Оставьте хотя бы один способ связи: телефон, ВКонтакте или e-mail'
+                        : 'Проверьте e-mail — в адресе опечатка';
+            }
+            return null;
+        }
+
+        async function submitOrder() {
+            if (submitting) return;
+            if (cart.length === 0) { setCheckoutError('Корзина пуста'); return; }
+
+            const payload = {
+                customer_name: readField('co-name'),
+                customer_phone: readField('co-phone'),
+                customer_vk: readField('co-vk'),
+                customer_email: readField('co-email'),
+                comment: readField('co-comment'),
+                delivery_comment: readField('co-delivery-comment'),
+                payment_method_id: selectedPayment,
+                delivery_method_id: selectedDelivery,
+                items: cart.map(i => ({ product_id: i.id, quantity: i.quantity }))
             };
 
+            const problem = validateCheckoutForm(payload);
+            if (problem) { setCheckoutError(problem); return; }
+            setCheckoutError('');
+
+            submitting = true;
+            const btn = document.getElementById('co-submit');
+            const btnText = btn.innerText;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="co-spinner"></span> Отправляем…';
+
+            const { data, error } = await db.rpc('create_order', { p: payload });
+
+            btn.disabled = false;
+            btn.innerText = btnText;
+            submitting = false;
+
+            if (error) {
+                console.error('Ошибка создания заказа:', error);
+                setCheckoutError(error.message || 'Не удалось отправить заказ. Попробуйте ещё раз.');
+                return;
+            }
+
+            // запоминаем контакты, чтобы в следующий раз не вводить заново
+            try {
+                localStorage.setItem(CUSTOMER_KEY, JSON.stringify({
+                    name: payload.customer_name, phone: payload.customer_phone,
+                    vk: payload.customer_vk, email: payload.customer_email
+                }));
+            } catch (e) { /* приватный режим браузера — не критично */ }
+
+            showCheckoutSuccess(data || {}, payload);
+        }
+
+        function showCheckoutSuccess(result, payload) {
+            const number = String(result.order_id || '').padStart(4, '0');
+            document.getElementById('co-order-number').innerText = '№ ' + number;
+
+            const itemsCount = Number(result.items_count) || payload.items.length;
+            const grand = Number(result.grand_total) || 0;
+            document.getElementById('co-success-details').innerHTML =
+                'Позиций: ' + itemsCount + '<br>Сумма: <span class="accent">' + formatPrice(grand) + '</span><br>' +
+                'Мастер свяжется с вами для подтверждения и оплаты.';
+
+            lastOrderText = 'Заказ № ' + number + '\n' +
+                payload.items.map(i => {
+                    const p = products.find(x => x.id === i.product_id);
+                    return '• ' + (p ? p.name : 'товар ' + i.product_id) + ' × ' + i.quantity;
+                }).join('\n') +
+                '\n\nИтого: ' + formatPrice(grand) +
+                '\nИмя: ' + payload.customer_name +
+                (payload.customer_phone ? '\nТелефон: ' + payload.customer_phone : '') +
+                (payload.customer_vk ? '\nВК: ' + payload.customer_vk : '') +
+                (payload.customer_email ? '\nE-mail: ' + payload.customer_email : '') +
+                (payload.comment ? '\nКомментарий: ' + payload.comment : '');
+
+            cart = [];
+            saveCart();
+            updateCartUI();
+
+            document.getElementById('checkout-form').classList.add('hidden');
+            document.getElementById('checkout-success').classList.remove('hidden');
+            document.getElementById('checkout-modal').scrollTop = 0;
+        }
+
+        function copyOrderText() {
+            if (!lastOrderText) return;
+            const after = () => showToast('Состав заказа скопирован');
             if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(message).then(done).catch(() => {
-                    window.prompt('Скопируйте состав заказа вручную:', message);
-                    done();
+                navigator.clipboard.writeText(lastOrderText).then(after).catch(() => {
+                    window.prompt('Скопируйте текст заказа:', lastOrderText); after();
                 });
             } else {
-                window.prompt('Скопируйте состав заказа вручную:', message);
-                done();
+                window.prompt('Скопируйте текст заказа:', lastOrderText); after();
             }
         }
+
+        document.getElementById('checkout-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'checkout-modal') closeCheckout();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeCheckout();
+        });
 
         // ---------- 9. Модальные окна и прочее ----------
         function toggleAccordion(btn) {
