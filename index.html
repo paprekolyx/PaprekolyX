@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+        const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
     <style>
@@ -999,47 +1004,75 @@
 
     <script>
         const products = [
-            { id: 1, article: '00099', name: 'Руны / эпоксидная смола р.9', price: 166.67, category: 'Руны', imagePrompt: 'single runic stone made of transparent epoxy resin with pink and purple inclusions, dark background, mystical lighting, macro photography' },
-            { id: 2, article: '00098', name: 'Руны карамельки (Серый+Красный) — 27 шт.', price: 8000, category: 'Руны', imagePrompt: 'set of 27 epoxy resin rune stones in grey and red colors, arranged neatly, dark moody background with pink lighting' },
-            { id: 3, article: '00097', name: 'Руны хамелеоны (два цвета) — 27 шт.', price: 9500, category: 'Руны', imagePrompt: '27 chameleon color-shifting epoxy resin rune stones, iridescent pink and purple, mystical dark background' },
-            { id: 4, article: '10000', name: 'Фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'minimalist felt keychain brooch, handmade, pink and purple colors, studio photo' },
-            { id: 5, article: '10001', name: 'Фетровый брелок с минималистичным дизайном', price: 700, category: 'Броши', imagePrompt: 'minimalist felt brooch keychain, clean design, pastel pink tones, white background' },
-            { id: 6, article: '10002', name: 'Фетровый брелок Twenty One Pilots', price: 700, category: 'Броши', imagePrompt: 'felt keychain brooch inspired by music band aesthetic, black and red, handmade' },
-            { id: 7, article: '10003', name: '"Лягушонок" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'cute green felt frog keychain brooch, handmade, soft texture, white background' },
-            { id: 8, article: '10004', name: '"I ❤ U" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'red heart felt keychain with I love U design, handmade, soft' },
-            { id: 9, article: '10005', name: '"Котенок?" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'cute kitten felt brooch keychain, handmade, soft pastel colors' },
-            { id: 10, article: '10006', name: '"Небесное око" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'blue eye mystical felt brooch keychain, handmade, dark blue tones' },
-            { id: 11, article: '10007', name: '"Восход в горах" фетровый брелок', price: 700, category: 'Броши', imagePrompt: 'mountain sunrise landscape felt brooch, gradient pink to purple, handmade' },
-            { id: 12, article: '20001', name: 'Фетровый человечек', price: 3750, category: 'Куклы', imagePrompt: 'handmade felt humanoid doll figure, cute, soft texture, studio photo' },
-            { id: 13, article: '20002', name: 'Фетровая кукла с одеждой', price: 2500, category: 'Куклы', imagePrompt: 'handmade felt doll with clothes set, detailed, cozy aesthetic' },
-            { id: 14, article: '30001', name: 'Кулон "Чистое сияние"', price: 2060.94, category: 'Подвески', imagePrompt: 'clear transparent epoxy resin pendant with pink light inclusions, glowing, jewelry photography' },
-            { id: 15, article: '30002', name: 'Кулон "Пятицветие"', price: 800, category: 'Подвески', imagePrompt: 'epoxy resin pendant with five colorful layers, vibrant pink and purple, jewelry photo' },
-            { id: 16, article: '30004', name: 'Кулон "Золотая монета"', price: 1000, category: 'Подвески', imagePrompt: 'gold coin epoxy resin pendant, metallic inclusions, luxury jewelry photography' },
-            { id: 17, article: '30008', name: 'Кулон "Сосна"', price: 2000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with real pine tree inside, forest green, nature jewelry' },
-            { id: 18, article: '30009', name: 'Кулон "Лети лепесток"', price: 1000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with flower petal inside, pink and white, delicate jewelry' },
-            { id: 19, article: '30010', name: 'Кулон "Мраморный"', price: 2000, category: 'Подвески', imagePrompt: 'marble pattern epoxy resin pendant, white and grey veins, elegant jewelry' },
-            { id: 20, article: '30012', name: 'Кулон "Одуванчик"', price: 2000, category: 'Подвески', imagePrompt: 'epoxy resin pendant with real dandelion flower inside, transparent, nature jewelry' },
-            { id: 21, article: '30014', name: 'Кулон "Лоллипоп"', price: 5000, category: 'Подвески', imagePrompt: 'candy lollipop swirl epoxy resin pendant, colorful spiral, playful jewelry' },
-            { id: 22, article: '30015', name: 'Кулон "Лунный свет"', price: 800, category: 'Подвески', imagePrompt: 'moon glowing epoxy resin pendant, silver and blue, mystical jewelry' },
-            { id: 23, article: '30020', name: 'Кулон "Живое сердце"', price: 3000, category: 'Подвески', imagePrompt: 'heart shaped epoxy resin pendant with red inclusions, romantic jewelry' },
-            { id: 24, article: '30022', name: 'Кулон "Сапфировый"', price: 3000, category: 'Подвески', imagePrompt: 'sapphire blue deep epoxy resin pendant, gem-like, luxury jewelry' },
-            { id: 25, article: '30027', name: 'Собака-недоумевака', price: 500, category: 'Подвески', imagePrompt: 'cute confused dog figurine in epoxy resin, funny, keychain pendant' },
-            { id: 26, article: '30028', name: 'Кулон "Аквариум"', price: 1000, category: 'Подвески', imagePrompt: 'aquarium themed epoxy resin pendant with tiny fish inside, blue transparent' },
-            { id: 27, article: '31001', name: 'Молочные коты N1', price: 2000, category: 'Подвески', imagePrompt: 'milky white cat figurine in epoxy resin pendant, creamy, cute jewelry' },
-            { id: 28, article: '31007', name: 'Бронзовые коты N6', price: 2000, category: 'Подвески', imagePrompt: 'bronze colored cat figurine in epoxy resin, metallic, pendant' },
-            { id: 29, article: '31013', name: 'Денежная кошка N6', price: 4000, category: 'Подвески', imagePrompt: 'money cat figurine with gold coins in epoxy resin, prosperity pendant' },
-            { id: 30, article: '31015', name: 'Цветочные коты N6', price: 5000, category: 'Подвески', imagePrompt: 'flower cat figurine with real flowers in epoxy resin, pink and green, pendant' },
-            { id: 31, article: '32001', name: 'Знак зодиака — Синий Рак', price: 600, category: 'Подвески', imagePrompt: 'zodiac cancer crab sign pendant in blue epoxy resin, astrological jewelry' },
-            { id: 32, article: '32002', name: 'Знак зодиака — Лев', price: 600, category: 'Подвески', imagePrompt: 'zodiac leo lion sign pendant in golden epoxy resin, astrological jewelry' },
-            { id: 33, article: '60001', name: 'Драконовы кубы с кровью и пеплом', price: 12000, category: 'Игр. кости', imagePrompt: 'epoxy resin d6 dice with dragon blood red and ash black swirls, D&D gaming, dramatic lighting' },
-            { id: 34, article: '60002', name: 'Цветочный к6', price: 1500, category: 'Игр. кости', imagePrompt: 'epoxy resin d6 dice with real dried flowers inside, transparent, pastel, gaming' },
-            { id: 35, article: '40001', name: 'Кольцо "Моя прелесть"', price: 2000, category: 'Кольца', imagePrompt: 'epoxy resin ring with golden inclusions, Gollum inspired, jewelry photography' },
-            { id: 36, article: '40002', name: 'Кольцо "Млеко"', price: 1500, category: 'Кольца', imagePrompt: 'milky white epoxy resin ring, creamy, minimalist jewelry' },
-            { id: 37, article: '40003', name: 'Кольцо "Неон"', price: 1500, category: 'Кольца', imagePrompt: 'neon glowing epoxy resin ring, vibrant pink and blue, UV reactive' },
-            { id: 38, article: '40004', name: 'Кольцо "Ночное небо"', price: 1500, category: 'Кольца', imagePrompt: 'night sky epoxy resin ring with stars and galaxies, dark blue purple, jewelry' },
-            { id: 39, article: '01001', name: 'Шахматный набор из эпоксидной смолы', price: 50000, category: 'Шахматы', imagePrompt: 'luxury epoxy resin chess set, black and white pieces, ocean wave design, dramatic studio lighting, premium' },
-            { id: 40, article: '50001', name: '"Кровавый лёд" из эпоксидной смолы', price: 500, category: 'Подвески', imagePrompt: 'bloody ice epoxy resin pendant, red and white frozen effect, dark horror aesthetic' }
+            // Инициализация
+const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Загрузка товаров при старте
+async function loadProducts() {
+  const { data, error } = await db
+    .from('products')
+    .select(`
+      id, article, name, price, image_url,
+      categories (name)
+    `)
+    .eq('is_active', true)
+    .order('id');
+
+  if (error) {
+    console.error('Не удалось загрузить товары:', error);
+    return;
+  }
+
+  // Преобразуем в формат, который уже использует твой код
+  const products = data.map(p => ({
+    id: p.id,
+    article: p.article,
+    name: p.name,
+    price: p.price,
+    category: p.categories.name,
+    image_url: p.image_url
+  }));
+
+  renderProducts(products);
+}
+
+document.addEventListener('DOMContentLoaded', loadProducts);
         ];
+        async function filterProducts(category, btn) {
+  // Обновляем UI кнопок (твой существующий код)
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.remove('active');
+    b.classList.add('text-gray-300');
+  });
+  btn.classList.add('active');
+  btn.classList.remove('text-gray-300');
+
+  // Запрос к БД
+  let query = db
+    .from('products')
+    .select(`id, article, name, price, image_url, categories(name)`)
+    .eq('is_active', true);
+
+  if (category !== 'all') {
+    query = query.eq('categories.name', category);
+  }
+
+  const { data } = await query.order('id');
+
+  const products = data.map(p => ({
+    id: p.id,
+    article: p.article,
+    name: p.name,
+    price: p.price,
+    category: p.categories.name,
+    image_url: p.image_url
+  }));
+
+  renderProducts(products);
+}
 
         const categoryImages = {};
         let cart = [];
