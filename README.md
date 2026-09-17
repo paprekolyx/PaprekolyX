@@ -39,9 +39,6 @@ supabase/
 ## Изменения в базе данных
 
 SQL-скрипты из папки `supabase/` выполняются в **Supabase → SQL Editor → New query → Run**.
-Оба скрипта идемпотентны: их можно запускать повторно, данные не удаляются.
-
-Порядок: сначала `01_catalog_read_access.sql`, затем `02_schema_and_orders.sql`.
 
 ## Безопасность
 
