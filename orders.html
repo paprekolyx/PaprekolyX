@@ -1,0 +1,427 @@
+
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Кабинет заказов — PaprekolyX</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.20/index.min.css" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg-soft:#12101a;--bg-card:#1a1525;--accent:#ff2d95;--purple:#a855f7;--text:#f0e6ff;--dim:#8a7a9a;--ok:#34d399;--warn:#fbbf24}
+[data-theme="light"]{--bg:#faf7fc;--bg-soft:#ffffff;--bg-card:#ffffff;--accent:#d6006e;--purple:#7c3aed;--text:#1c1424;--dim:#6b5f7a;--ok:#059669;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
+a{color:var(--accent)}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:5;background:var(--bg-soft);border-bottom:1px solid rgba(255,45,149,.14)}
+header .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.logo{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff2d95,#a855f7);color:#fff;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+.brand{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent)}
+.back{margin-left:auto;font-size:14px;text-decoration:none;color:var(--dim)}
+.back:hover{color:var(--accent)}
+main{padding:34px 0 70px}
+h1{font-size:34px;margin:0 0 4px}
+.sub{font-size:13px;color:var(--dim);margin-bottom:24px}
+.btn{border:1px solid rgba(255,45,149,.35);background:transparent;color:var(--text);border-radius:999px;padding:9px 18px;font-size:13px;transition:.2s}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--purple));border:0;color:#fff}
+.btn.primary:hover{filter:brightness(1.1);color:#fff}
+.btn.ghost{border-color:rgba(255,255,255,.18);color:var(--dim)}
+[data-theme="light"] .btn.ghost{border-color:rgba(28,20,36,.2)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.toolbar .spacer{margin-left:auto}
+.card{background:var(--bg-card);border:1px solid rgba(255,45,149,.16);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.chip{border:1px solid rgba(255,45,149,.25);border-radius:999px;padding:6px 14px;font-size:12px;color:var(--dim);background:transparent;transition:.2s}
+.chip b{color:var(--text);font-variant-numeric:tabular-nums}
+.chip.active{border-color:var(--accent);color:var(--accent);background:rgba(255,45,149,.08)}
+input[type=password],input[type=search],input[type=text]{width:100%;background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;outline:none}
+input:focus{border-color:var(--accent)}
+.err{color:#fb7185;font-size:13px;margin-top:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:9px 10px;border-bottom:1px solid rgba(255,45,149,.18)}
+td{padding:11px 10px;border-bottom:1px solid rgba(255,45,149,.10);vertical-align:top;color:var(--dim)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.order-row{cursor:pointer}
+tr.order-row:hover td{background:rgba(255,45,149,.04)}
+.status{display:inline-block;border-radius:999px;padding:3px 10px;font-size:11px;border:1px solid}
+.st-new{color:var(--warn);border-color:currentColor}
+.st-mid{color:var(--purple);border-color:currentColor}
+.st-end{color:var(--ok);border-color:currentColor}
+.st-bad{color:#fb7185;border-color:currentColor}
+.detail td{background:rgba(255,45,149,.03);padding:16px 18px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
+.val{font-size:14px;color:var(--text);margin-bottom:12px;word-break:break-word}
+.mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:12px}
+details.note{border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+details.note summary{cursor:pointer;font-size:13px;color:var(--warn);list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.note summary::-webkit-details-marker{display:none}
+details.note summary:after{content:'+';font-size:15px}
+details.note[open] summary:after{content:'−'}
+details.note ul{margin:12px 0 0;padding-left:20px;font-size:13px;color:var(--dim)}
+details.note li{margin-bottom:6px}
+.skel{border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:sh 1.2s infinite;height:52px;margin-bottom:10px}
+[data-theme="light"] .skel{background:linear-gradient(90deg,rgba(28,20,36,.06) 25%,rgba(28,20,36,.12) 50%,rgba(28,20,36,.06) 75%);background-size:200% 100%}
+@keyframes sh{to{background-position:-200% 0}}
+.gate{max-width:520px;margin:8vh auto;text-align:center;padding:44px 34px;border:1px solid rgba(255,45,149,.3);border-radius:24px;background:var(--bg-card)}
+.gate .ico{font-size:44px;margin-bottom:14px}
+.gate h2{font-size:28px;margin:0 0 10px}
+.gate p{font-size:14px;color:var(--dim)}
+.wf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--dim)}
+.wf .arrow{color:var(--accent)}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+</style>
+<script>
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('paprekolyx_theme'); } catch (e) {}
+    var light = saved ? saved === 'light'
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+    document.documentElement.dataset.theme = light ? 'light' : 'dark';
+  })();
+</script>
+<!-- Библиотека Supabase из репозитория, с запасным источником -->
+<script src="assets/supabase.min.js"></script>
+<script>
+  if (!window.supabase) {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+  }
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="logo">P</span>
+    <span class="brand">PaprekolyX</span>
+    <a class="back" href="index.html">← на главную</a>
+  </div>
+</header>
+
+<main><div class="wrap">
+
+  <!-- Только для ПК -->
+  <div id="gate-mobile" class="gate" hidden>
+    <div class="ico">🖥️</div>
+    <h2>Кабинет заказов доступен только в ПК-версии</h2>
+    <p>Просмотр заказов собран для широкого экрана: таблицы, статусная модель
+    и выгрузка в CSV на телефоне теряют смысл.<br><br>
+    Откройте эту страницу с компьютера — <span class="mono">/orders.html</span></p>
+  </div>
+
+  <!-- Вход -->
+  <div id="view-login" hidden>
+    <div class="gate" style="margin:6vh auto">
+      <h2>Вход для мастера</h2>
+      <p style="margin-bottom:20px">Пароль проверяется на стороне базы; сам пароль не передаётся и не хранится.</p>
+      <input type="password" id="pwd" placeholder="Пароль" autocomplete="current-password">
+      <div style="margin-top:14px"><button class="btn primary" id="btn-login" style="width:100%">Войти</button></div>
+      <div class="err" id="login-err" hidden></div>
+    </div>
+  </div>
+
+  <!-- Кабинет -->
+  <div id="view-app" hidden>
+    <h1>Кабинет заказов</h1>
+    <div class="sub">Только просмотр. Данные обновлены: <span id="updated-at">—</span></div>
+
+    <details class="note">
+      <summary>Честно о защите этого кабинета — прочитать</summary>
+      <ul>
+        <li>Здесь нет серверной сессии и токенов: после входа хеш пароля лежит в sessionStorage вкладки до её закрытия.</li>
+        <li>Нет ограничения частоты попыток входа на сервере — подбор теоретически возможен.</li>
+        <li>Нет журнала входов: не видно, кто и когда открывал кабинет.</li>
+        <li>Нет разделения ролей: один пароль на всех, кто его знает.</li>
+        <li>Нет HTTPS-only cookie и прочих атрибутов настоящей аутентификации.</li>
+      </ul>
+      <p style="font-size:12px;color:var(--dim);margin:12px 0 0">Для учебного проекта этого достаточно: заказы закрыты политиками RLS
+      и отдаются только функцией с проверкой пароля. Для настоящего магазина раздел нужно перевести на Supabase Auth.</p>
+    </details>
+
+    <div class="toolbar">
+      <button class="btn" id="btn-refresh">Обновить</button>
+      <button class="btn" id="btn-csv">Выгрузить в CSV</button>
+      <button class="btn" id="btn-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
+      <span class="spacer"></span>
+      <button class="btn ghost" id="btn-logout">Выйти</button>
+    </div>
+
+    <div class="chips" id="stats"></div>
+
+    <div class="card">
+      <div class="lbl">Статусная модель: разрешённые переходы</div>
+      <div id="workflow"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="chips" id="filters" style="margin:0"></div>
+      <span class="spacer"></span>
+      <input type="search" id="search" placeholder="Поиск: номер, имя, телефон" style="width:260px">
+    </div>
+
+    <div class="card" style="padding:6px 10px">
+      <div id="orders-box"></div>
+    </div>
+  </div>
+
+</div></main>
+
+<script>
+const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
+const SESSION_KEY = 'paprekolyx_admin_hash';
+
+let db = null;
+let DATA = null;          // ответ admin_orders
+let revealed = false;     // показывать контакты без звёздочек
+let filterStatus = 'all';
+let searchTerm = '';
+
+const $ = id => document.getElementById(id);
+
+function isDesktop() {
+  if (window.matchMedia) return window.matchMedia('(min-width: 1024px)').matches;
+  return (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+}
+
+async function sha256hex(text) {
+  const buf = new TextEncoder().encode(text);
+  const digest = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+function maskPhone(p) {
+  if (!p) return '—';
+  const digits = String(p).replace(/\D/g, '');
+  const tail = digits.slice(-2);
+  const head = String(p).slice(0, 7);
+  return head + ' ***-**-' + tail;
+}
+function maskEmail(e) {
+  if (!e) return '—';
+  const [name, dom] = String(e).split('@');
+  if (!dom) return '—';
+  return name.slice(0, 1) + '***@' + dom;
+}
+const show = (v, mask) => revealed ? v : mask;
+
+function statusClass(code) {
+  if (code === 'new') return 'st-new';
+  if (['cancelled', 'returned'].includes(code)) return 'st-bad';
+  if (['delivered'].includes(code)) return 'st-end';
+  return 'st-mid';
+}
+
+function fmtDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+}
+function fmtMoney(v) { return Math.round(Number(v) || 0).toLocaleString('ru-RU') + ' ₽'; }
+
+function switchView() {
+  const desktop = isDesktop();
+  $('gate-mobile').hidden = desktop;
+  if (!desktop) { $('view-login').hidden = true; $('view-app').hidden = true; return; }
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  $('view-login').hidden = !!hash;
+  $('view-app').hidden = !hash;
+  if (hash && !DATA) load();
+}
+
+async function login() {
+  const pwd = $('pwd').value;
+  const err = $('login-err');
+  err.hidden = true;
+  if (!pwd) { err.textContent = 'Введите пароль'; err.hidden = false; return; }
+  if (!window.crypto || !crypto.subtle) {
+    err.textContent = 'Нужно открыть страницу по HTTPS: без crypto.subtle хеш не посчитать.';
+    err.hidden = false; return;
+  }
+  const hash = await sha256hex(pwd);
+  const { data, error } = await db.rpc('admin_check_password', { p_hash_hex: hash });
+  if (error || data !== true) {
+    err.textContent = 'Пароль не подошёл';
+    err.hidden = false;
+    return;
+  }
+  sessionStorage.setItem(SESSION_KEY, hash);
+  $('pwd').value = '';
+  switchView();
+  load();
+}
+
+function skeleton() {
+  $('orders-box').innerHTML = '<div style="padding:12px">' +
+    '<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>';
+}
+
+async function load() {
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  if (!hash) { switchView(); return; }
+  skeleton();
+  const { data, error } = await db.rpc('admin_orders', { p_hash_hex: hash });
+  if (error) {
+    if (/Неверный пароль|28000/.test(error.message)) {
+      sessionStorage.removeItem(SESSION_KEY); DATA = null; switchView(); return;
+    }
+    $('orders-box').innerHTML = '<div style="padding:20px" class="err">Не удалось получить данные: ' +
+      error.message + '<br><button class="btn" onclick="load()">Повторить</button></div>';
+    return;
+  }
+  DATA = data;
+  $('updated-at').textContent = new Date().toLocaleTimeString('ru-RU');
+  renderStats(); renderWorkflow(); renderFilters(); renderOrders();
+}
+
+function renderStats() {
+  const s = DATA.stats;
+  let html = '<button class="chip active" data-f="all">Всего <b>' + s.total + '</b></button>';
+  (s.by_status || []).forEach(b => {
+    html += '<button class="chip" data-f="' + b.code + '">' + b.name + ' <b>' + b.count + '</b></button>';
+  });
+  $('stats').innerHTML = html;
+  $('stats').querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    filterStatus = c.dataset.f;
+    $('stats').querySelectorAll('.chip').forEach(x => x.classList.toggle('active', x === c));
+    renderOrders();
+  });
+}
+
+function renderWorkflow() {
+  const byCode = {};
+  (DATA.statuses || []).forEach(st => byCode[st.code] = st);
+  const map = {};
+  (DATA.transitions || []).forEach(t => { (map[t.from_code] = map[t.from_code] || []).push(t.to_name); });
+  $('workflow').innerHTML = (DATA.statuses || []).map(st => {
+    const next = map[st.code];
+    return '<div class="wf" style="margin-bottom:8px">' +
+      '<span class="status ' + statusClass(st.code) + '">' + st.name + '</span>' +
+      (next && next.length
+        ? '<span class="arrow">→</span> ' + next.map(n => '<span>' + n + '</span>').join(' <span class="arrow">/</span> ')
+        : '<span style="opacity:.6">завершающий статус</span>') +
+      '</div>';
+  }).join('');
+}
+
+function renderFilters() {
+  // фильтры дублируют статистику, но живут отдельно для удобства
+  $('filters').innerHTML = '';
+}
+
+function currentOrders() {
+  let list = DATA.orders || [];
+  if (filterStatus !== 'all') list = list.filter(o => o.status_code === filterStatus);
+  if (searchTerm) {
+    const q = searchTerm.toLowerCase();
+    list = list.filter(o =>
+      String(o.id).includes(q) ||
+      (o.customer_name || '').toLowerCase().includes(q) ||
+      (o.customer_phone || '').toLowerCase().includes(q) ||
+      (o.customer_email || '').toLowerCase().includes(q));
+  }
+  return list;
+}
+
+function renderOrders() {
+  const list = currentOrders();
+  if (!list.length) {
+    $('orders-box').innerHTML = '<div style="padding:26px;text-align:center;color:var(--dim)">Заказов не найдено</div>';
+    return;
+  }
+  let html = '<table><thead><tr>' +
+    '<th>№</th><th>Дата</th><th>Статус</th><th>Клиент</th><th>Позиций</th><th>Сумма</th>' +
+    '</tr></thead><tbody>';
+  list.forEach(o => {
+    const sum = Number(o.total || 0) + Number(o.delivery_cost || 0);
+    html += '<tr class="order-row" data-id="' + o.id + '">' +
+      '<td class="num mono">#' + String(o.id).padStart(4, '0') + '</td>' +
+      '<td class="num">' + fmtDate(o.created_at) + '</td>' +
+      '<td><span class="status ' + statusClass(o.status_code) + '">' + (o.status_name || '—') + '</span></td>' +
+      '<td>' + (o.customer_name || '—') + '</td>' +
+      '<td class="num">' + (o.items || []).length + '</td>' +
+      '<td class="num">' + fmtMoney(sum) + '</td>' +
+      '</tr>' +
+      '<tr class="detail" data-detail="' + o.id + '" hidden><td colspan="6">' + orderDetail(o) + '</td></tr>';
+  });
+  html += '</tbody></table>';
+  $('orders-box').innerHTML = html;
+  $('orders-box').querySelectorAll('tr.order-row').forEach(r => r.onclick = () => {
+    const d = $('orders-box').querySelector('tr[data-detail="' + r.dataset.id + '"]');
+    d.hidden = !d.hidden;
+  });
+}
+
+function orderDetail(o) {
+  const items = (o.items || []).map(i =>
+    '<div style="display:flex;gap:10px;justify-content:space-between;font-size:13px;margin-bottom:6px">' +
+    '<span>' + (i.name || i.article) + ' <span class="mono" style="color:var(--dim)">#' + (i.article || '') + '</span> × ' + i.quantity + '</span>' +
+    '<span class="num">' + fmtMoney(Number(i.price || 0) * i.quantity) + '</span></div>').join('') || '<div class="val">позиций нет</div>';
+  return '<div class="grid2">' +
+    '<div>' +
+      '<div class="lbl">Контакты</div>' +
+      '<div class="val">' + (o.customer_name || '—') + '<br>' +
+        show(o.customer_phone || '—', maskPhone(o.customer_phone)) + '<br>' +
+        show(o.customer_email || '—', maskEmail(o.customer_email)) +
+        (o.customer_vk ? '<br><a href="' + o.customer_vk + '" target="_blank" rel="noopener">профиль ВКонтакте</a>' : '') +
+      '</div>' +
+      '<div class="lbl">Комментарий к заказу</div>' +
+      '<div class="val">' + (o.customer_comment || '—') + '</div>' +
+      '<div class="lbl">Комментарий к доставке</div>' +
+      '<div class="val">' + (o.delivery_comment || '—') + '</div>' +
+    '</div>' +
+    '<div>' +
+      '<div class="lbl">Оплата и доставка</div>' +
+      '<div class="val">' + (o.payment_name || '—') + ' · ' + (o.delivery_name || '—') +
+        (o.delivery_point ? '<br>' + o.delivery_point : '') +
+        (o.tracking_number ? '<br>трек: <span class="mono">' + o.tracking_number + '</span>' : '') + '</div>' +
+      '<div class="lbl">Позиции</div>' + items +
+      '<div class="lbl">История статусов</div>' +
+      ((o.history || []).map(h => '<div style="font-size:12px;color:var(--dim);margin-bottom:4px">' +
+        fmtDate(h.changed_at) + ' — ' + h.status_name + ' (' + h.changed_by + ')</div>').join('') || '—') +
+    '</div></div>';
+}
+
+function exportCsv() {
+  const list = DATA.orders || [];
+  const esc = v => {
+    v = v === null || v === undefined ? '' : String(v);
+    return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+  };
+  const head = ['Номер','Дата','Статус','Имя','Телефон','E-mail','VK','Позиций','Сумма изделий','Доставка','Итого','Комментарий к заказу','Комментарий к доставке'];
+  const rows = list.map(o => [
+    o.id, fmtDate(o.created_at), o.status_name, o.customer_name, o.customer_phone, o.customer_email,
+    o.customer_vk, (o.items || []).length, o.total, o.delivery_cost,
+    Number(o.total || 0) + Number(o.delivery_cost || 0), o.customer_comment, o.delivery_comment
+  ].map(esc).join(';'));
+  const csv = '\uFEFF' + head.map(esc).join(';') + '\n' + rows.join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'paprekolyx-orders-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  db = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  $('btn-login').onclick = login;
+  $('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  $('btn-refresh').onclick = load;
+  $('btn-csv').onclick = exportCsv;
+  $('btn-logout').onclick = () => { sessionStorage.removeItem(SESSION_KEY); DATA = null; switchView(); };
+  $('btn-eye').onclick = () => {
+    revealed = !revealed;
+    $('btn-eye').textContent = revealed ? '👁 Контакты открыты' : '👁 Контакты скрыты';
+    renderOrders();
+  };
+  $('search').addEventListener('input', e => { searchTerm = e.target.value.trim(); renderOrders(); });
+  window.addEventListener('resize', switchView);
+  switchView();
+});
+</script>
+</body>
+</html>

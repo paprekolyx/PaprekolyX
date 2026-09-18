@@ -30,6 +30,10 @@ SECURITY.md                      политика безопасности
 assets/
   supabase.min.js                библиотека Supabase — лежит у нас, не на чужом CDN
 
+privacy.html                     политика обработки персональных данных
+custom-order.html                как сделать кастомный заказ
+orders.html                      кабинет просмотра заказов (вход по паролю, только с ПК)
+
 .github/workflows/
   static.yml                     автопубликация сайта при push в main
 
@@ -44,6 +48,8 @@ supabase/                        всё, что касается базы дан
   02_schema_and_orders.sql       схема по техпаспорту
   03_create_order_function.sql   серверная функция приёма заказов
   04_site_content.sql            тексты и картинки сайта
+  05_delivery_prices_and_legal.sql  вилка цен доставки и юридические ссылки
+  06_admin_orders.sql            кабинет просмотра заказов: пароль, статусная модель, выборка
 
 docs/                            документация
   tehnicheskiy-pasport.md        технический паспорт, версия 1.2
