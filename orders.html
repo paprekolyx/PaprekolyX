@@ -5,6 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <title>Кабинет заказов — PaprekolyX</title>
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
@@ -18,29 +19,49 @@ h1,h2,h3,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
 a{color:var(--accent)}
 button{font:inherit;cursor:pointer}
 .wrap{max-width:1180px;margin:0 auto;padding:0 20px}
-header{position:sticky;top:0;z-index:5;background:var(--bg-soft);border-bottom:1px solid rgba(255,45,149,.14)}
+header{position:sticky;top:0;z-index:20;background:var(--bg-soft);border-bottom:1px solid rgba(255,45,149,.14)}
 header .wrap{display:flex;align-items:center;gap:12px;height:64px}
 .logo{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff2d95,#a855f7);color:#fff;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
 .brand{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent)}
-.back{margin-left:auto;font-size:14px;text-decoration:none;color:var(--dim)}
+.brand-tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border:1px solid rgba(255,45,149,.3);border-radius:999px;padding:4px 12px}
+.spacer{margin-left:auto}
+.back{font-size:14px;text-decoration:none;color:var(--dim);white-space:nowrap}
 .back:hover{color:var(--accent)}
-main{padding:34px 0 70px}
-h1{font-size:34px;margin:0 0 4px}
-.sub{font-size:13px;color:var(--dim);margin-bottom:24px}
-.btn{border:1px solid rgba(255,45,149,.35);background:transparent;color:var(--text);border-radius:999px;padding:9px 18px;font-size:13px;transition:.2s}
+/* переключатель темы — как на главной */
+.theme-toggle{position:relative;display:flex;align-items:center;justify-content:space-between;width:60px;height:30px;padding:0 8px;border-radius:999px;border:1px solid rgba(255,45,149,.32);background:linear-gradient(135deg,rgba(255,45,149,.14),rgba(168,85,247,.14));flex-shrink:0}
+.theme-toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));box-shadow:0 0 12px rgba(255,45,149,.55);transform:translateX(0);transition:transform .38s cubic-bezier(.4,0,.2,1)}
+html:not([data-theme="light"]) .theme-toggle-thumb{transform:translateX(30px)}
+.theme-icon{position:relative;z-index:1;width:14px;height:14px;color:var(--dim)}
+html:not([data-theme="light"]) .theme-icon-moon{color:#fff}
+[data-theme="light"] .theme-icon-sun{color:#fff}
+main{padding:30px 0 70px}
+h1.big{font-size:46px;line-height:1.1;margin:0 0 2px;display:flex;align-items:center;gap:14px}
+.icon-btn{background:transparent;border:1px solid rgba(255,45,149,.3);color:var(--dim);border-radius:999px;width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;transition:.2s}
+.icon-btn:hover{color:var(--accent);border-color:var(--accent)}
+.icon-btn.spin svg{animation:rot 1s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.sub{font-size:13px;color:var(--dim);margin-bottom:20px}
+.btn{border:1px solid rgba(255,45,149,.35);background:transparent;color:var(--text);border-radius:999px;padding:9px 18px;font-size:13px;transition:.2s;white-space:nowrap}
 .btn:hover{border-color:var(--accent);color:var(--accent)}
 .btn.primary{background:linear-gradient(135deg,var(--accent),var(--purple));border:0;color:#fff}
 .btn.primary:hover{filter:brightness(1.1);color:#fff}
 .btn.ghost{border-color:rgba(255,255,255,.18);color:var(--dim)}
 [data-theme="light"] .btn.ghost{border-color:rgba(28,20,36,.2)}
-.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
-.toolbar .spacer{margin-left:auto}
-.card{background:var(--bg-card);border:1px solid rgba(255,45,149,.16);border-radius:16px;padding:18px 20px;margin-bottom:16px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px}
+/* крупные счётчики как на главной */
+.hero-stats{display:flex;gap:44px;flex-wrap:wrap;margin:6px 0 22px}
+.hero-stat .num{font-family:'Cormorant Garamond',serif;font-size:44px;line-height:1;display:inline-block;transform-origin:left center;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.hero-stat:hover .num{transform:scale(1.15)}
+.hero-stat .num.a{color:var(--accent)}
+.hero-stat .num.p{color:var(--purple)}
+.hero-stat .num.g{color:var(--ok)}
+.hero-stat .lbl{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.card{background:var(--bg-card);border:1px solid rgba(255,45,149,.16);border-radius:16px;padding:16px 18px;margin-bottom:16px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:1px solid rgba(255,45,149,.25);border-radius:999px;padding:6px 14px;font-size:12px;color:var(--dim);background:transparent;transition:.2s}
 .chip b{color:var(--text);font-variant-numeric:tabular-nums}
 .chip.active{border-color:var(--accent);color:var(--accent);background:rgba(255,45,149,.08)}
-input[type=password],input[type=search],input[type=text]{width:100%;background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;outline:none}
+input[type=password],input[type=search]{background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;width:100%}
 input:focus{border-color:var(--accent)}
 .err{color:#fb7185;font-size:13px;margin-top:10px}
 table{width:100%;border-collapse:collapse;font-size:13px}
@@ -54,11 +75,25 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .st-mid{color:var(--purple);border-color:currentColor}
 .st-end{color:var(--ok);border-color:currentColor}
 .st-bad{color:#fb7185;border-color:currentColor}
-.detail td{background:rgba(255,45,149,.03);padding:16px 18px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.detail td{background:rgba(255,45,149,.03);padding:18px 20px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
-.val{font-size:14px;color:var(--text);margin-bottom:12px;word-break:break-word}
+.val{font-size:14px;color:var(--text);margin-bottom:14px;word-break:break-word}
 .mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:12px}
+/* пагинация */
+.pager{display:flex;align-items:center;justify-content:center;gap:14px;padding:14px 0 4px;font-size:13px;color:var(--dim)}
+.pager button{width:34px;height:34px;border-radius:999px;border:1px solid rgba(255,45,149,.3);background:transparent;color:var(--text);display:inline-flex;align-items:center;justify-content:center}
+.pager button:disabled{opacity:.35;cursor:default}
+.pager button:not(:disabled):hover{border-color:var(--accent);color:var(--accent)}
+/* модальное окно статусной модели */
+.overlay{position:fixed;inset:0;z-index:40;background:rgba(0,0,0,.8);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;visibility:hidden;transition:.3s}
+.overlay.open{opacity:1;visibility:visible}
+.overlay .box{background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:20px;max-width:1080px;width:100%;max-height:86vh;overflow:auto;padding:26px 28px}
+.wf-row{display:flex;align-items:flex-start;gap:10px;overflow-x:auto;padding-bottom:10px}
+.wf-node{flex:0 0 auto;min-width:130px;border:1px solid rgba(255,45,149,.25);border-radius:14px;padding:12px 14px;background:var(--bg-card)}
+.wf-node .t{font-size:14px;color:var(--text);margin-bottom:6px}
+.wf-node .n{font-size:11px;color:var(--dim);line-height:1.5}
+.wf-arrow{flex:0 0 auto;align-self:center;color:var(--accent);font-size:20px}
 details.note{border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);border-radius:14px;padding:14px 18px;margin-bottom:18px}
 details.note summary{cursor:pointer;font-size:13px;color:var(--warn);list-style:none;display:flex;justify-content:space-between;align-items:center}
 details.note summary::-webkit-details-marker{display:none}
@@ -73,9 +108,7 @@ details.note li{margin-bottom:6px}
 .gate .ico{font-size:44px;margin-bottom:14px}
 .gate h2{font-size:28px;margin:0 0 10px}
 .gate p{font-size:14px;color:var(--dim)}
-.wf{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12px;color:var(--dim)}
-.wf .arrow{color:var(--accent)}
-@media (max-width:900px){.grid2{grid-template-columns:1fr}}
+@media (max-width:900px){.grid2{grid-template-columns:1fr}h1.big{font-size:34px}}
 </style>
 <script>
   (function () {
@@ -83,10 +116,13 @@ details.note li{margin-bottom:6px}
     try { saved = localStorage.getItem('paprekolyx_theme'); } catch (e) {}
     var light = saved ? saved === 'light'
       : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
-    document.documentElement.dataset.theme = light ? 'light' : 'dark';
+    var theme = light ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    var m = document.createElement('meta');
+    m.name = 'theme-color'; m.content = light ? '#faf7fc' : '#0a0a0f';
+    document.head.appendChild(m);
   })();
 </script>
-<!-- Библиотека Supabase из репозитория, с запасным источником -->
 <script src="assets/supabase.min.js"></script>
 <script>
   if (!window.supabase) {
@@ -99,13 +135,20 @@ details.note li{margin-bottom:6px}
   <div class="wrap">
     <span class="logo">P</span>
     <span class="brand">PaprekolyX</span>
+    <span class="brand-tag">Админ-панель</span>
+    <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Переключить тему">
+      <span class="theme-toggle-thumb"></span>
+      <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.4M12 19.8v2.4M4.7 4.7l1.7 1.7M17.6 17.6l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.7 19.3l1.7-1.7M17.6 6.4l1.7-1.7"/></svg>
+      <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <span class="spacer"></span>
+    <button class="btn ghost" id="btn-logout">Выйти</button>
     <a class="back" href="index.html">← на главную</a>
   </div>
 </header>
 
 <main><div class="wrap">
 
-  <!-- Только для ПК -->
   <div id="gate-mobile" class="gate" hidden>
     <div class="ico">🖥️</div>
     <h2>Кабинет заказов доступен только в ПК-версии</h2>
@@ -114,7 +157,6 @@ details.note li{margin-bottom:6px}
     Откройте эту страницу с компьютера — <span class="mono">/orders.html</span></p>
   </div>
 
-  <!-- Вход -->
   <div id="view-login" hidden>
     <div class="gate" style="margin:6vh auto">
       <h2>Вход для мастера</h2>
@@ -125,10 +167,13 @@ details.note li{margin-bottom:6px}
     </div>
   </div>
 
-  <!-- Кабинет -->
   <div id="view-app" hidden>
-    <h1>Кабинет заказов</h1>
-    <div class="sub">Только просмотр. Данные обновлены: <span id="updated-at">—</span></div>
+    <h1 class="big">Кабинет заказов
+      <button class="icon-btn" id="btn-refresh" title="Обновить данные" aria-label="Обновить данные">
+        <svg class="w-5 h-5" width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36M21 3v6h-6"/></svg>
+      </button>
+    </h1>
+    <div class="sub">Данные обновлены: <span id="updated-at">—</span></div>
 
     <details class="note">
       <summary>Честно о защите этого кабинета — прочитать</summary>
@@ -143,29 +188,43 @@ details.note li{margin-bottom:6px}
       и отдаются только функцией с проверкой пароля. Для настоящего магазина раздел нужно перевести на Supabase Auth.</p>
     </details>
 
+    <div class="hero-stats" id="stats"></div>
+
     <div class="toolbar">
-      <button class="btn" id="btn-refresh">Обновить</button>
-      <button class="btn" id="btn-csv">Выгрузить в CSV</button>
-      <button class="btn" id="btn-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
+      <button class="btn" id="btn-wf">Статусная модель</button>
       <span class="spacer"></span>
-      <button class="btn ghost" id="btn-logout">Выйти</button>
-    </div>
-
-    <div class="chips" id="stats"></div>
-
-    <div class="card">
-      <div class="lbl">Статусная модель: разрешённые переходы</div>
-      <div id="workflow"></div>
+      <button class="btn" id="btn-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
+      <button class="btn" id="btn-csv">Выгрузить в CSV</button>
     </div>
 
     <div class="toolbar">
-      <div class="chips" id="filters" style="margin:0"></div>
+      <div class="chips" id="filters"></div>
       <span class="spacer"></span>
       <input type="search" id="search" placeholder="Поиск: номер, имя, телефон" style="width:260px">
     </div>
 
     <div class="card" style="padding:6px 10px">
       <div id="orders-box"></div>
+      <div class="pager" id="pager" hidden>
+        <button id="pg-prev" aria-label="Предыдущая страница">‹</button>
+        <span id="pg-label">страница 1 из 1</span>
+        <button id="pg-next" aria-label="Следующая страница">›</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Статусная модель поверх страницы -->
+  <div class="overlay" id="wf-modal">
+    <div class="box">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+        <h2 style="margin:0;font-size:28px">Статусная модель заказов</h2>
+        <span class="spacer"></span>
+        <button class="icon-btn" id="wf-close" aria-label="Закрыть">✕</button>
+      </div>
+      <p style="font-size:13px;color:var(--dim);margin:0 0 16px">
+        Слева направо — путь заказа. Под каждым статусом указано, куда разрешён переход.
+        В завершающие статусы переходов нет.</p>
+      <div class="wf-row" id="wf-body"></div>
     </div>
   </div>
 
@@ -175,18 +234,29 @@ details.note li{margin-bottom:6px}
 const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
 const SESSION_KEY = 'paprekolyx_admin_hash';
+const THEME_KEY = 'paprekolyx_theme';
+const PAGE_SIZE = 30;
 
 let db = null;
-let DATA = null;          // ответ admin_orders
-let revealed = false;     // показывать контакты без звёздочек
+let DATA = null;
+let revealed = false;
 let filterStatus = 'all';
 let searchTerm = '';
+let page = 1;
+const expanded = new Set();   // раскрытые заказы переживают перерисовку
 
 const $ = id => document.getElementById(id);
 
 function isDesktop() {
   if (window.matchMedia) return window.matchMedia('(min-width: 1024px)').matches;
   return (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', theme === 'light' ? '#faf7fc' : '#0a0a0f');
 }
 
 async function sha256hex(text) {
@@ -198,9 +268,7 @@ async function sha256hex(text) {
 function maskPhone(p) {
   if (!p) return '—';
   const digits = String(p).replace(/\D/g, '');
-  const tail = digits.slice(-2);
-  const head = String(p).slice(0, 7);
-  return head + ' ***-**-' + tail;
+  return String(p).slice(0, 7) + ' ***-**-' + digits.slice(-2);
 }
 function maskEmail(e) {
   if (!e) return '—';
@@ -216,7 +284,6 @@ function statusClass(code) {
   if (['delivered'].includes(code)) return 'st-end';
   return 'st-mid';
 }
-
 function fmtDate(iso) {
   const d = new Date(iso);
   return d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
@@ -244,11 +311,7 @@ async function login() {
   }
   const hash = await sha256hex(pwd);
   const { data, error } = await db.rpc('admin_check_password', { p_hash_hex: hash });
-  if (error || data !== true) {
-    err.textContent = 'Пароль не подошёл';
-    err.hidden = false;
-    return;
-  }
+  if (error || data !== true) { err.textContent = 'Пароль не подошёл'; err.hidden = false; return; }
   sessionStorage.setItem(SESSION_KEY, hash);
   $('pwd').value = '';
   switchView();
@@ -258,13 +321,16 @@ async function login() {
 function skeleton() {
   $('orders-box').innerHTML = '<div style="padding:12px">' +
     '<div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>';
+  $('pager').hidden = true;
 }
 
 async function load() {
   const hash = sessionStorage.getItem(SESSION_KEY);
   if (!hash) { switchView(); return; }
+  $('btn-refresh').classList.add('spin');
   skeleton();
   const { data, error } = await db.rpc('admin_orders', { p_hash_hex: hash });
+  $('btn-refresh').classList.remove('spin');
   if (error) {
     if (/Неверный пароль|28000/.test(error.message)) {
       sessionStorage.removeItem(SESSION_KEY); DATA = null; switchView(); return;
@@ -275,42 +341,42 @@ async function load() {
   }
   DATA = data;
   $('updated-at').textContent = new Date().toLocaleTimeString('ru-RU');
-  renderStats(); renderWorkflow(); renderFilters(); renderOrders();
+  renderStats(); renderFilters(); renderWorkflow(); renderOrders();
 }
 
 function renderStats() {
   const s = DATA.stats;
-  let html = '<button class="chip active" data-f="all">Всего <b>' + s.total + '</b></button>';
+  const by = {};
+  (s.by_status || []).forEach(b => by[b.code] = b.count);
+  $('stats').innerHTML =
+    '<div class="hero-stat"><span class="num a">' + s.total + '</span><div class="lbl">всего заказов</div></div>' +
+    '<div class="hero-stat"><span class="num p">' + (by['new'] || 0) + '</span><div class="lbl">новых</div></div>' +
+    '<div class="hero-stat"><span class="num g">' + (by['delivered'] || 0) + '</span><div class="lbl">доставлено</div></div>';
+}
+
+function renderFilters() {
+  const s = DATA.stats;
+  let html = '<button class="chip' + (filterStatus === 'all' ? ' active' : '') + '" data-f="all">Все <b>' + s.total + '</b></button>';
   (s.by_status || []).forEach(b => {
-    html += '<button class="chip" data-f="' + b.code + '">' + b.name + ' <b>' + b.count + '</b></button>';
+    html += '<button class="chip' + (filterStatus === b.code ? ' active' : '') + '" data-f="' + b.code + '">' +
+      b.name + ' <b>' + b.count + '</b></button>';
   });
-  $('stats').innerHTML = html;
-  $('stats').querySelectorAll('.chip').forEach(c => c.onclick = () => {
-    filterStatus = c.dataset.f;
-    $('stats').querySelectorAll('.chip').forEach(x => x.classList.toggle('active', x === c));
-    renderOrders();
+  $('filters').innerHTML = html;
+  $('filters').querySelectorAll('.chip').forEach(c => c.onclick = () => {
+    filterStatus = c.dataset.f; page = 1;
+    renderFilters(); renderOrders();
   });
 }
 
 function renderWorkflow() {
-  const byCode = {};
-  (DATA.statuses || []).forEach(st => byCode[st.code] = st);
   const map = {};
   (DATA.transitions || []).forEach(t => { (map[t.from_code] = map[t.from_code] || []).push(t.to_name); });
-  $('workflow').innerHTML = (DATA.statuses || []).map(st => {
-    const next = map[st.code];
-    return '<div class="wf" style="margin-bottom:8px">' +
-      '<span class="status ' + statusClass(st.code) + '">' + st.name + '</span>' +
-      (next && next.length
-        ? '<span class="arrow">→</span> ' + next.map(n => '<span>' + n + '</span>').join(' <span class="arrow">/</span> ')
-        : '<span style="opacity:.6">завершающий статус</span>') +
-      '</div>';
+  $('wf-body').innerHTML = (DATA.statuses || []).map((st, i) => {
+    const next = map[st.code] || [];
+    return (i ? '<span class="wf-arrow">→</span>' : '') +
+      '<div class="wf-node"><div class="t"><span class="status ' + statusClass(st.code) + '">' + st.name + '</span></div>' +
+      '<div class="n">' + (next.length ? '→ ' + next.join('<br>→ ') : 'завершающий статус') + '</div></div>';
   }).join('');
-}
-
-function renderFilters() {
-  // фильтры дублируют статистику, но живут отдельно для удобства
-  $('filters').innerHTML = '';
 }
 
 function currentOrders() {
@@ -329,15 +395,22 @@ function currentOrders() {
 
 function renderOrders() {
   const list = currentOrders();
+  const pages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+  if (page > pages) page = pages;
+  const slice = list.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
   if (!list.length) {
     $('orders-box').innerHTML = '<div style="padding:26px;text-align:center;color:var(--dim)">Заказов не найдено</div>';
+    $('pager').hidden = true;
     return;
   }
+
   let html = '<table><thead><tr>' +
     '<th>№</th><th>Дата</th><th>Статус</th><th>Клиент</th><th>Позиций</th><th>Сумма</th>' +
     '</tr></thead><tbody>';
-  list.forEach(o => {
+  slice.forEach(o => {
     const sum = Number(o.total || 0) + Number(o.delivery_cost || 0);
+    const open = expanded.has(o.id);
     html += '<tr class="order-row" data-id="' + o.id + '">' +
       '<td class="num mono">#' + String(o.id).padStart(4, '0') + '</td>' +
       '<td class="num">' + fmtDate(o.created_at) + '</td>' +
@@ -346,21 +419,30 @@ function renderOrders() {
       '<td class="num">' + (o.items || []).length + '</td>' +
       '<td class="num">' + fmtMoney(sum) + '</td>' +
       '</tr>' +
-      '<tr class="detail" data-detail="' + o.id + '" hidden><td colspan="6">' + orderDetail(o) + '</td></tr>';
+      '<tr class="detail" data-detail="' + o.id + '"' + (open ? '' : ' hidden') + '><td colspan="6">' +
+      orderDetail(o) + '</td></tr>';
   });
   html += '</tbody></table>';
   $('orders-box').innerHTML = html;
+
+  $('pager').hidden = pages <= 1;
+  $('pg-label').textContent = 'страница ' + page + ' из ' + pages;
+  $('pg-prev').disabled = page <= 1;
+  $('pg-next').disabled = page >= pages;
+
   $('orders-box').querySelectorAll('tr.order-row').forEach(r => r.onclick = () => {
-    const d = $('orders-box').querySelector('tr[data-detail="' + r.dataset.id + '"]');
-    d.hidden = !d.hidden;
+    const id = Number(r.dataset.id);
+    if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
+    const d = $('orders-box').querySelector('tr[data-detail="' + id + '"]');
+    d.hidden = !expanded.has(id);
   });
 }
 
 function orderDetail(o) {
-  const items = (o.items || []).map(i =>
-    '<div style="display:flex;gap:10px;justify-content:space-between;font-size:13px;margin-bottom:6px">' +
-    '<span>' + (i.name || i.article) + ' <span class="mono" style="color:var(--dim)">#' + (i.article || '') + '</span> × ' + i.quantity + '</span>' +
-    '<span class="num">' + fmtMoney(Number(i.price || 0) * i.quantity) + '</span></div>').join('') || '<div class="val">позиций нет</div>';
+  const itemsRows = (o.items || []).map(i =>
+    '<tr><td>' + (i.name || '—') + '</td><td class="mono">' + (i.article || '') + '</td>' +
+    '<td class="num">' + i.quantity + ' шт.</td><td class="num">' + fmtMoney(i.price) + '</td>' +
+    '<td class="num">' + fmtMoney(Number(i.price || 0) * i.quantity) + '</td></tr>').join('');
   return '<div class="grid2">' +
     '<div>' +
       '<div class="lbl">Контакты</div>' +
@@ -369,21 +451,23 @@ function orderDetail(o) {
         show(o.customer_email || '—', maskEmail(o.customer_email)) +
         (o.customer_vk ? '<br><a href="' + o.customer_vk + '" target="_blank" rel="noopener">профиль ВКонтакте</a>' : '') +
       '</div>' +
+      '<div class="lbl">Оплата и доставка</div>' +
+      '<div class="val">' + (o.payment_name || '—') + ' · ' + (o.delivery_name || '—') +
+        (o.delivery_point ? '<br>адрес: ' + o.delivery_point : '') +
+        (o.tracking_number ? '<br>трек: <span class="mono">' + o.tracking_number + '</span>' : '') + '</div>' +
+    '</div>' +
+    '<div>' +
       '<div class="lbl">Комментарий к заказу</div>' +
       '<div class="val">' + (o.customer_comment || '—') + '</div>' +
       '<div class="lbl">Комментарий к доставке</div>' +
       '<div class="val">' + (o.delivery_comment || '—') + '</div>' +
-    '</div>' +
-    '<div>' +
-      '<div class="lbl">Оплата и доставка</div>' +
-      '<div class="val">' + (o.payment_name || '—') + ' · ' + (o.delivery_name || '—') +
-        (o.delivery_point ? '<br>' + o.delivery_point : '') +
-        (o.tracking_number ? '<br>трек: <span class="mono">' + o.tracking_number + '</span>' : '') + '</div>' +
-      '<div class="lbl">Позиции</div>' + items +
       '<div class="lbl">История статусов</div>' +
       ((o.history || []).map(h => '<div style="font-size:12px;color:var(--dim);margin-bottom:4px">' +
         fmtDate(h.changed_at) + ' — ' + h.status_name + ' (' + h.changed_by + ')</div>').join('') || '—') +
-    '</div></div>';
+    '</div></div>' +
+    '<div class="lbl" style="margin-top:18px">Позиции заказа</div>' +
+    '<table><thead><tr><th>Название</th><th>Артикул</th><th>Количество</th><th>Цена</th><th>Сумма</th></tr></thead>' +
+    '<tbody>' + (itemsRows || '<tr><td colspan="5">позиций нет</td></tr>') + '</tbody></table>';
 }
 
 function exportCsv() {
@@ -416,9 +500,17 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-eye').onclick = () => {
     revealed = !revealed;
     $('btn-eye').textContent = revealed ? '👁 Контакты открыты' : '👁 Контакты скрыты';
-    renderOrders();
+    renderOrders();          // раскрытые заказы остаются раскрытыми
   };
-  $('search').addEventListener('input', e => { searchTerm = e.target.value.trim(); renderOrders(); });
+  $('search').addEventListener('input', e => { searchTerm = e.target.value.trim(); page = 1; renderOrders(); });
+  $('pg-prev').onclick = () => { if (page > 1) { page--; renderOrders(); } };
+  $('pg-next').onclick = () => { page++; renderOrders(); };
+  $('btn-wf').onclick = () => $('wf-modal').classList.add('open');
+  $('wf-close').onclick = () => $('wf-modal').classList.remove('open');
+  $('wf-modal').addEventListener('click', e => { if (e.target.id === 'wf-modal') $('wf-modal').classList.remove('open'); });
+  $('theme-toggle').onclick = () =>
+    applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') $('wf-modal').classList.remove('open'); });
   window.addEventListener('resize', switchView);
   switchView();
 });

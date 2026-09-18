@@ -1143,6 +1143,12 @@
                                data-content="legal.privacy_label" data-content-href="legal.privacy_url"
                                data-fallback-href="privacy.html">Политика обработки персональных данных</a></li>
                         <li><a href="custom-order.html" class="hover:text-pink-400 transition">Как сделать кастомный заказ</a></li>
+                        <li><a href="orders.html" class="hover:text-pink-400 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg>
+                            Админ-панель заказов</a></li>
+                        <li><a href="orders.html" class="hover:text-pink-400 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg>
+                            Админ-панель заказов</a></li>
                         <li><span class="text-gray-600" data-content="footer.version">v 1.2 · 18.09.2026</span></li>
                     </ul>
                 </div>
@@ -1844,6 +1850,8 @@
                     <div id="co-summary" class="mb-4"></div>
                     <div class="divider mb-4"></div>
                     <div class="co-line"><span>Изделия</span><span id="co-subtotal">0 ₽</span></div>
+                    <div class="co-line" id="co-discount-row" hidden><span>Скидка по промокоду</span><span class="accent" id="co-discount">−0 ₽</span></div>
+                    <div class="co-line" id="co-discount-row" hidden><span>Скидка по промокоду</span><span class="accent" id="co-discount">−0 ₽</span></div>
                     <div class="co-line mt-1"><span>Доставка</span><span id="co-delivery-cost">—</span></div>
                     <div class="flex justify-between items-end mt-3 pt-3 border-t border-pink-500/10">
                         <span class="font-serif text-lg">Итого</span>
@@ -1855,23 +1863,23 @@
 
                 <div>
                     <label class="co-label" for="co-name">Ваше имя <span class="accent">*</span></label>
-                    <input id="co-name" class="co-input" type="text" placeholder="Как к вам обращаться" maxlength="200" autocomplete="name">
+                    <input id="co-name" class="co-input" type="text" placeholder="Как к вам обращаться" maxlength="200" autocomplete="off">
                 </div>
 
                 <div class="grid sm:grid-cols-2 gap-4">
                     <div>
                         <label class="co-label" for="co-phone">Телефон</label>
-                        <input id="co-phone" class="co-input" type="tel" placeholder="+7 900 000-00-00" maxlength="50" autocomplete="tel" inputmode="tel">
+                        <input id="co-phone" class="co-input" type="tel" placeholder="+7 900 000-00-00" maxlength="50" autocomplete="off" inputmode="tel">
                     </div>
                     <div>
                         <label class="co-label" for="co-vk">Профиль ВКонтакте</label>
-                        <input id="co-vk" class="co-input" type="text" placeholder="https://vk.ru/ваш_профиль" maxlength="300">
+                        <input id="co-vk" class="co-input" type="text" placeholder="https://vk.ru/ваш_профиль" maxlength="300" autocomplete="off">
                     </div>
                 </div>
 
                 <div>
                     <label class="co-label" for="co-email">E-mail</label>
-                    <input id="co-email" class="co-input" type="email" placeholder="you@mail.ru" maxlength="200" autocomplete="email" inputmode="email">
+                    <input id="co-email" class="co-input" type="email" placeholder="you@mail.ru" maxlength="200" autocomplete="off" inputmode="email">
                 </div>
 
                 <p class="co-hint"><span class="accent">*</span> Нужен хотя бы один способ связи — телефон, ВКонтакте или e-mail.
@@ -1894,6 +1902,44 @@
                         <input id="co-delivery-comment" class="co-input" type="text"
                                placeholder="Станция метро, адрес ПВЗ, удобное время" maxlength="500">
                     </div>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-pickup">Пункт выдачи или станция метро</label>
+                    <input id="co-pickup" class="co-input" type="text" autocomplete="off" maxlength="300"
+                           placeholder="Например: м. Сокол или ПВЗ на Ленинградском, 39">
+                    <p class="co-hint mt-2">Заполните, если выбрали доставку с конкретным адресом.
+                        Это отдельное поле: оно про «куда», а комментарий ниже — про «как и когда».</p>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-promo">Промокод</label>
+                    <div class="flex gap-2">
+                        <input id="co-promo" class="co-input" type="text" autocomplete="off" maxlength="40"
+                               placeholder="Например: TEST10">
+                        <button type="button" id="co-promo-apply" onclick="applyPromo()"
+                                class="btn-ghost px-5 rounded-xl text-sm flex-shrink-0">Применить</button>
+                    </div>
+                    <div id="co-promo-msg" class="co-hint mt-2"></div>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-pickup">Пункт выдачи или станция метро</label>
+                    <input id="co-pickup" class="co-input" type="text" autocomplete="off" maxlength="300"
+                           placeholder="Например: м. Сокол или ПВЗ на Ленинградском, 39">
+                    <p class="co-hint mt-2">Заполните, если выбрали доставку с конкретным адресом.
+                        Это отдельное поле: оно про «куда», а комментарий ниже — про «как и когда».</p>
+                </div>
+
+                <div>
+                    <label class="co-label" for="co-promo">Промокод</label>
+                    <div class="flex gap-2">
+                        <input id="co-promo" class="co-input" type="text" autocomplete="off" maxlength="40"
+                               placeholder="Например: TEST10">
+                        <button type="button" id="co-promo-apply" onclick="applyPromo()"
+                                class="btn-ghost px-5 rounded-xl text-sm flex-shrink-0">Применить</button>
+                    </div>
+                    <div id="co-promo-msg" class="co-hint mt-2"></div>
                 </div>
 
                 <div>
@@ -2519,6 +2565,13 @@
             totalBigEl.innerText = total;
 
             syncCartButtons();   // кнопки в карточках следуют за корзиной
+
+            // Если форма заказа открыта, состав и суммы в ней обновляются сразу:
+            // без этого промокод не сбрасывался при изменении корзины
+            if (document.getElementById('checkout-modal').classList.contains('open')) {
+                renderCheckoutSummary();
+                updateCheckoutTotals();
+            }
         }
 
         function pluralize(n, one, two, five) {
@@ -2577,6 +2630,7 @@
         let selectedDelivery = null;
         let submitting = false;
         let lastOrderText = '';
+        let appliedPromo = null;   // { code, discount, subtotalAtApply } после проверки на сервере
 
         const CUSTOMER_KEY = 'paprekolyx_customer_v1';
 
@@ -2728,13 +2782,51 @@
 
         function updateCheckoutTotals() {
             const subtotal = cartTotal();
+
+            // Состав изменился после применения промокода — скидку нужно перепроверить
+            if (appliedPromo && appliedPromo.subtotalAtApply !== subtotal) {
+                appliedPromo = null;
+                const m = document.getElementById('co-promo-msg');
+                if (m) m.textContent = 'Состав заказа изменился — примените промокод снова.';
+            }
+
+            const discount = appliedPromo ? Math.min(appliedPromo.discount, subtotal) : 0;
+            const base = Math.max(0, subtotal - discount);
             const method = selectedDeliveryMethod();
-            const total = grandTotal(subtotal, method);
+            const total = grandTotal(base, method);
 
             document.getElementById('co-subtotal').innerText = formatPrice(subtotal);
+            const drow = document.getElementById('co-discount-row');
+            if (drow) {
+                drow.hidden = discount <= 0;
+                document.getElementById('co-discount').innerText = '−' + formatPrice(discount);
+            }
             document.getElementById('co-delivery-cost').innerText =
                 method ? deliveryPriceText(method) : '—';
             document.getElementById('co-total').innerText = total.text;
+        }
+
+        // Промокод проверяется на сервере: таблица promo_codes закрыта для чтения
+        async function applyPromo() {
+            const msg = document.getElementById('co-promo-msg');
+            const code = readField('co-promo');
+            appliedPromo = null;
+            if (!code) { msg.textContent = ''; updateCheckoutTotals(); return; }
+            if (!db) { msg.textContent = 'Нет соединения с базой данных'; return; }
+
+            const { data, error } = await db.rpc('check_promo', { p_code: code, p_amount: cartTotal() });
+            if (error || !data || data.ok !== true) {
+                msg.textContent = (data && data.message) || (error && error.message) || 'Промокод не применён';
+                updateCheckoutTotals();
+                return;
+            }
+            appliedPromo = {
+                code: code.toUpperCase(),
+                discount: Number(data.discount) || 0,
+                subtotalAtApply: cartTotal()
+            };
+            msg.textContent = data.message + ' (−' + formatPrice(appliedPromo.discount) + ')';
+            updateCheckoutTotals();
         }
 
         // --- открытие и закрытие ---
@@ -2755,6 +2847,11 @@
                 setField('co-vk', saved.vk || '');
                 setField('co-email', saved.email || '');
             } catch (e) { /* игнорируем повреждённые данные */ }
+
+            appliedPromo = null;
+            const promoMsg = document.getElementById('co-promo-msg');
+            if (promoMsg) promoMsg.textContent = '';
+            setField('co-promo', '');
 
             renderCheckoutSummary();
             updateCheckoutTotals();
@@ -2812,6 +2909,10 @@
                 customer_email: readField('co-email'),
                 comment: readField('co-comment'),
                 delivery_comment: readField('co-delivery-comment'),
+                pickup_point: readField('co-pickup'),
+                promo_code: appliedPromo ? appliedPromo.code : '',
+                pickup_point: readField('co-pickup'),
+                promo_code: appliedPromo ? appliedPromo.code : '',
                 payment_method_id: selectedPayment,
                 delivery_method_id: selectedDelivery,
                 items: cart.map(i => ({ product_id: i.id, quantity: i.quantity }))
