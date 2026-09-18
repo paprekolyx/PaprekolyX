@@ -603,21 +603,38 @@
             background: rgba(255, 255, 255, .08);
             border-color: rgba(255, 255, 255, .16);
             color: var(--text);
-            transition: all .2s;
+            transition: none;   /* «минус» намеренно не меняется при наведении */
             display: inline-flex; align-items: center; justify-content: center;
         }
-        .step-btn:hover { background: rgba(255, 255, 255, .16); }
         .step-btn-plus {
             background: linear-gradient(135deg, var(--accent), var(--accent-purple));
             color: #fff; border: 0;
             box-shadow: 0 0 14px rgba(255, 45, 149, .35);
+            transition: filter .2s ease, transform .15s ease;
         }
-        .step-btn-plus:hover { filter: brightness(1.12); }
-        [data-theme="light"] .step-btn {
-            background: rgba(28, 20, 36, .06);
-            border-color: rgba(28, 20, 36, .16);
+        .step-btn-plus:hover  { filter: brightness(1.12); }   /* градиент остаётся градиентом */
+        .step-btn-plus:active { transform: scale(.92); }
+        /* В светлой теме нейтральной становится ТОЛЬКО кнопка «минус».
+           «Плюс» сохраняет градиент и белый текст — иначе он сливался
+           со светло-серой подложкой и его не было видно. */
+        [data-theme="light"] .step-btn:not(.step-btn-plus) {
+            background: rgba(28, 20, 36, .07);
+            border-color: rgba(28, 20, 36, .18);
+            color: #3d3348;
         }
-        [data-theme="light"] .step-btn:hover { background: rgba(28, 20, 36, .12); }
+        [data-theme="light"] .step-btn-plus { box-shadow: 0 0 14px rgba(214, 0, 110, .30); }
+
+        /* Цифры «изделий» и «категорий» пружинят при наведении */
+        #stat-products, #stat-categories {
+            display: inline-block;
+            transform-origin: left center;
+            transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
+        }
+        #stat-products:hover, #stat-categories:hover { transform: scale(1.18); }
+        @media (prefers-reduced-motion: reduce) {
+            #stat-products:hover, #stat-categories:hover { transform: none; }
+            .step-btn-plus:hover { filter: none; }
+        }
 
         /* ============================================================
            СВОРАЧИВАЕМАЯ ПОДСКАЗКА В КОРЗИНЕ
@@ -635,6 +652,42 @@
 
         /* Прокрутка внутри корзины не передаётся странице позади неё */
         .cart-sidebar, #cart-items { overscroll-behavior: contain; }
+
+
+        /* ============================================================
+           КАРТОЧКИ ДОКУМЕНТОВ
+           ============================================================ */
+        .doc-card {
+            display: flex; gap: 16px; align-items: flex-start; text-align: left;
+            background: var(--bg-card); border: 1px solid rgba(255, 45, 149, .14);
+            border-radius: 18px; padding: 22px; cursor: pointer; width: 100%;
+            color: inherit; font: inherit;
+            transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+        }
+        .doc-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 45, 149, .45);
+            box-shadow: 0 14px 34px rgba(120, 60, 160, .16);
+        }
+        .doc-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        .doc-card-icon {
+            flex-shrink: 0; width: 46px; height: 46px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(255, 45, 149, .16), rgba(168, 85, 247, .16));
+            border: 1px solid rgba(255, 45, 149, .28); color: var(--accent);
+        }
+        .doc-card-title {
+            display: block; font-family: 'Cormorant Garamond', Georgia, serif;
+            font-size: 1.35rem; line-height: 1.2; color: var(--text);
+        }
+        .doc-card-text { display: block; margin-top: 6px; font-size: .82rem; line-height: 1.55; color: var(--text-dim); }
+        .doc-card-tag {
+            display: inline-block; margin-top: 12px; padding: 3px 10px;
+            font-size: .66rem; letter-spacing: .08em; text-transform: uppercase;
+            color: var(--accent); border: 1px solid rgba(255, 45, 149, .3); border-radius: 999px;
+        }
+        [data-theme="light"] .doc-card { border-color: rgba(28, 20, 36, .12); }
+        [data-theme="light"] .doc-card:hover { border-color: rgba(214, 0, 110, .45); box-shadow: 0 14px 34px rgba(120, 60, 160, .12); }
 
     </style>
     <script>
@@ -938,6 +991,63 @@
         </div>
     </section>
 
+    <!-- Documents -->
+    <section id="docs" class="bg-soft py-20 border-y border-pink-500/10">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <div class="text-xs uppercase tracking-[0.3em] accent mb-3">Прозрачность</div>
+                <h2 class="font-serif text-4xl sm:text-5xl mb-4 neon-text">Документы</h2>
+                <div class="divider max-w-xs mx-auto"></div>
+                <p class="text-sm text-gray-400 max-w-2xl mx-auto leading-relaxed">
+                    Всё, по чему работает мастерская: как устроен проект изнутри, фирменный стиль,
+                    правила обращения с вашими данными и путь кастомного заказа от идеи до посылки.
+                </p>
+            </div>
+            <div class="grid sm:grid-cols-2 gap-5">
+                <button type="button" onclick="openPassport()" class="doc-card">
+                    <span class="doc-card-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H7a2 2 0 00-2 2v16a2 2 0 002 2h10a2 2 0 002-2V7z"/><path d="M14 2v5h5M9 13h6M9 17h6M9 9h2"/></svg>
+                    </span>
+                    <span>
+                        <span class="doc-card-title">Технический паспорт</span>
+                        <span class="doc-card-text">Архитектура, схема базы данных из 15 таблиц, пользовательские пути и меры безопасности.</span>
+                        <span class="doc-card-tag">открывается здесь же</span>
+                    </span>
+                </button>
+                <button type="button" onclick="openBrandbook()" class="doc-card">
+                    <span class="doc-card-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21a9 9 0 110-18c4.97 0 9 3.13 9 7 0 2.21-1.79 4-4 4h-2a2 2 0 00-2 2v1a2 2 0 01-2 2z"/><circle cx="7.5" cy="11.5" r="1"/><circle cx="11" cy="7.5" r="1"/><circle cx="15.5" cy="9.5" r="1"/></svg>
+                    </span>
+                    <span>
+                        <span class="doc-card-title">Брендбук</span>
+                        <span class="doc-card-text">Логотип, палитра, две темы оформления, типографика и правила применения.</span>
+                        <span class="doc-card-tag">открывается здесь же</span>
+                    </span>
+                </button>
+                <a href="privacy.html" class="doc-card">
+                    <span class="doc-card-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/><path d="M9 11.5l2 2 4-4"/></svg>
+                    </span>
+                    <span>
+                        <span class="doc-card-title">Политика обработки персональных данных</span>
+                        <span class="doc-card-text">Какие данные собирает сайт, зачем они нужны, где хранятся и как их удалить.</span>
+                        <span class="doc-card-tag">отдельная страница</span>
+                    </span>
+                </a>
+                <a href="custom-order.html" class="doc-card">
+                    <span class="doc-card-icon">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 15l.9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9z"/></svg>
+                    </span>
+                    <span>
+                        <span class="doc-card-title">Как сделать кастомный заказ</span>
+                        <span class="doc-card-text">Что такое кастомизация, как описать идею и готовые шаблоны заявки.</span>
+                        <span class="doc-card-tag">отдельная страница</span>
+                    </span>
+                </a>
+            </div>
+        </div>
+    </section>
+
     <!-- Contacts -->
     <section id="contacts" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="text-center mb-12">
@@ -1007,9 +1117,10 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"/></svg>
                             Брендбук
                         </button></li>
-                        <li><a id="footer-privacy" href="#" class="legal-plain hover:text-pink-400 transition"
+                        <li><a id="footer-privacy" href="privacy.html" class="hover:text-pink-400 transition"
                                data-content="legal.privacy_label" data-content-href="legal.privacy_url"
-                               >Политика обработки персональных данных</a></li>
+                               data-fallback-href="privacy.html">Политика обработки персональных данных</a></li>
+                        <li><a href="custom-order.html" class="hover:text-pink-400 transition">Как сделать кастомный заказ</a></li>
                         <li><span class="text-gray-600" data-content="footer.version">v 1.2 · 18.09.2026</span></li>
                     </ul>
                 </div>
@@ -1776,8 +1887,8 @@
 
                 <p class="co-hint text-center">Нажимая «Отправить заказ», вы соглашаетесь на обработку
                     контактных данных для его исполнения —
-                    <a href="#" class="legal-plain" data-content-href="legal.privacy_url">политика обработки
-                    персональных данных</a>. Кастомные изделия — предоплата 40%, невозвратная.</p>
+                    <a href="privacy.html" data-content-href="legal.privacy_url"
+                       data-fallback-href="privacy.html">политика обработки персональных данных</a>. Кастомные изделия — предоплата 40%, невозвратная.</p>
             </div>
 
             <!-- -------- Шаг 2: успех -------- -->
@@ -1938,8 +2049,10 @@
         // Политика обработки персональных данных: ссылка появляется только
         // тогда, когда адрес заполнен в таблице site_content.
         function applyPrivacyLinks() {
-            const url = String(contentMap['legal.privacy_url'] || '').trim();
+            const fromDb = String(contentMap['legal.privacy_url'] || '').trim();
             document.querySelectorAll('[data-content-href="legal.privacy_url"]').forEach(el => {
+                // Адрес из базы главный; если он не заполнен, берём страницу из репозитория
+                const url = fromDb || (el.getAttribute('data-fallback-href') || '').trim();
                 if (url) {
                     el.setAttribute('href', url);
                     el.setAttribute('target', '_blank');
