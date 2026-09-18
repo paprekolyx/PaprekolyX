@@ -1126,6 +1126,10 @@
                         <li><a href="#catalog" class="hover:text-pink-400 transition">Коллекция</a></li>
                         <li><a href="#order-info" class="hover:text-pink-400 transition">Условия заказа</a></li>
                         <li><a href="#contacts" class="hover:text-pink-400 transition">Контакты</a></li>
+                        <li><a href="#docs" class="hover:text-pink-400 transition">Документы</a></li>
+                        <li><a href="orders.html" class="hover:text-pink-400 transition flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg>
+                            Админ-панель заказов</a></li>
                     </ul>
                 </div>
                 <div class="md:col-span-2">
@@ -1143,13 +1147,7 @@
                                data-content="legal.privacy_label" data-content-href="legal.privacy_url"
                                data-fallback-href="privacy.html">Политика обработки персональных данных</a></li>
                         <li><a href="custom-order.html" class="hover:text-pink-400 transition">Как сделать кастомный заказ</a></li>
-                        <li><a href="orders.html" class="hover:text-pink-400 transition flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg>
-                            Админ-панель заказов</a></li>
-                        <li><a href="orders.html" class="hover:text-pink-400 transition flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15" r="1.4"/></svg>
-                            Админ-панель заказов</a></li>
-                        <li><span class="text-gray-600" data-content="footer.version">v 1.2 · 18.09.2026</span></li>
+                        <li><span class="text-gray-600" data-content="footer.version">v 1.7.0 · 18.09.2026</span></li>
                     </ul>
                 </div>
             </div>
@@ -1229,7 +1227,7 @@
                         </div>
                         <div class="bg-card p-3 rounded-lg border border-pink-500/10">
                             <div class="text-xs text-gray-500 uppercase tracking-wider">Версия</div>
-                            <div class="accent font-medium mt-1">1.2</div>
+                            <div class="accent font-medium mt-1">1.7.0</div>
                         </div>
                         <div class="bg-card p-3 rounded-lg border border-pink-500/10">
                             <div class="text-xs text-gray-500 uppercase tracking-wider">Дата</div>
@@ -1449,7 +1447,7 @@
                 </section>
 
                 <div class="pt-4 text-center text-xs text-gray-600 uppercase tracking-wider">
-                    — Паспорт v1.2 · 18.09.2026 · полная редакция в репозитории —
+                    — Паспорт v 1.7.0 · 18.09.2026 · полная редакция в репозитории —
                 </div>
             </div>
         </div>
@@ -1815,7 +1813,7 @@
                 </section>
 
                 <div class="pt-4 text-center text-xs text-gray-600 uppercase tracking-wider">
-                    — Брендбук v1.2 · 18.09.2026 —
+                    — Брендбук v 1.7.0 · 18.09.2026 —
                 </div>
             </div>
         </div>
@@ -1850,7 +1848,6 @@
                     <div id="co-summary" class="mb-4"></div>
                     <div class="divider mb-4"></div>
                     <div class="co-line"><span>Изделия</span><span id="co-subtotal">0 ₽</span></div>
-                    <div class="co-line" id="co-discount-row" hidden><span>Скидка по промокоду</span><span class="accent" id="co-discount">−0 ₽</span></div>
                     <div class="co-line" id="co-discount-row" hidden><span>Скидка по промокоду</span><span class="accent" id="co-discount">−0 ₽</span></div>
                     <div class="co-line mt-1"><span>Доставка</span><span id="co-delivery-cost">—</span></div>
                     <div class="flex justify-between items-end mt-3 pt-3 border-t border-pink-500/10">
@@ -1900,30 +1897,11 @@
                     <div class="mt-3">
                         <label class="co-label" for="co-delivery-comment">Комментарий к доставке</label>
                         <input id="co-delivery-comment" class="co-input" type="text"
-                               placeholder="Станция метро, адрес ПВЗ, удобное время" maxlength="500">
+                               placeholder="Удобное время, пожелания курьеру, код домофона" maxlength="500">
                     </div>
                 </div>
 
-                <div>
-                    <label class="co-label" for="co-pickup">Пункт выдачи или станция метро</label>
-                    <input id="co-pickup" class="co-input" type="text" autocomplete="off" maxlength="300"
-                           placeholder="Например: м. Сокол или ПВЗ на Ленинградском, 39">
-                    <p class="co-hint mt-2">Заполните, если выбрали доставку с конкретным адресом.
-                        Это отдельное поле: оно про «куда», а комментарий ниже — про «как и когда».</p>
-                </div>
-
-                <div>
-                    <label class="co-label" for="co-promo">Промокод</label>
-                    <div class="flex gap-2">
-                        <input id="co-promo" class="co-input" type="text" autocomplete="off" maxlength="40"
-                               placeholder="Например: TEST10">
-                        <button type="button" id="co-promo-apply" onclick="applyPromo()"
-                                class="btn-ghost px-5 rounded-xl text-sm flex-shrink-0">Применить</button>
-                    </div>
-                    <div id="co-promo-msg" class="co-hint mt-2"></div>
-                </div>
-
-                <div>
+                <div id="co-pickup-wrap">
                     <label class="co-label" for="co-pickup">Пункт выдачи или станция метро</label>
                     <input id="co-pickup" class="co-input" type="text" autocomplete="off" maxlength="300"
                            placeholder="Например: м. Сокол или ПВЗ на Ленинградском, 39">
@@ -2802,8 +2780,21 @@
                 document.getElementById('co-discount').innerText = '−' + formatPrice(discount);
             }
             document.getElementById('co-delivery-cost').innerText =
-                method ? deliveryPriceText(method) : '—';
+                method ? deliveryPriceText(method) : '\u2014';
             document.getElementById('co-total').innerText = total.text;
+
+            syncPickupVisibility();
+        }
+
+        // Пункт выдачи нужен только когда доставка требует адреса.
+        // При самовывозе человек и так приходит в мастерскую — поле прячем.
+        function syncPickupVisibility() {
+            const wrap = document.getElementById('co-pickup-wrap');
+            if (!wrap) return;
+            const m = selectedDeliveryMethod();
+            const hide = !m || m.code === 'pickup';
+            wrap.hidden = hide;
+            if (hide) setField('co-pickup', '');
         }
 
         // Промокод проверяется на сервере: таблица promo_codes закрыта для чтения
