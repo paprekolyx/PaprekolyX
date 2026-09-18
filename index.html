@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FF2D95%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23A855F7%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2240%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E">
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23FF2D95%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23A855F7%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2232%22%20r%3D%2232%22%20fill%3D%22url%28%23g%29%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2246%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%2240%22%20font-weight%3D%22bold%22%20fill%3D%22%23ffffff%22%20text-anchor%3D%22middle%22%3EP%3C%2Ftext%3E%3C%2Fsvg%3E">
-    <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#faf7fc" media="(prefers-color-scheme: light)">
+    <!-- Цвет панелей мобильного браузера. Управляется из JS, чтобы всегда
+         совпадать с темой САЙТА, а не с системной темой телефона. -->
+    <meta id="meta-theme-color" name="theme-color" content="#0a0a0f">
     <title>PaprekolyX — Изделия ручной работы из эпоксидной смолы</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Библиотека Supabase лежит в репозитории и не зависит от стороннего CDN.
@@ -594,6 +595,47 @@
             border-color: rgba(168, 85, 247, .28);
         }
 
+
+        /* ============================================================
+           СЧЁТЧИК В КАРТОЧКЕ ТОВАРА («−  N  +»)
+           ============================================================ */
+        .step-btn {
+            background: rgba(255, 255, 255, .08);
+            border-color: rgba(255, 255, 255, .16);
+            color: var(--text);
+            transition: all .2s;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .step-btn:hover { background: rgba(255, 255, 255, .16); }
+        .step-btn-plus {
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            color: #fff; border: 0;
+            box-shadow: 0 0 14px rgba(255, 45, 149, .35);
+        }
+        .step-btn-plus:hover { filter: brightness(1.12); }
+        [data-theme="light"] .step-btn {
+            background: rgba(28, 20, 36, .06);
+            border-color: rgba(28, 20, 36, .16);
+        }
+        [data-theme="light"] .step-btn:hover { background: rgba(28, 20, 36, .12); }
+
+        /* ============================================================
+           СВОРАЧИВАЕМАЯ ПОДСКАЗКА В КОРЗИНЕ
+           ============================================================ */
+        .cart-note summary { cursor: pointer; list-style: none; }
+        .cart-note summary::-webkit-details-marker { display: none; }
+        .cart-note-title { margin-bottom: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .cart-note-title::after {
+            content: '+'; font-size: 15px; line-height: 1; color: var(--accent);
+            transition: transform .25s ease; flex-shrink: 0;
+        }
+        .cart-note[open] .cart-note-title::after { transform: rotate(45deg); }
+        .cart-note[open] .cart-note-title { margin-bottom: 8px; }
+        .cart-note ul { margin-top: 0; }
+
+        /* Прокрутка внутри корзины не передаётся странице позади неё */
+        .cart-sidebar, #cart-items { overscroll-behavior: contain; }
+
     </style>
     <script>
         // Тема применяется до отрисовки страницы, чтобы не было «вспышки» другой темы.
@@ -601,7 +643,10 @@
             var saved = null;
             try { saved = localStorage.getItem('paprekolyx_theme'); } catch (e) {}
             var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
-            document.documentElement.dataset.theme = saved || (prefersLight ? 'light' : 'dark');
+            var _theme = saved || (prefersLight ? 'light' : 'dark');
+            document.documentElement.dataset.theme = _theme;
+            var _meta = document.querySelector('meta[name="theme-color"]');
+            if (_meta) _meta.setAttribute('content', _theme === 'light' ? '#faf7fc' : '#0a0a0f');
         })();
     </script>
 </head>
@@ -693,7 +738,7 @@
                 <div class="relative">
                     <div class="absolute -inset-4 bg-gradient-to-tr from-pink-500/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
                     <img id="hero-img" alt="Изделия PaprekolyX из эпоксидной смолы" data-content-src="hero.image_url" class="relative rounded-3xl shadow-2xl w-full aspect-[4/5] object-cover border border-pink-500/20">
-                    <div class="absolute -bottom-6 -left-6 bg-card border border-pink-500/20 rounded-2xl p-4 shadow-xl backdrop-blur neon-border">
+                    <div class="absolute bottom-4 left-4 right-4 sm:bottom-auto sm:right-auto sm:bottom-[-1.5rem] sm:left-[-1.5rem] bg-card border border-pink-500/20 rounded-2xl p-4 shadow-xl backdrop-blur neon-border">
                         <div class="text-xs uppercase tracking-wider text-gray-500" data-content="hero.card_label">Материал</div>
                         <div class="font-serif text-lg accent neon-text" data-content="hero.card_text">Эпоксидная смола, сухоцветы, фетр</div>
                     </div>
@@ -994,28 +1039,28 @@
                 </button>
             </div>
         </div>
-        <div id="cart-items" class="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin"></div>
-        <div class="p-6 border-t border-pink-500/10 bg-black/30">
+        <div id="cart-items" class="flex-1 overflow-y-auto overscroll-contain p-4 sm:p-6 space-y-4 scrollbar-thin"></div>
+        <div class="p-4 sm:p-6 border-t border-pink-500/10 bg-black/30 shrink-0">
             <div class="flex justify-between mb-2 text-sm text-gray-400">
                 <span>Сумма</span>
                 <span id="cart-total">0 ₽</span>
             </div>
-            <div class="flex justify-between mb-5 text-lg font-serif">
+            <div class="flex justify-between mb-4 text-lg font-serif">
                 <span>Итого</span>
                 <span class="accent neon-text" id="cart-total-big">0 ₽</span>
             </div>
-            <div class="cart-note mb-4">
-                <div class="cart-note-title">Спокойно — ничего не спишется само</div>
+            <details class="cart-note mb-3">
+                <summary class="cart-note-title">Спокойно — ничего не спишется само</summary>
                 <ul>
                     <li>Сумму проверяет мастер, поэтому ошибки в расчёте не будет.</li>
                     <li>Заказ уходит напрямую в мастерскую, без посредников и наценок.</li>
                     <li>Оплату и доставку согласуем лично в переписке — автоматически деньги не списываются.</li>
                     <li>Контакты нужны только для этого заказа и никуда не передаются.</li>
                 </ul>
-            </div>
-            <button onclick="openCheckout()" class="w-full btn-primary py-3 rounded-full font-medium tracking-wide">Оформить заказ</button>
-            <a href="https://vk.ru/paprekolyx" target="_blank" rel="noopener" class="w-full vk-btn py-3 rounded-full font-medium tracking-wide text-center block mt-2">Обсудить в ВК</a>
-            <p class="text-[10px] text-gray-500 text-center mt-3 uppercase tracking-wider">Доставка рассчитывается отдельно</p>
+            </details>
+            <button onclick="openCheckout()" class="w-full btn-primary py-2.5 sm:py-3 rounded-full font-medium tracking-wide">Оформить заказ</button>
+            <a href="https://vk.ru/paprekolyx" target="_blank" rel="noopener" class="w-full vk-btn py-2.5 sm:py-3 rounded-full font-medium tracking-wide text-center block mt-2">Обсудить в ВК</a>
+            <p class="text-[10px] text-gray-500 text-center mt-2 uppercase tracking-wider">Доставка рассчитывается отдельно</p>
         </div>
     </div>
 
@@ -1128,7 +1173,7 @@
                         <span class="accent font-mono text-sm">03.</span>
                         <h3 class="font-serif text-2xl neon-text">Структура базы данных</h3>
                     </div>
-                    <p class="text-sm text-gray-500 mb-4">15 таблиц, 113 полей, 16 связей. Состояние на 18.09.2026.</p>
+                    <p class="text-sm text-gray-500 mb-4">15 таблиц, 114 полей, 16 связей. Состояние на 18.09.2026.</p>
                     <div class="flex flex-wrap gap-2 mb-5 text-[10px] font-mono">
                         <span class="px-2 py-1 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK — первичный ключ</span>
                         <span class="px-2 py-1 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK — внешняя ссылка</span>
@@ -1833,6 +1878,10 @@
             document.documentElement.dataset.theme = theme;
             try { localStorage.setItem(THEME_KEY, theme); } catch (e) { /* приватный режим */ }
 
+            // Панели мобильного браузера (верхняя и нижняя) красим под тему сайта
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', theme === 'light' ? '#faf7fc' : '#0a0a0f');
+
             const btn = document.getElementById('theme-toggle');
             if (btn) {
                 btn.setAttribute('aria-label',
@@ -2175,15 +2224,39 @@
                                 '<div class="text-[10px] uppercase tracking-wider text-gray-500">Цена</div>' +
                                 '<div class="text-xl accent neon-text font-medium">' + formatPrice(product.price) + '</div>' +
                             '</div>' +
-                            '<button onclick="addToCart(' + product.id + ')" class="btn-primary px-4 py-2 rounded-full ' +
-                                'text-xs font-medium tracking-wide flex items-center gap-1.5">' +
-                                '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
-                                '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>' +
-                                'В корзину' +
-                            '</button>' +
+                            '<div class="card-actions" data-product-id="' + product.id + '"></div>' +
                         '</div>' +
                     '</div>';
                 grid.appendChild(card);
+            });
+            syncCartButtons();
+        }
+
+        // Кнопка в карточке: «В корзину» или счётчик с «−» и «+», если товар уже в корзине
+        function cardActionsHtml(product) {
+            const inCart = cart.find(i => i.id === product.id);
+            if (!inCart) {
+                return '<button onclick="addToCart(' + product.id + ')" class="btn-primary px-4 py-2 rounded-full ' +
+                    'text-xs font-medium tracking-wide flex items-center gap-1.5">' +
+                    '<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+                    '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>' +
+                    'В корзину</button>';
+            }
+            return '<div class="flex items-center gap-1.5" role="group" aria-label="Количество в корзине">' +
+                '<button onclick="changeQuantity(' + product.id + ', -1)" aria-label="Убрать один" ' +
+                    'class="step-btn w-8 h-8 rounded-full border text-base leading-none">\u2212</button>' +
+                '<span class="text-sm font-semibold w-7 text-center tabular-nums" data-card-qty>' + inCart.quantity + '</span>' +
+                '<button onclick="changeQuantity(' + product.id + ', 1)" aria-label="Добавить один" ' +
+                    'class="step-btn step-btn-plus w-8 h-8 rounded-full text-base leading-none">+</button>' +
+                '</div>';
+        }
+
+        // Синхронизирует кнопки во всех карточках с текущей корзиной
+        function syncCartButtons() {
+            document.querySelectorAll('.card-actions').forEach(box => {
+                const id = Number(box.getAttribute('data-product-id'));
+                const product = products.find(p => p.id === id);
+                if (product) box.innerHTML = cardActionsHtml(product);
             });
         }
 
@@ -2307,6 +2380,8 @@
             const total = formatPrice(cartTotal());
             totalEl.innerText = total;
             totalBigEl.innerText = total;
+
+            syncCartButtons();   // кнопки в карточках следуют за корзиной
         }
 
         function pluralize(n, one, two, five) {
@@ -2320,10 +2395,26 @@
             if (sidebar.classList.contains('open')) {
                 sidebar.classList.remove('open');
                 overlay.classList.add('hidden');
+                syncScrollLock();
             } else {
                 overlay.classList.remove('hidden');
-                requestAnimationFrame(() => sidebar.classList.add('open'));
+                requestAnimationFrame(() => {
+                    sidebar.classList.add('open');
+                    syncScrollLock();
+                });
             }
+        }
+
+        // Блокирует прокрутку страницы, пока открыты корзина или любое модальное окно.
+        // Без этого листание внутри корзины прокручивало сайт позади неё.
+        function syncScrollLock() {
+            const anyModalOpen = ['passport-modal', 'brandbook-modal', 'checkout-modal']
+                .some(id => {
+                    const el = document.getElementById(id);
+                    return !!el && el.classList.contains('open');
+                });
+            const cartOpen = document.getElementById('cart-sidebar').classList.contains('open');
+            document.body.style.overflow = (anyModalOpen || cartOpen) ? 'hidden' : '';
         }
 
         function showToast(msg) {
@@ -2534,7 +2625,7 @@
             if (document.getElementById('cart-sidebar').classList.contains('open')) toggleCart();
 
             document.getElementById('checkout-modal').classList.add('open');
-            document.body.style.overflow = 'hidden';
+            syncScrollLock();
 
             loadCheckoutRefs();
         }
@@ -2543,7 +2634,7 @@
             const modal = document.getElementById('checkout-modal');
             if (!modal) return;
             modal.classList.remove('open');
-            document.body.style.overflow = '';
+            syncScrollLock();
         }
 
         // --- отправка ---
@@ -2680,19 +2771,19 @@
 
         function openPassport() {
             document.getElementById('passport-modal').classList.add('open');
-            document.body.style.overflow = 'hidden';
+            syncScrollLock();
         }
         function closePassport() {
             document.getElementById('passport-modal').classList.remove('open');
-            document.body.style.overflow = '';
+            syncScrollLock();
         }
         function openBrandbook() {
             document.getElementById('brandbook-modal').classList.add('open');
-            document.body.style.overflow = 'hidden';
+            syncScrollLock();
         }
         function closeBrandbook() {
             document.getElementById('brandbook-modal').classList.remove('open');
-            document.body.style.overflow = '';
+            syncScrollLock();
         }
 
         document.getElementById('passport-modal').addEventListener('click', (e) => {
