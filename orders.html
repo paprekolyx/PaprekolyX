@@ -77,7 +77,18 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .st-bad{color:#fb7185;border-color:currentColor}
 .linklike{background:none;border:0;padding:0;color:var(--accent);font-size:13px;cursor:pointer}
 .mgmt{border:1px solid rgba(255,45,149,.22);border-radius:14px;padding:14px 16px;margin-bottom:18px;background:rgba(255,45,149,.04)}
-.mgmt-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.mgmt-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:6px}
+.switch-wrap{display:inline-flex;align-items:center;gap:8px}
+.switch{position:relative;width:46px;height:26px;border-radius:999px;flex-shrink:0;
+  background:rgba(255,255,255,.10);border:1px solid rgba(255,45,149,.30);cursor:pointer;transition:.2s;padding:0}
+.switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.switch.on{background:linear-gradient(135deg,var(--accent),var(--purple));border-color:transparent}
+.switch.on .knob{left:22px}
+[data-theme="light"] .switch{background:rgba(28,20,36,.10)}
+.switch-label{font-size:12px;color:var(--dim)}
+.select{background:var(--bg-soft);border:1px solid rgba(255,45,149,.30);border-radius:999px;
+  padding:8px 16px;color:var(--text);font-size:13px;outline:none;cursor:pointer;min-width:190px}
+.select:focus{border-color:var(--accent)}
 .dim-note{font-size:11px;color:var(--dim)}
 .tabs{display:flex;gap:6px;margin:4px 0 22px;border-bottom:1px solid rgba(255,45,149,.18)}
 .tab{padding:12px 26px;font-size:15px;color:var(--dim);text-decoration:none;border:1px solid transparent;border-bottom:0;border-radius:14px 14px 0 0;transition:.2s}
@@ -472,23 +483,29 @@ function orderDetail(o) {
     '<tr><td>' + (i.name || '—') + '</td><td class="mono">' + (i.article || '') + '</td>' +
     '<td class="num">' + i.quantity + ' шт.</td><td class="num">' + fmtMoney(i.price) + '</td>' +
     '<td class="num">' + fmtMoney(Number(i.price || 0) * i.quantity) + '</td></tr>').join('');
-  const paidPill = o.is_paid
-    ? '<span class="status st-end">оплачен</span>'
-    : '<span class="status st-new">не оплачен</span>';
   const mgmt =
     '<div class="mgmt">' +
       '<div class="lbl">Управление заказом</div>' +
       '<div class="mgmt-row">' +
         '<span class="status ' + statusClass(o.status_code) + '">' + (o.status_name || '—') + '</span>' +
-        paidPill +
-        '<button class="btn" onclick="togglePaid(' + o.id + ', ' + (!o.is_paid) + ')">' +
-          (o.is_paid ? 'Снять флаг оплаты' : 'Отметить оплаченным') + '</button>' +
+        '<span class="switch-wrap">' +
+          '<button type="button" role="switch" aria-checked="' + (!!o.is_paid) + '" ' +
+            'class="switch' + (o.is_paid ? ' on' : '') + '" ' +
+            'onclick="togglePaid(' + o.id + ', ' + (!o.is_paid) + ')" ' +
+            'title="' + (o.is_paid ? 'Снять флаг оплаты' : 'Отметить оплаченным') + '">' +
+            '<span class="knob"></span></button>' +
+          '<span class="switch-label">' + (o.is_paid ? 'оплачен' : 'не оплачен') + '</span>' +
+        '</span>' +
       '</div>' +
       '<div class="lbl" style="margin-top:14px">Перевести в статус</div>' +
       '<div class="mgmt-row">' +
-        ((DATA && window.__actions && window.__actions[o.id]) || []).map(x =>
-          '<button class="btn" onclick="changeStatus(' + o.id + ', \'' + x.code + '\')">' + x.name + '</button>').join('') +
-        '<span class="dim-note">разрешённые переходы по статусной модели</span>' +
+        '<select id="status-select-' + o.id + '" class="select">' +
+          '<option value="">Выберите статус…</option>' +
+          (((DATA && window.__actions && window.__actions[o.id]) || []).map(x =>
+            '<option value="' + x.code + '">' + x.name + '</option>').join('')) +
+        '</select>' +
+        '<button type="button" class="btn" onclick="applyStatusChange(' + o.id + ')">Перевести</button>' +
+        '<span class="dim-note">доступны только разрешённые переходы</span>' +
       '</div>' +
       '<div class="err" id="order-card-msg" hidden></div>' +
     '</div>';
@@ -533,6 +550,17 @@ async function loadActions(orderId) {
   window.__actions = window.__actions || {};
   window.__actions[orderId] = error ? [] : (data.allowed || []);
   return window.__actions[orderId];
+}
+
+function applyStatusChange(orderId) {
+  const sel = document.getElementById('status-select-' + orderId);
+  const msg = document.getElementById('order-card-msg');
+  if (!sel || !sel.value) {
+    if (msg) { msg.textContent = 'Сначала выберите статус из списка'; msg.hidden = false; }
+    return;
+  }
+  if (msg) msg.hidden = true;
+  changeStatus(orderId, sel.value);
 }
 
 async function changeStatus(orderId, code) {
