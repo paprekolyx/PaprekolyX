@@ -84,8 +84,22 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .switch .knob{position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
 .switch.on{background:linear-gradient(135deg,var(--accent),var(--purple));border-color:transparent}
 .switch.on .knob{left:22px}
-[data-theme="light"] .switch{background:rgba(28,20,36,.10)}
-.switch-label{font-size:12px;color:var(--dim)}
+[data-theme="light"] .switch:not(.on){background:rgba(28,20,36,.10)}
+.switch-label{font-size:13px;color:var(--dim)}
+.mgmt .lbl{font-size:12px;font-weight:600;letter-spacing:.12em}
+.mgmt-row{font-size:14px}
+.dd-btn{font-size:14px;padding:10px 18px;min-width:210px}
+.dd-item{font-size:14px;padding:11px 18px}
+.mgmt .select{flex:1;min-width:200px;font-size:14px;padding:10px 18px}
+.hist{margin-top:16px;border:1px solid rgba(255,45,149,.18);border-radius:14px;padding:12px 16px}
+.hist summary{cursor:pointer;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);list-style:none;display:flex;justify-content:space-between;align-items:center}
+.hist summary::-webkit-details-marker{display:none}
+.hist summary:after{content:'+';font-size:15px}
+.hist[open] summary:after{content:'−'}
+.hist-row{font-size:13px;color:var(--dim);padding:7px 0;border-top:1px dashed rgba(255,45,149,.15)}
+.hist-row:first-of-type{border-top:0}
+.overlay .box{overscroll-behavior:contain}
 .card-loading{padding:26px;color:var(--dim);font-size:13px}
 .dd{position:relative;display:inline-block}
 .dd-btn{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
@@ -261,6 +275,7 @@ details.note li{margin-bottom:6px}
         <h2 style="margin:0;font-size:28px" id="order-card-title">Заказ</h2>
         <span class="spacer"></span>
         <button class="btn" id="card-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
+        <button class="btn" id="card-save" onclick="saveOrder()">Сохранить</button>
         <button class="icon-btn" id="order-close" aria-label="Закрыть">✕</button>
       </div>
       <div id="order-card"></div>
@@ -541,8 +556,7 @@ function orderDetail(o) {
               x.name + '</button>').join('')) +
           '</div>' +
         '</div>' +
-        '<input class="select" id="status-comment-' + o.id + '" maxlength="200" placeholder="Комментарий (необязательно)">' +
-        '<button type="button" class="btn" onclick="applyStatusChange(' + o.id + ')">Перевести</button>' +
+        '<input class="select" id="status-comment-' + o.id + '" maxlength="200" placeholder="Комментарий к смене статуса (необязательно)">' +
       '</div>' +
       '<div class="err" id="order-card-msg" hidden></div>' +
     '</div>';
@@ -564,20 +578,28 @@ function orderDetail(o) {
       '<div class="val">' + (o.customer_comment || '—') + '</div>' +
       '<div class="lbl">Комментарий к доставке</div>' +
       '<div class="val">' + (o.delivery_comment || '—') + '</div>' +
-      '<div class="lbl">История статусов</div>' +
-      ((o.history || []).map(h => '<div style="font-size:12px;color:var(--dim);margin-bottom:4px">' +
-        fmtDate(h.changed_at) + ' — ' + h.status_name + ' (' + h.changed_by + ')</div>').join('') || '—') +
     '</div></div>' +
     '<div class="lbl" style="margin-top:18px">Позиции заказа</div>' +
     '<table><thead><tr><th>Название</th><th>Артикул</th><th>Количество</th><th>Цена</th><th>Сумма</th></tr></thead>' +
-    '<tbody>' + (itemsRows || '<tr><td colspan="5">позиций нет</td></tr>') + '</tbody></table>';
+    '<tbody>' + (itemsRows || '<tr><td colspan="5">позиций нет</td></tr>') + '</tbody></table>' +
+    '<details class="hist"><summary>История статусов · ' + (o.history || []).length + '</summary>' +
+      ((o.history || []).map(h =>
+        '<div class="hist-row">' + fmtDate(h.changed_at) + ' — ' + h.status_name +
+        ' (' + h.changed_by + ')' + (h.comment ? ' · ' + h.comment : '') + '</div>').join('') ||
+        '<div class="hist-row">записей пока нет</div>') +
+    '</details>';
 }
 
 let currentOrderId = null;
 
+function setBodyLock(lock) {
+  document.body.style.overflow = lock ? 'hidden' : '';
+}
+
 async function openOrder(id) {
   currentOrderId = id;
   $('order-modal').classList.add('open');
+  setBodyLock(true);
   if (!(DATA && (DATA.orders || []).some(x => x.id === id))) {
     $('order-card').innerHTML = '<div class="card-loading">Загрузка заказа…</div>';
     await load();
@@ -613,16 +635,23 @@ document.addEventListener('click', e => {
   }
 });
 
-function applyStatusChange(orderId) {
-  const code = (window.__ddSel || {})[orderId];
+function saveOrder() {
+  const id = currentOrderId;
+  const code = (window.__ddSel || {})[id];
+  const commentEl = document.getElementById('status-comment-' + id);
+  const comment = commentEl ? commentEl.value.trim() : '';
   const msg = document.getElementById('order-card-msg');
   if (!code) {
-    if (msg) { msg.textContent = 'Сначала выберите статус из списка'; msg.hidden = false; }
+    if (msg) {
+      msg.textContent = comment
+        ? 'Комментарий сохраняется вместе со сменой статуса — выберите статус из списка.'
+        : 'Выберите статус из списка или закройте карточку без изменений.';
+      msg.hidden = false;
+    }
     return;
   }
   if (msg) msg.hidden = true;
-  const commentEl = document.getElementById('status-comment-' + orderId);
-  changeStatus(orderId, code, commentEl ? commentEl.value.trim() : '');
+  changeStatus(id, code, comment);
 }
 
 async function changeStatus(orderId, code, comment) {
@@ -702,12 +731,13 @@ document.addEventListener('DOMContentLoaded', () => {
   $('search').addEventListener('input', e => { searchTerm = e.target.value.trim(); page = 1; renderOrders(); });
   $('pg-prev').onclick = () => { if (page > 1) { page--; renderOrders(); } };
   $('pg-next').onclick = () => { page++; renderOrders(); };
-  $('btn-wf').onclick = () => $('wf-modal').classList.add('open');
-  $('wf-close').onclick = () => $('wf-modal').classList.remove('open');
+  $('btn-wf').onclick = () => { $('wf-modal').classList.add('open'); setBodyLock(true); };
+  $('wf-close').onclick = () => { $('wf-modal').classList.remove('open'); setBodyLock(false); };
   $('card-eye').onclick = toggleRevealed;
-  $('order-close').onclick = () => $('order-modal').classList.remove('open');
+  const closeOrder = () => { $('order-modal').classList.remove('open'); setBodyLock(false); };
+  $('order-close').onclick = closeOrder;
   $('order-modal').addEventListener('click', e => {
-    if (e.target.id === 'order-modal') $('order-modal').classList.remove('open');
+    if (e.target.id === 'order-modal') closeOrder();
   });
   $('wf-modal').addEventListener('click', e => { if (e.target.id === 'wf-modal') $('wf-modal').classList.remove('open'); });
   $('theme-toggle').onclick = () =>
@@ -716,6 +746,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'Escape') {
       $('wf-modal').classList.remove('open');
       $('order-modal').classList.remove('open');
+      setBodyLock(false);
     }
   });
   window.addEventListener('resize', switchView);
