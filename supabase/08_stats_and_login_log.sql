@@ -122,6 +122,11 @@ begin
     return jsonb_build_object(
         -- общие числа
         'total',        (select count(*) from public.orders where created_at >= v_from),
+        'sum_all_time', (select coalesce(sum(total), 0) from public.orders),
+        'statuses',     (select coalesce(jsonb_agg(jsonb_build_object(
+                            'code', code, 'name', name, 'sort', sort_order)
+                            order by sort_order), '[]'::jsonb)
+                         from public.order_statuses),
         'unique_clients', (select count(distinct coalesce(nullif(customer_phone,''), customer_email, customer_name))
                              from public.orders where created_at >= v_from),
         'avg_items',    (select round(coalesce(avg(c.n),0), 2)
