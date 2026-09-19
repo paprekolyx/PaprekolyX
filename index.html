@@ -629,7 +629,9 @@
             transform-origin: left center;
             transition: transform .35s cubic-bezier(.34, 1.56, .64, 1);
         }
-        #stat-products:hover, #stat-categories:hover { transform: scale(1.18); }
+        .stat-cell { cursor: default; }
+        #stat-products:hover, #stat-categories:hover,
+        .stat-cell:hover #stat-products, .stat-cell:hover #stat-categories { transform: scale(1.18); }
         @media (prefers-reduced-motion: reduce) {
             #stat-products:hover, #stat-categories:hover { transform: none; }
             .step-btn-plus:hover { filter: none; }
@@ -702,6 +704,32 @@
             color: var(--accent); opacity: .75; transition: transform .2s ease, opacity .2s ease;
         }
         .doc-card:hover .doc-card-arrow { transform: translateX(5px); opacity: 1; }
+
+
+        /* Расшифровка ключей схемы: на светлой теме делаем читаемой */
+        [data-theme="light"] .schema-legend .text-pink-300 { color: #b3005c; }
+        [data-theme="light"] .schema-legend .text-purple-300 { color: #6d28d9; }
+        [data-theme="light"] .schema-legend .text-blue-300 { color: #1d4ed8; }
+        [data-theme="light"] .schema-legend .text-gray-300 { color: #3d3348; }
+        [data-theme="light"] .schema-legend .text-red-300 { color: #b91c1c; }
+        [data-theme="light"] .schema-legend .bg-pink-500\/20 { background-color: rgba(214,0,110,.12); }
+        [data-theme="light"] .schema-legend .bg-purple-500\/20 { background-color: rgba(124,58,237,.12); }
+        [data-theme="light"] .schema-legend .bg-blue-500\/20 { background-color: rgba(37,99,235,.12); }
+        [data-theme="light"] .schema-legend .bg-white\/10 { background-color: rgba(28,20,36,.08); }
+        [data-theme="light"] .schema-legend .bg-red-500\/15 { background-color: rgba(220,38,38,.10); }
+
+
+        /* Расшифровка ключей схемы: на светлой теме делаем читаемой */
+        [data-theme="light"] .schema-legend .text-pink-300 { color: #b3005c; }
+        [data-theme="light"] .schema-legend .text-purple-300 { color: #6d28d9; }
+        [data-theme="light"] .schema-legend .text-blue-300 { color: #1d4ed8; }
+        [data-theme="light"] .schema-legend .text-gray-300 { color: #3d3348; }
+        [data-theme="light"] .schema-legend .text-red-300 { color: #b91c1c; }
+        [data-theme="light"] .schema-legend .bg-pink-500\/20 { background-color: rgba(214,0,110,.12); }
+        [data-theme="light"] .schema-legend .bg-purple-500\/20 { background-color: rgba(124,58,237,.12); }
+        [data-theme="light"] .schema-legend .bg-blue-500\/20 { background-color: rgba(37,99,235,.12); }
+        [data-theme="light"] .schema-legend .bg-white\/10 { background-color: rgba(28,20,36,.08); }
+        [data-theme="light"] .schema-legend .bg-red-500\/15 { background-color: rgba(220,38,38,.10); }
 
     </style>
     <script>
@@ -793,11 +821,11 @@
                         </a>
                     </div>
                     <div class="grid grid-cols-2 gap-6 mt-12 pt-8 border-t border-white/5">
-                        <div>
+                        <div class="stat-cell">
                             <div class="font-serif text-3xl accent neon-text" id="stat-products">—</div>
                             <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Изделий в коллекции</div>
                         </div>
-                        <div>
+                        <div class="stat-cell">
                             <div class="font-serif text-3xl accent-purple neon-text" id="stat-categories">—</div>
                             <div class="text-xs uppercase tracking-wider text-gray-500 mt-1">Категорий</div>
                         </div>
@@ -806,7 +834,7 @@
                 <div class="relative">
                     <div class="absolute -inset-4 bg-gradient-to-tr from-pink-500/20 to-purple-600/20 rounded-3xl blur-2xl"></div>
                     <img id="hero-img" alt="Изделия PaprekolyX из эпоксидной смолы" data-content-src="hero.image_url" class="relative rounded-3xl shadow-2xl w-full aspect-[4/5] object-cover border border-pink-500/20">
-                    <div class="absolute bottom-4 left-4 right-4 sm:bottom-auto sm:right-auto sm:bottom-[-1.5rem] sm:left-[-1.5rem] bg-card border border-pink-500/20 rounded-2xl p-4 shadow-xl backdrop-blur neon-border">
+                    <div class="absolute bottom-4 left-4 right-4 sm:bottom-10 sm:right-auto sm:left-[-1.5rem] bg-card border border-pink-500/20 rounded-2xl p-4 shadow-xl backdrop-blur neon-border">
                         <div class="text-xs uppercase tracking-wider text-gray-500" data-content="hero.card_label">Материал</div>
                         <div class="font-serif text-lg accent neon-text" data-content="hero.card_text">Эпоксидная смола, сухоцветы, фетр</div>
                     </div>
@@ -1256,7 +1284,9 @@
                         <div class="bg-card p-5 rounded-xl border border-pink-500/10">
                             <div class="accent text-xs uppercase tracking-wider mb-3">Клиент</div>
                             <ul class="text-sm text-gray-400 space-y-1.5">
-                                <li>• HTML5 — одна страница <span class="font-mono text-xs">index.html</span></li>
+                                <li>• HTML5 — пять страниц: <span class="font-mono text-xs">index.html</span> (витрина),
+                                    <span class="font-mono text-xs">orders.html</span> и <span class="font-mono text-xs">stats.html</span> (кабинет),
+                                    <span class="font-mono text-xs">privacy.html</span> и <span class="font-mono text-xs">custom-order.html</span> (документы)</li>
                                 <li>• CSS3 + Tailwind CSS через CDN</li>
                                 <li>• JavaScript ES6+, без сборки</li>
                                 <li>• Шрифты Cormorant Garamond и Inter</li>
@@ -1270,7 +1300,7 @@
                                 <li>• Клиент <span class="font-mono text-xs">@supabase/supabase-js</span> v2</li>
                                 <li>• Приём заказов — функция <span class="font-mono text-xs">create_order()</span></li>
                                 <li>• GitHub Pages + GitHub Actions</li>
-                                <li>• Фото — Cloudinary или Supabase Storage</li>
+                                <li>• Фото — сейчас ссылки из ВК; Cloudinary и Supabase Storage в планах</li>
                             </ul>
                         </div>
                     </div>
@@ -1278,7 +1308,7 @@
                         <span class="accent font-medium">Серверного кода на отдельном хостинге нет.</span>
                         Вся серверная логика живёт внутри Supabase: политики RLS решают, кто и какие строки
                         может прочитать, а функция <span class="font-mono">create_order()</span> принимает заказы
-                        и пересчитывает суммы на стороне базы. Отдельный бэкенд проекту не нужен.
+                        и пересчитывает суммы на стороне базы. Отдельный бэкенд сейчас не реализован.
                     </div>
                 </section>
 
@@ -1311,7 +1341,7 @@
                         <h3 class="font-serif text-2xl neon-text">Структура базы данных</h3>
                     </div>
                     <p class="text-sm text-gray-500 mb-4">17 таблиц, 120 полей, 18 связей. Состояние на 18.09.2026.</p>
-                    <div class="flex flex-wrap gap-2 mb-5 text-[10px] font-mono">
+                    <div class="schema-legend flex flex-wrap gap-2 mb-5 text-[10px] font-mono">
                         <span class="px-2 py-1 rounded border bg-pink-500/20 text-pink-300 border-pink-500/40">PK — первичный ключ</span>
                         <span class="px-2 py-1 rounded border bg-purple-500/20 text-purple-300 border-purple-500/40">FK — внешняя ссылка</span>
                         <span class="px-2 py-1 rounded border bg-blue-500/20 text-blue-300 border-blue-500/40">UK — уникально</span>
@@ -1375,7 +1405,9 @@
                                 <tr class="border-b border-pink-500/10"><td class="py-2 pr-3 font-mono text-xs">order_statuses</td><td class="py-2 pr-3">всё</td><td class="py-2 accent">закрыто</td></tr>
                                 <tr class="border-b border-pink-500/10"><td class="py-2 pr-3 font-mono text-xs">reviews</td><td class="py-2 pr-3">опубликованные</td><td class="py-2">добавление, всегда на модерацию</td></tr>
                                 <tr class="border-b border-pink-500/10"><td class="py-2 pr-3 font-mono text-xs">orders, order_items, deliveries, payments, custom_orders</td><td class="py-2 pr-3 accent">закрыто</td><td class="py-2">только через create_order()</td></tr>
-                                <tr><td class="py-2 pr-3 font-mono text-xs">promo_codes</td><td class="py-2 pr-3 accent">закрыто полностью</td><td class="py-2 accent">закрыто</td></tr>
+                                <tr class="border-b border-pink-500/10"><td class="py-2 pr-3 font-mono text-xs">promo_codes</td><td class="py-2 pr-3 accent">закрыто полностью</td><td class="py-2 accent">закрыто</td></tr>
+                                <tr class="border-b border-pink-500/10"><td class="py-2 pr-3 font-mono text-xs">admin_credentials</td><td class="py-2 pr-3 accent">закрыто полностью</td><td class="py-2 accent">только из SQL Editor</td></tr>
+                                <tr><td class="py-2 pr-3 font-mono text-xs">admin_login_log</td><td class="py-2 pr-3 accent">закрыто, чтение через admin_login_log(hash)</td><td class="py-2">пишет только функция проверки пароля</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -1400,6 +1432,13 @@
                             </ul>
                         </div>
                     </div>
+                <div class="bg-card p-5 rounded-xl border border-pink-500/10 mt-4 text-sm text-gray-400 leading-relaxed">
+                    <span class="accent font-medium">Админ-панель.</span> Список заказов (<span class="font-mono text-xs">orders.html</span>)
+                    и статистика (<span class="font-mono text-xs">stats.html</span>) открываются только с компьютера и только после
+                    ввода пароля: хеш сравнивается на сервере, а каждая попытка входа пишется в журнал
+                    <span class="font-mono text-xs">admin_login_log</span> (время, успех, браузер, действовавший хеш).
+                    Кабинет работает только на просмотр: изменение статусов заказов запланировано, но не реализовано.
+                </div>
                 </section>
 
                 <section>
@@ -1441,6 +1480,34 @@
                             <div>
                                 <div class="font-medium text-white text-sm mb-1">Смена темы оформления</div>
                                 <div class="text-xs text-gray-400 leading-relaxed">Переключатель в шапке → светлая или тёмная тема. Выбор запоминается, при первом визите берётся из настроек системы.</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-4 rounded-xl border border-pink-500/10 flex gap-4">
+                            <div class="accent font-serif text-xl flex-shrink-0">6</div>
+                            <div>
+                                <div class="font-medium text-white text-sm mb-1">Кабинет заказов</div>
+                                <div class="text-xs text-gray-400 leading-relaxed">Прямой адрес orders.html → вход по паролю (только с ПК) → список заказов, карточка заказа окном, статусная модель, выгрузка в CSV. Каждая попытка входа пишется в журнал.</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-4 rounded-xl border border-pink-500/10 flex gap-4">
+                            <div class="accent font-serif text-xl flex-shrink-0">7</div>
+                            <div>
+                                <div class="font-medium text-white text-sm mb-1">Статистика заявок</div>
+                                <div class="text-xs text-gray-400 leading-relaxed">Вкладка «Статистика» в кабинете → тот же вход → KPI, заявки по дням, воронка статусов, топ товаров, выгрузка сводки за несколько периодов.</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-4 rounded-xl border border-pink-500/10 flex gap-4">
+                            <div class="accent font-serif text-xl flex-shrink-0">6</div>
+                            <div>
+                                <div class="font-medium text-white text-sm mb-1">Кабинет заказов</div>
+                                <div class="text-xs text-gray-400 leading-relaxed">Прямой адрес orders.html → вход по паролю (только с ПК) → список заказов, карточка заказа окном, статусная модель, выгрузка в CSV. Каждая попытка входа пишется в журнал.</div>
+                            </div>
+                        </div>
+                        <div class="bg-card p-4 rounded-xl border border-pink-500/10 flex gap-4">
+                            <div class="accent font-serif text-xl flex-shrink-0">7</div>
+                            <div>
+                                <div class="font-medium text-white text-sm mb-1">Статистика заявок</div>
+                                <div class="text-xs text-gray-400 leading-relaxed">Вкладка «Статистика» в кабинете → тот же вход → KPI, заявки по дням, воронка статусов, топ товаров, выгрузка сводки за несколько периодов.</div>
                             </div>
                         </div>
                     </div>
@@ -1508,27 +1575,27 @@
                         <div class="text-center">
                             <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-pink-500 to-pink-600 mb-2 neon-border"></div>
                             <div class="text-xs font-mono text-gray-400">#FF2D95</div>
-                            <div class="text-xs text-gray-500">Основной</div>
+                            <div class="text-xs text-gray-500">Розовый акцент</div>
                         </div>
                         <div class="text-center">
                             <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 mb-2"></div>
                             <div class="text-xs font-mono text-gray-400">#A855F7</div>
-                            <div class="text-xs text-gray-500">Акцент</div>
+                            <div class="text-xs text-gray-500">Фиолетовый акцент</div>
                         </div>
                         <div class="text-center">
                             <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 mb-2"></div>
                             <div class="text-xs font-mono text-gray-400">#3B82F6</div>
-                            <div class="text-xs text-gray-500">Дополнительный</div>
+                            <div class="text-xs text-gray-500">Синий (ВКонтакте)</div>
                         </div>
                         <div class="text-center">
                             <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-gray-900 to-black mb-2 border border-pink-500/20"></div>
                             <div class="text-xs font-mono text-gray-400">#0A0A0F</div>
-                            <div class="text-xs text-gray-500">Фон</div>
+                            <div class="text-xs text-gray-500">Фон тёмной темы</div>
                         </div>
                         <div class="text-center">
                             <div class="color-swatch w-full aspect-square rounded-xl bg-gradient-to-br from-gray-100 to-white mb-2"></div>
                             <div class="text-xs font-mono text-gray-400">#F0E6FF</div>
-                            <div class="text-xs text-gray-500">Текст</div>
+                            <div class="text-xs text-gray-500">Текст тёмной темы</div>
                         </div>
                     </div>
                     <div class="mt-6 bg-card p-4 rounded-xl border border-pink-500/10">
@@ -1566,12 +1633,12 @@
                                 <div class="flex items-center gap-3">
                                     <span class="w-8 h-8 rounded-lg flex-shrink-0" style="background:#FF2D95"></span>
                                     <span class="font-mono text-xs text-gray-400 w-20">#FF2D95</span>
-                                    <span class="text-gray-500 text-xs">акцент · 5.70:1</span>
+                                    <span class="text-gray-500 text-xs">розовый акцент · 5.70:1</span>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span class="w-8 h-8 rounded-lg flex-shrink-0" style="background:#A855F7"></span>
                                     <span class="font-mono text-xs text-gray-400 w-20">#A855F7</span>
-                                    <span class="text-gray-500 text-xs">доп. акцент · 4.99:1</span>
+                                    <span class="text-gray-500 text-xs">фиолетовый акцент · 4.99:1</span>
                                 </div>
                                 <div class="flex items-center gap-3">
                                     <span class="w-8 h-8 rounded-lg flex-shrink-0" style="background:#F0E6FF;border:1px solid rgba(255,45,149,.25)"></span>
@@ -1681,8 +1748,11 @@
                             <div class="text-sm text-gray-400">Используется для заголовков, названий товаров, акцентных элементов.</div>
                             <div class="mt-4 space-y-2">
                                 <div class="font-serif text-3xl">H1 — 48-72px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Главный заголовок страницы и названия крупных секций</div>
                                 <div class="font-serif text-2xl">H2 — 36-48px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Заголовки разделов: «Коллекция», «Условия заказа», «Документы»</div>
                                 <div class="font-serif text-xl">H3 — 24-32px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Подразделы и заголовки карточек документов</div>
                             </div>
                         </div>
                         <div class="bg-card p-6 rounded-xl border border-pink-500/10">
@@ -1691,37 +1761,34 @@
                             <div class="text-sm text-gray-400">Используется для основного текста, описаний, интерфейсных элементов.</div>
                             <div class="mt-4 space-y-2">
                                 <div class="text-lg">Body — 16px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Абзацы описаний и условия заказа</div>
                                 <div class="text-sm">Caption — 14px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Подписи под заголовками, текст кнопок и ссылок</div>
                                 <div class="text-xs">Small — 12px</div>
+                                <div class="text-xs text-gray-500 -mt-1">Мелкие метки: категории, артикулы, пояснения</div>
                             </div>
                         </div>
-                        <div class="bg-card p-6 rounded-xl border border-pink-500/10 md:col-span-2">
+                        <div class="bg-card p-6 rounded-xl border border-pink-500/10">
                             <div class="text-xs uppercase tracking-wider accent mb-3">Технические подписи</div>
-                            <div class="grid md:grid-cols-2 gap-6">
-                                <div>
-                                    <div class="text-2xl mb-2 font-mono">JetBrains Mono</div>
-                                    <div class="text-sm text-gray-400">Артикулы товаров, ключи базы данных, HEX-коды цветов, технические обозначения.</div>
-                                    <div class="mt-4 space-y-2 font-mono text-sm">
-                                        <div>#00099 · art. 00099</div>
-                                        <div>#FF2D95 · numeric(10,2)</div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-xs uppercase tracking-wider accent mb-3">Кириллица обязательна</div>
-                                    <p class="text-sm text-gray-400 leading-relaxed">
-                                        Это правило относится ко всем текстам сайта, а не только к техническим подписям.
-                                        Каждый подключаемый шрифт обязан содержать и кириллицу, и латиницу
-                                        в едином стиле. Если русских букв в шрифте нет, браузер подставит для них
-                                        другой шрифт, и смешанный текст вроде
-                                        <span class="font-mono text-xs">«арт. 00099»</span> будет выглядеть разнобоем —
-                                        буквы разной высоты и насыщенности.
-                                    </p>
-                                    <p class="text-sm text-gray-400 leading-relaxed mt-3">
-                                        Сейчас на сайте три шрифта, все с кириллицей:
-                                        Cormorant Garamond, Inter и JetBrains Mono.
-                                    </p>
-                                </div>
+                            <div class="text-2xl mb-2 font-mono">JetBrains Mono</div>
+                            <div class="text-sm text-gray-400">Артикулы товаров, ключи базы данных, HEX-коды цветов, технические обозначения.</div>
+                            <div class="mt-4 space-y-2 font-mono text-sm">
+                                <div>#00099 · art. 00099</div>
+                                <div>#FF2D95 · numeric(10,2)</div>
                             </div>
+                        </div>
+                        <div class="p-6 rounded-xl border border-purple-500/30" style="background: linear-gradient(135deg, rgba(168,85,247,.10), rgba(255,45,149,.06))">
+                            <div class="text-xs uppercase tracking-wider accent-purple mb-3">Кириллица обязательна</div>
+                            <p class="text-sm text-gray-400 leading-relaxed">
+                                Это правило относится ко всем текстам сайта, а не только к техническим подписям.
+                                Каждый подключаемый шрифт обязан содержать и кириллицу, и латиницу в едином стиле.
+                                Если русских букв в шрифте нет, браузер подставит для них другой шрифт,
+                                и смешанный текст вроде «арт. 00099» будет выглядеть разнобоем.
+                            </p>
+                            <p class="text-sm text-gray-400 leading-relaxed mt-3">
+                                Сейчас на сайте три шрифта, все с кириллицей:
+                                Cormorant Garamond, Inter и JetBrains Mono.
+                            </p>
                         </div>
                     </div>
                 </section>
@@ -2146,11 +2213,23 @@
         }
 
         // Цифры на первом экране — из фактических данных базы
+        // Плавный набор числа: цифра «досчитывается» от нуля до значения
+        function animateNumber(el, target) {
+            const dur = 900, t0 = performance.now();
+            const step = t => {
+                const k = Math.min(1, (t - t0) / dur);
+                const eased = 1 - Math.pow(1 - k, 3);
+                el.textContent = Math.round(target * eased);
+                if (k < 1) requestAnimationFrame(step);
+            };
+            requestAnimationFrame(step);
+        }
+
         function updateStats() {
             const p = document.getElementById('stat-products');
             const c = document.getElementById('stat-categories');
-            if (p) p.textContent = String(products.length);
-            if (c) c.textContent = String(categories.length);
+            if (p) animateNumber(p, products.length);
+            if (c) animateNumber(c, categories.length);
         }
 
 

@@ -50,8 +50,8 @@ h1.big{font-size:44px;margin:0 0 2px}
 .kpi:hover .num{transform:scale(1.12)}
 .kpi .num.a{color:var(--accent)}.kpi .num.p{color:var(--purple)}.kpi .num.g{color:var(--ok)}.kpi .num.w{color:var(--warn)}
 .kpi .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:6px}
-.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:10px}
-.bar{flex:1;min-width:6px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:4px 4px 0 0;position:relative;transition:filter .2s}
+.bars{display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;height:150px;padding-top:10px}
+.bar{flex:0 0 26px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:4px 4px 0 0;position:relative;transition:filter .2s}
 .bar:hover{filter:brightness(1.25)}
 .bar.zero{background:rgba(255,255,255,.08)}
 .rows{display:flex;flex-direction:column;gap:8px}
@@ -78,6 +78,20 @@ details.note p{font-size:13px;color:var(--dim);margin:10px 0 0}
 .gate p{font-size:14px;color:var(--dim)}
 input[type=password]{background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;width:100%}
 .err{color:#fb7185;font-size:13px;margin-top:10px}
+.funnel{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px}
+.frow{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}
+.fval{color:var(--dim);font-variant-numeric:tabular-nums}
+.status{display:inline-block;border-radius:999px;padding:3px 12px;font-size:11px;border:1px solid}
+.st-new{color:var(--warn);border-color:currentColor}
+.st-mid{color:var(--purple);border-color:currentColor}
+.st-end{color:var(--ok);border-color:currentColor}
+.st-bad{color:#fb7185;border-color:currentColor}
+@media (max-width:700px){.funnel{grid-template-columns:1fr}}
+
+.tabs{display:flex;gap:6px;margin:4px 0 22px;border-bottom:1px solid rgba(255,45,149,.18)}
+.tab{padding:12px 26px;font-size:15px;color:var(--dim);text-decoration:none;border:1px solid transparent;border-bottom:0;border-radius:14px 14px 0 0;transition:.2s}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);background:var(--bg-card);border-color:rgba(255,45,149,.25);font-weight:600}
 footer{padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)}
 footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)}
 </style>
@@ -113,12 +127,16 @@ footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:1
       <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
     </button>
     <span class="spacer"></span>
-    <a class="btn ghost" href="orders.html">Кабинет заказов</a>
     <a class="back" href="index.html">← на главную</a>
   </div>
 </header>
 
 <main><div class="wrap">
+  <div class="tabs">
+    <a class="tab" href="orders.html">Кабинет заказов</a>
+    <a class="tab active" href="stats.html">Статистика</a>
+  </div>
+
 
   <div id="gate-mobile" class="gate" hidden>
     <div class="ico">🖥️</div>
@@ -141,13 +159,6 @@ footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:1
     <h1 class="big">Статистика заявок</h1>
     <div class="sub">Обновлено: <span id="updated-at">—</span></div>
 
-    <details class="note">
-      <summary>Как читать эти цифры — важно</summary>
-      <p>Сайт не видит оплаты: они происходят в ВКонтакте и в базу не попадают.
-      Поэтому все денежные метрики ниже считаются по суммам <b>оформленных заявок</b>,
-      а не по выручке. «Средняя сумма заявки» означает среднюю по заказам за период,
-      а не средний чек по оплатам.</p>
-    </details>
 
     <div class="toolbar">
       <button class="btn period active" data-days="">За всё время</button>
@@ -158,8 +169,16 @@ footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:1
       <button class="btn" id="btn-refresh">Обновить</button>
       <button class="btn" id="btn-csv">Выгрузить сводку</button>
     </div>
-
     <div id="stats-box"></div>
+
+    <details class="note">
+      <summary>Как читать эти цифры — важно</summary>
+      <p>Сайт не видит оплаты: они происходят в ВКонтакте и в базу не попадают.
+      Поэтому все денежные метрики ниже считаются по суммам <b>оформленных заявок</b>,
+      а не по выручке. «Средняя сумма заявки» означает среднюю по заказам за период,
+      а не средний чек по оплатам.</p>
+    </details>
+
   </div>
 
 </div></main>
@@ -242,6 +261,24 @@ async function load() {
   render();
 }
 
+function statusClass(code) {
+  if (code === 'new') return 'st-new';
+  if (['cancelled', 'returned'].includes(code)) return 'st-bad';
+  if (['delivered'].includes(code)) return 'st-end';
+  return 'st-mid';
+}
+
+// Все статусы, даже с нулём; оформление как у статусной модели; две колонки
+function funnel(d) {
+  const counts = {};
+  (d.by_status || []).forEach(b => counts[b.code] = b.count);
+  const items = (d.statuses || []).map(st => ({ code: st.code, name: st.name, count: counts[st.code] || 0 }));
+  if (!items.length) return '<div style="color:var(--dim);font-size:13px">Нет данных</div>';
+  return '<div class="funnel">' + items.map(i =>
+    '<div class="frow"><span class="status ' + statusClass(i.code) + '">' + i.name +
+    '</span><span class="fval">' + i.count + '</span></div>').join('') + '</div>';
+}
+
 function barRows(items, nameKey, valKey) {
   const max = Math.max(...items.map(i => Number(i[valKey]) || 0), 1);
   return '<div class="rows">' + items.map(i =>
@@ -261,13 +298,14 @@ function render() {
     kpi((d.cancel_rate || 0) + '%', 'w', 'отмен и возвратов') +
     kpi(d.avg_items, 'p', 'позиций в заявке') +
     kpi(d.avg_days_to_deliver + ' дн.', 'g', 'путь до «доставлен»') +
+    kpi(fmtMoney(d.sum_all_time), 'a', 'сумма заказов за всё время') +
     '</div>';
 
-  html += '<div class="card"><div class="lbl" style="margin-bottom:6px">Заявки по дням</div>' +
+  html += '<div class="card" style="margin-top:16px"><div class="lbl" style="margin-bottom:6px">Заявки по дням</div>' +
     dayBars(d.per_day || []) + '</div>';
 
   html += '<div class="card"><div class="lbl" style="margin-bottom:10px">Воронка статусов</div>' +
-    barRows(d.by_status || [], 'name', 'count') + '</div>';
+    funnel(d) + '</div>';
 
   html += '<div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">' +
     '<div class="card" style="margin:0"><div class="lbl" style="margin-bottom:10px">Топ товаров</div>' +
@@ -303,17 +341,28 @@ function topTable(items) {
       fmtMoney(i.sum) + '</td></tr>').join('') + '</tbody></table>';
 }
 
-function exportCsv() {
+async function exportCsv() {
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  const periods = [['all', null], ['7', 7], ['30', 30], ['90', 90]];
+  const res = {};
+  for (const [key, days] of periods) {
+    const r = await db.rpc('admin_stats', { p_hash_hex: hash, p_days: days });
+    if (!r.error) res[key] = r.data;
+  }
   const d = DATA;
   const esc = v => { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const metrics = [
+    ['Заявок', x => x.total], ['Уникальных клиентов', x => x.unique_clients],
+    ['Повторных клиентов', x => x.repeat_clients], ['Средняя сумма заявки', x => x.avg_total],
+    ['Медианная сумма', x => x.median_total], ['Отмен и возвратов, %', x => x.cancel_rate],
+    ['Позиций в заявке', x => x.avg_items], ['Дней до «доставлен»', x => x.avg_days_to_deliver],
+    ['Сумма заказов за всё время', x => x.sum_all_time],
+  ];
   const lines = [
-    ['Метрика', 'Значение'],
-    ['Период', DAYS ? DAYS + ' дней' : 'всё время'],
-    ['Заявок', d.total], ['Уникальных клиентов', d.unique_clients], ['Повторных клиентов', d.repeat_clients],
-    ['Средняя сумма заявки', d.avg_total], ['Медианная сумма', d.median_total],
-    ['Отмен и возвратов, %', d.cancel_rate], ['Позиций в заявке', d.avg_items],
-    ['Дней до «доставлен»', d.avg_days_to_deliver],
-    [''], ['День', 'Заявок'],
+    ['Метрика', 'Всё время', '7 дней', '30 дней', '90 дней'],
+    ...metrics.map(m => [m[0],
+      m[1](res.all || {}), m[1](res['7'] || {}), m[1](res['30'] || {}), m[1](res['90'] || {})]),
+    [''], ['День', 'Заявок за день'],
     ...(d.per_day || []).map(p => [p.day, p.count]),
   ];
   const csv = '\uFEFF' + lines.map(r => (Array.isArray(r) ? r : [r]).map(esc).join(';')).join('\n');

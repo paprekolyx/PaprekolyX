@@ -76,6 +76,11 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .st-end{color:var(--ok);border-color:currentColor}
 .st-bad{color:#fb7185;border-color:currentColor}
 .linklike{background:none;border:0;padding:0;color:var(--accent);font-size:13px;cursor:pointer}
+.tabs{display:flex;gap:6px;margin:4px 0 22px;border-bottom:1px solid rgba(255,45,149,.18)}
+.tab{padding:12px 26px;font-size:15px;color:var(--dim);text-decoration:none;border:1px solid transparent;border-bottom:0;border-radius:14px 14px 0 0;transition:.2s}
+.tab:hover{color:var(--accent)}
+.tab.active{color:var(--accent);background:var(--bg-card);border-color:rgba(255,45,149,.25);font-weight:600}
+
 .linklike:hover{text-decoration:underline}
 .detail td{background:rgba(255,45,149,.03);padding:18px 20px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
@@ -150,6 +155,11 @@ details.note li{margin-bottom:6px}
 </header>
 
 <main><div class="wrap">
+  <div class="tabs">
+    <a class="tab active" href="orders.html">Кабинет заказов</a>
+    <a class="tab" href="stats.html">Статистика</a>
+  </div>
+
 
   <div id="gate-mobile" class="gate" hidden>
     <div class="ico">🖥️</div>
@@ -177,24 +187,11 @@ details.note li{margin-bottom:6px}
     </h1>
     <div class="sub">Данные обновлены: <span id="updated-at">—</span></div>
 
-    <details class="note">
-      <summary>Честно о защите этого кабинета — прочитать</summary>
-      <ul>
-        <li>Здесь нет серверной сессии и токенов: после входа хеш пароля лежит в sessionStorage вкладки до её закрытия.</li>
-        <li>Нет ограничения частоты попыток входа на сервере — подбор теоретически возможен.</li>
-        <li>Нет журнала входов: не видно, кто и когда открывал кабинет.</li>
-        <li>Нет разделения ролей: один пароль на всех, кто его знает.</li>
-        <li>Нет HTTPS-only cookie и прочих атрибутов настоящей аутентификации.</li>
-      </ul>
-      <p style="font-size:12px;color:var(--dim);margin:12px 0 0">Для учебного проекта этого достаточно: заказы закрыты политиками RLS
-      и отдаются только функцией с проверкой пароля. Для настоящего магазина раздел нужно перевести на Supabase Auth.</p>
-    </details>
 
     <div class="hero-stats" id="stats"></div>
 
     <div class="toolbar">
       <button class="btn" id="btn-wf">Статусная модель</button>
-      <a class="btn" href="stats.html">Статистика</a>
       <span class="spacer"></span>
       <button class="btn" id="btn-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
       <button class="btn" id="btn-csv">Выгрузить в CSV</button>
@@ -244,6 +241,19 @@ details.note li{margin-bottom:6px}
     </div>
   </div>
 
+    <details class="note">
+      <summary>Честно о защите этого кабинета — прочитать</summary>
+      <ul>
+        <li>Здесь нет серверной сессии и токенов: после входа хеш пароля лежит в sessionStorage вкладки до её закрытия.</li>
+        <li>Нет ограничения частоты попыток входа на сервере — подбор теоретически возможен.</li>
+        <li>Нет журнала входов: не видно, кто и когда открывал кабинет.</li>
+        <li>Нет разделения ролей: один пароль на всех, кто его знает.</li>
+        <li>Нет HTTPS-only cookie и прочих атрибутов настоящей аутентификации.</li>
+      </ul>
+      <p style="font-size:12px;color:var(--dim);margin:12px 0 0">Для учебного проекта этого достаточно: заказы закрыты политиками RLS
+      и отдаются только функцией с проверкой пароля. Для настоящего магазина раздел нужно перевести на Supabase Auth.</p>
+    </details>
+
 </div></main>
 <footer style="padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)"><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)"><span class="site-version">PaprekolyX · v 1.8.0 · 18.09.2026</span><a href="index.html">Витрина</a><a href="privacy.html">Политика ПДн</a><a href="custom-order.html">Кастомный заказ</a></div></footer>
 
@@ -283,8 +293,13 @@ async function sha256hex(text) {
 
 function maskPhone(p) {
   if (!p) return '—';
-  const digits = String(p).replace(/\D/g, '');
-  return String(p).slice(0, 7) + ' ***-**-' + digits.slice(-2);
+  const d = String(p).replace(/\D/g, '');
+  // прячем пять цифр в середине, оставляем код и последние две: +7 (925) ***-**-27
+  if (d.length === 11 && (d[0] === '7' || d[0] === '8')) {
+    return '+7 (' + d.slice(1, 4) + ') ***-**-' + d.slice(-2);
+  }
+  if (d.length >= 5) return String(p).slice(0, 4) + ' … ' + d.slice(-2);
+  return '—';
 }
 function maskEmail(e) {
   if (!e) return '—';
