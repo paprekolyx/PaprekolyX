@@ -161,7 +161,9 @@ begin
                dm.name              as delivery_name,
                (select d2.pickup_point    from public.deliveries d2 where d2.order_id = ord.id limit 1) as delivery_point,
                (select d2.tracking_number from public.deliveries d2 where d2.order_id = ord.id limit 1) as tracking_number,
-               (select d2.comment         from public.deliveries d2 where d2.order_id = ord.id limit 1) as delivery_comment, -- комментарий к доставке
+               (select d2.comment         from public.deliveries d2 where d2.order_id = ord.id limit 1) as delivery_comment,
+               ord.is_paid,
+               ord.paid_at, -- комментарий к доставке
                (select coalesce(jsonb_agg(jsonb_build_object(
                             'article',   pr.article,
                             'name',       pr.name,
