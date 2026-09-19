@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<title>Статистика заявок — PaprekolyX</title>
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.16/index.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/cormorant-garamond@5.0.14/index.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@fontsource/jetbrains-mono@5.0.20/index.min.css" rel="stylesheet">
+<style>
+:root{--bg:#0a0a0f;--bg-soft:#12101a;--bg-card:#1a1525;--accent:#ff2d95;--purple:#a855f7;--text:#f0e6ff;--dim:#8a7a9a;--ok:#34d399;--warn:#fbbf24}
+[data-theme="light"]{--bg:#faf7fc;--bg-soft:#ffffff;--bg-card:#ffffff;--accent:#d6006e;--purple:#7c3aed;--text:#1c1424;--dim:#6b5f7a;--ok:#059669;--warn:#b45309}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,Arial,sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,.serif{font-family:'Cormorant Garamond',Georgia,serif;font-weight:500}
+a{color:var(--accent)}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header{position:sticky;top:0;z-index:20;background:var(--bg-soft);border-bottom:1px solid rgba(255,45,149,.14)}
+header .wrap{display:flex;align-items:center;gap:12px;height:64px}
+.logo{width:38px;height:38px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ff2d95,#a855f7);color:#fff;font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700}
+.brand{font-family:'Cormorant Garamond',serif;font-size:22px;color:var(--accent)}
+.brand-tag{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);border:1px solid rgba(255,45,149,.3);border-radius:999px;padding:4px 12px}
+.spacer{margin-left:auto}
+.back{font-size:14px;text-decoration:none;color:var(--dim);white-space:nowrap}
+.back:hover{color:var(--accent)}
+.theme-toggle{position:relative;display:flex;align-items:center;justify-content:space-between;width:60px;height:30px;padding:0 8px;border-radius:999px;border:1px solid rgba(255,45,149,.32);background:linear-gradient(135deg,rgba(255,45,149,.14),rgba(168,85,247,.14));flex-shrink:0}
+.theme-toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--purple));box-shadow:0 0 12px rgba(255,45,149,.55);transform:translateX(0);transition:transform .38s cubic-bezier(.4,0,.2,1)}
+html:not([data-theme="light"]) .theme-toggle-thumb{transform:translateX(30px)}
+.theme-icon{position:relative;z-index:1;width:14px;height:14px;color:var(--dim)}
+html:not([data-theme="light"]) .theme-icon-moon{color:#fff}
+[data-theme="light"] .theme-icon-sun{color:#fff}
+main{padding:30px 0 60px}
+h1.big{font-size:44px;margin:0 0 2px}
+.sub{font-size:13px;color:var(--dim);margin-bottom:18px}
+.btn{border:1px solid rgba(255,45,149,.35);background:transparent;color:var(--text);border-radius:999px;padding:9px 18px;font-size:13px;transition:.2s;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:linear-gradient(135deg,var(--accent),var(--purple));border:0;color:#fff}
+.btn.ghost{border-color:rgba(255,255,255,.18);color:var(--dim)}
+[data-theme="light"] .btn.ghost{border-color:rgba(28,20,36,.2)}
+.btn.active{border-color:var(--accent);color:var(--accent);background:rgba(255,45,149,.08)}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:18px}
+.card{background:var(--bg-card);border:1px solid rgba(255,45,149,.16);border-radius:16px;padding:18px 20px;margin-bottom:16px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+.kpi .num{font-family:'Cormorant Garamond',serif;font-size:38px;line-height:1.05;display:inline-block;transform-origin:left center;transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.kpi:hover .num{transform:scale(1.12)}
+.kpi .num.a{color:var(--accent)}.kpi .num.p{color:var(--purple)}.kpi .num.g{color:var(--ok)}.kpi .num.w{color:var(--warn)}
+.kpi .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:6px}
+.bars{display:flex;align-items:flex-end;gap:4px;height:150px;padding-top:10px}
+.bar{flex:1;min-width:6px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:4px 4px 0 0;position:relative;transition:filter .2s}
+.bar:hover{filter:brightness(1.25)}
+.bar.zero{background:rgba(255,255,255,.08)}
+.rows{display:flex;flex-direction:column;gap:8px}
+.rowline{display:grid;grid-template-columns:150px 1fr 70px;gap:10px;align-items:center;font-size:13px}
+.rowline .track{height:10px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden}
+.rowline .fill{height:100%;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--purple))}
+.rowline .val{text-align:right;color:var(--dim);font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:8px 10px;border-bottom:1px solid rgba(255,45,149,.18)}
+td{padding:9px 10px;border-bottom:1px solid rgba(255,45,149,.10);color:var(--dim)}
+td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+details.note{border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+details.note summary{cursor:pointer;font-size:13px;color:var(--warn);list-style:none;display:flex;justify-content:space-between}
+details.note summary::-webkit-details-marker{display:none}
+details.note summary:after{content:'+'}
+details.note[open] summary:after{content:'−'}
+details.note p{font-size:13px;color:var(--dim);margin:10px 0 0}
+.skel{border-radius:12px;background:linear-gradient(90deg,rgba(255,255,255,.05) 25%,rgba(255,255,255,.12) 50%,rgba(255,255,255,.05) 75%);background-size:200% 100%;animation:sh 1.2s infinite;height:60px;margin-bottom:12px}
+[data-theme="light"] .skel{background:linear-gradient(90deg,rgba(28,20,36,.06) 25%,rgba(28,20,36,.12) 50%,rgba(28,20,36,.06) 75%);background-size:200% 100%}
+@keyframes sh{to{background-position:-200% 0}}
+.gate{max-width:520px;margin:8vh auto;text-align:center;padding:44px 34px;border:1px solid rgba(255,45,149,.3);border-radius:24px;background:var(--bg-card)}
+.gate .ico{font-size:44px;margin-bottom:14px}
+.gate h2{font-size:28px;margin:0 0 10px}
+.gate p{font-size:14px;color:var(--dim)}
+input[type=password]{background:var(--bg-soft);border:1px solid rgba(255,45,149,.25);border-radius:12px;padding:11px 14px;color:var(--text);font-size:14px;outline:none;width:100%}
+.err{color:#fb7185;font-size:13px;margin-top:10px}
+footer{padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)}
+footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)}
+</style>
+<script>
+  (function () {
+    var saved = null;
+    try { saved = localStorage.getItem('paprekolyx_theme'); } catch (e) {}
+    var light = saved ? saved === 'light'
+      : (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches);
+    var theme = light ? 'light' : 'dark';
+    document.documentElement.dataset.theme = theme;
+    var m = document.createElement('meta');
+    m.name = 'theme-color'; m.content = light ? '#faf7fc' : '#0a0a0f';
+    document.head.appendChild(m);
+  })();
+</script>
+<script src="assets/supabase.min.js"></script>
+<script>
+  if (!window.supabase) {
+    document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+  }
+</script>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="logo">P</span>
+    <span class="brand">PaprekolyX</span>
+    <span class="brand-tag">Статистика</span>
+    <button id="theme-toggle" type="button" class="theme-toggle" aria-label="Переключить тему">
+      <span class="theme-toggle-thumb"></span>
+      <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 1.8v2.4M12 19.8v2.4M4.7 4.7l1.7 1.7M17.6 17.6l1.7 1.7M1.8 12h2.4M19.8 12h2.4M4.7 19.3l1.7-1.7M17.6 6.4l1.7-1.7"/></svg>
+      <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    </button>
+    <span class="spacer"></span>
+    <a class="btn ghost" href="orders.html">Кабинет заказов</a>
+    <a class="back" href="index.html">← на главную</a>
+  </div>
+</header>
+
+<main><div class="wrap">
+
+  <div id="gate-mobile" class="gate" hidden>
+    <div class="ico">🖥️</div>
+    <h2>Статистика доступна только в ПК-версии</h2>
+    <p>Графики и таблицы собраны для широкого экрана.<br><br>
+    Откройте страницу с компьютера — <span style="font-family:'JetBrains Mono',monospace;font-size:12px">/stats.html</span></p>
+  </div>
+
+  <div id="view-login" hidden>
+    <div class="gate" style="margin:6vh auto">
+      <h2>Вход для мастера</h2>
+      <p style="margin-bottom:20px">Тот же пароль, что и в кабинете заказов.</p>
+      <input type="password" id="pwd" placeholder="Пароль" autocomplete="current-password">
+      <div style="margin-top:14px"><button class="btn primary" id="btn-login" style="width:100%">Войти</button></div>
+      <div class="err" id="login-err" hidden></div>
+    </div>
+  </div>
+
+  <div id="view-app" hidden>
+    <h1 class="big">Статистика заявок</h1>
+    <div class="sub">Обновлено: <span id="updated-at">—</span></div>
+
+    <details class="note">
+      <summary>Как читать эти цифры — важно</summary>
+      <p>Сайт не видит оплаты: они происходят в ВКонтакте и в базу не попадают.
+      Поэтому все денежные метрики ниже считаются по суммам <b>оформленных заявок</b>,
+      а не по выручке. «Средняя сумма заявки» означает среднюю по заказам за период,
+      а не средний чек по оплатам.</p>
+    </details>
+
+    <div class="toolbar">
+      <button class="btn period active" data-days="">За всё время</button>
+      <button class="btn period" data-days="7">7 дней</button>
+      <button class="btn period" data-days="30">30 дней</button>
+      <button class="btn period" data-days="90">90 дней</button>
+      <span class="spacer"></span>
+      <button class="btn" id="btn-refresh">Обновить</button>
+      <button class="btn" id="btn-csv">Выгрузить сводку</button>
+    </div>
+
+    <div id="stats-box"></div>
+  </div>
+
+</div></main>
+
+<footer>
+  <div class="wrap">
+    <span>PaprekolyX · v 1.8.0 · 18.09.2026</span>
+    <a href="orders.html">Кабинет заказов</a>
+    <a href="index.html">Витрина</a>
+    <a href="privacy.html">Политика ПДн</a>
+  </div>
+</footer>
+
+<script>
+const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_SGFVRShKl00bS42XWVzWQQ_ROPGeOqf';
+const SESSION_KEY = 'paprekolyx_admin_hash';
+const THEME_KEY = 'paprekolyx_theme';
+
+let db = null, DATA = null, DAYS = null;
+const $ = id => document.getElementById(id);
+
+function isDesktop() {
+  if (window.matchMedia) return window.matchMedia('(min-width: 1024px)').matches;
+  return (window.innerWidth || document.documentElement.clientWidth || 0) >= 1024;
+}
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+  const m = document.querySelector('meta[name="theme-color"]');
+  if (m) m.setAttribute('content', theme === 'light' ? '#faf7fc' : '#0a0a0f');
+}
+async function sha256hex(text) {
+  const buf = new TextEncoder().encode(text);
+  const d = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(d)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const fmtMoney = v => Math.round(Number(v) || 0).toLocaleString('ru-RU') + ' ₽';
+
+function switchView() {
+  const desktop = isDesktop();
+  $('gate-mobile').hidden = desktop;
+  if (!desktop) { $('view-login').hidden = true; $('view-app').hidden = true; return; }
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  $('view-login').hidden = !!hash;
+  $('view-app').hidden = !hash;
+  if (hash && !DATA) load();
+}
+
+async function login() {
+  const err = $('login-err'); err.hidden = true;
+  const pwd = $('pwd').value;
+  if (!pwd) { err.textContent = 'Введите пароль'; err.hidden = false; return; }
+  if (!window.crypto || !crypto.subtle) { err.textContent = 'Нужен HTTPS'; err.hidden = false; return; }
+  const hash = await sha256hex(pwd);
+  const { data, error } = await db.rpc('admin_check_password',
+    { p_hash_hex: hash, p_user_agent: navigator.userAgent });
+  if (error || data !== true) { err.textContent = 'Пароль не подошёл'; err.hidden = false; return; }
+  sessionStorage.setItem(SESSION_KEY, hash);
+  $('pwd').value = '';
+  switchView(); load();
+}
+
+function skeleton() {
+  $('stats-box').innerHTML = '<div class="skel"></div><div class="skel"></div><div class="skel"></div>';
+}
+
+async function load() {
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  if (!hash) { switchView(); return; }
+  skeleton();
+  const { data, error } = await db.rpc('admin_stats', { p_hash_hex: hash, p_days: DAYS });
+  if (error) {
+    if (/Неверный пароль|28000/.test(error.message)) { sessionStorage.removeItem(SESSION_KEY); DATA = null; switchView(); return; }
+    $('stats-box').innerHTML = '<div class="card err">Не удалось получить статистику: ' + error.message + '</div>';
+    return;
+  }
+  DATA = data;
+  $('updated-at').textContent = new Date().toLocaleTimeString('ru-RU');
+  render();
+}
+
+function barRows(items, nameKey, valKey) {
+  const max = Math.max(...items.map(i => Number(i[valKey]) || 0), 1);
+  return '<div class="rows">' + items.map(i =>
+    '<div class="rowline"><span>' + i[nameKey] + '</span>' +
+    '<span class="track"><span class="fill" style="width:' + Math.round(100 * (Number(i[valKey]) || 0) / max) + '%"></span></span>' +
+    '<span class="val">' + i[valKey] + '</span></div>').join('') + '</div>';
+}
+
+function render() {
+  const d = DATA;
+  let html = '<div class="grid">' +
+    kpi(d.total, 'a', 'заявок за период') +
+    kpi(d.unique_clients, 'p', 'уникальных клиентов') +
+    kpi(d.repeat_clients, 'p', 'повторных клиентов') +
+    kpi(fmtMoney(d.avg_total), 'g', 'средняя сумма заявки') +
+    kpi(fmtMoney(d.median_total), 'g', 'медианная сумма') +
+    kpi((d.cancel_rate || 0) + '%', 'w', 'отмен и возвратов') +
+    kpi(d.avg_items, 'p', 'позиций в заявке') +
+    kpi(d.avg_days_to_deliver + ' дн.', 'g', 'путь до «доставлен»') +
+    '</div>';
+
+  html += '<div class="card"><div class="lbl" style="margin-bottom:6px">Заявки по дням</div>' +
+    dayBars(d.per_day || []) + '</div>';
+
+  html += '<div class="card"><div class="lbl" style="margin-bottom:10px">Воронка статусов</div>' +
+    barRows(d.by_status || [], 'name', 'count') + '</div>';
+
+  html += '<div class="grid" style="grid-template-columns:1fr 1fr;gap:14px">' +
+    '<div class="card" style="margin:0"><div class="lbl" style="margin-bottom:10px">Топ товаров</div>' +
+    topTable(d.top_products || []) + '</div>' +
+    '<div class="card" style="margin:0"><div class="lbl" style="margin-bottom:10px">Категории и доставка</div>' +
+    barRows(d.category_share || [], 'name', 'qty') +
+    '<div class="lbl" style="margin:14px 0 10px">Способы доставки</div>' +
+    barRows(d.delivery_share || [], 'name', 'count') + '</div></div>';
+
+  $('stats-box').innerHTML = html;
+}
+
+function kpi(value, color, label) {
+  return '<div class="card kpi" style="margin:0"><span class="num ' + color + '">' + value +
+         '</span><div class="lbl">' + label + '</div></div>';
+}
+
+function dayBars(days) {
+  if (!days.length) return '<div style="color:var(--dim);font-size:13px">За период нет заявок</div>';
+  const max = Math.max(...days.map(d => Number(d.count) || 0), 1);
+  return '<div class="bars">' + days.map(d =>
+    '<span class="bar' + (Number(d.count) ? '' : ' zero') + '" style="height:' +
+    Math.max(4, Math.round(100 * (Number(d.count) || 0) / max)) + '%" title="' + d.day + ': ' + d.count + '"></span>'
+  ).join('') + '</div>' +
+  '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px">' +
+  '<span>' + days[0].day + '</span><span>' + days[days.length - 1].day + '</span></div>';
+}
+
+function topTable(items) {
+  if (!items.length) return '<div style="color:var(--dim);font-size:13px">Нет данных</div>';
+  return '<table><thead><tr><th>Товар</th><th>Шт.</th><th>Сумма</th></tr></thead><tbody>' +
+    items.map(i => '<tr><td>' + i.name + '</td><td class="num">' + i.qty + '</td><td class="num">' +
+      fmtMoney(i.sum) + '</td></tr>').join('') + '</tbody></table>';
+}
+
+function exportCsv() {
+  const d = DATA;
+  const esc = v => { v = v == null ? '' : String(v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+  const lines = [
+    ['Метрика', 'Значение'],
+    ['Период', DAYS ? DAYS + ' дней' : 'всё время'],
+    ['Заявок', d.total], ['Уникальных клиентов', d.unique_clients], ['Повторных клиентов', d.repeat_clients],
+    ['Средняя сумма заявки', d.avg_total], ['Медианная сумма', d.median_total],
+    ['Отмен и возвратов, %', d.cancel_rate], ['Позиций в заявке', d.avg_items],
+    ['Дней до «доставлен»', d.avg_days_to_deliver],
+    [''], ['День', 'Заявок'],
+    ...(d.per_day || []).map(p => [p.day, p.count]),
+  ];
+  const csv = '\uFEFF' + lines.map(r => (Array.isArray(r) ? r : [r]).map(esc).join(';')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'paprekolyx-stats-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  db = window.supabase ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
+  $('btn-login').onclick = login;
+  $('pwd').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
+  $('btn-refresh').onclick = load;
+  $('btn-csv').onclick = exportCsv;
+  document.querySelectorAll('.period').forEach(b => b.onclick = () => {
+    DAYS = b.dataset.days === '' ? null : Number(b.dataset.days);
+    document.querySelectorAll('.period').forEach(x => x.classList.toggle('active', x === b));
+    load();
+  });
+  $('theme-toggle').onclick = () =>
+    applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
+  window.addEventListener('resize', switchView);
+  switchView();
+});
+</script>
+</body>
+</html>

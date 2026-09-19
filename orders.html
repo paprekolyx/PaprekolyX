@@ -75,6 +75,8 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .st-mid{color:var(--purple);border-color:currentColor}
 .st-end{color:var(--ok);border-color:currentColor}
 .st-bad{color:#fb7185;border-color:currentColor}
+.linklike{background:none;border:0;padding:0;color:var(--accent);font-size:13px;cursor:pointer}
+.linklike:hover{text-decoration:underline}
 .detail td{background:rgba(255,45,149,.03);padding:18px 20px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .lbl{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-bottom:4px}
@@ -192,6 +194,7 @@ details.note li{margin-bottom:6px}
 
     <div class="toolbar">
       <button class="btn" id="btn-wf">Статусная модель</button>
+      <a class="btn" href="stats.html">Статистика</a>
       <span class="spacer"></span>
       <button class="btn" id="btn-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
       <button class="btn" id="btn-csv">Выгрузить в CSV</button>
@@ -228,8 +231,21 @@ details.note li{margin-bottom:6px}
     </div>
   </div>
 
+  <!-- Карточка заказа поверх страницы -->
+  <div class="overlay" id="order-modal">
+    <div class="box" style="max-width:860px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <h2 style="margin:0;font-size:28px" id="order-card-title">Заказ</h2>
+        <span class="spacer"></span>
+        <button class="btn" id="card-eye" title="Показать контакты без звёздочек">👁 Контакты скрыты</button>
+        <button class="icon-btn" id="order-close" aria-label="Закрыть">✕</button>
+      </div>
+      <div id="order-card"></div>
+    </div>
+  </div>
+
 </div></main>
-<footer style="padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)"><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)"><span class="site-version">PaprekolyX · v 1.7.0 · 18.09.2026</span><a href="index.html">Витрина</a><a href="privacy.html">Политика ПДн</a><a href="custom-order.html">Кастомный заказ</a></div></footer>
+<footer style="padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)"><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)"><span class="site-version">PaprekolyX · v 1.8.0 · 18.09.2026</span><a href="index.html">Витрина</a><a href="privacy.html">Политика ПДн</a><a href="custom-order.html">Кастомный заказ</a></div></footer>
 
 <script>
 const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
@@ -244,7 +260,6 @@ let revealed = false;
 let filterStatus = 'all';
 let searchTerm = '';
 let page = 1;
-const expanded = new Set();   // раскрытые заказы переживают перерисовку
 
 const $ = id => document.getElementById(id);
 
@@ -311,7 +326,8 @@ async function login() {
     err.hidden = false; return;
   }
   const hash = await sha256hex(pwd);
-  const { data, error } = await db.rpc('admin_check_password', { p_hash_hex: hash });
+  const { data, error } = await db.rpc('admin_check_password',
+    { p_hash_hex: hash, p_user_agent: navigator.userAgent });
   if (error || data !== true) { err.textContent = 'Пароль не подошёл'; err.hidden = false; return; }
   sessionStorage.setItem(SESSION_KEY, hash);
   $('pwd').value = '';
@@ -411,17 +427,15 @@ function renderOrders() {
     '</tr></thead><tbody>';
   slice.forEach(o => {
     const sum = Number(o.total || 0) + Number(o.delivery_cost || 0);
-    const open = expanded.has(o.id);
-    html += '<tr class="order-row" data-id="' + o.id + '">' +
-      '<td class="num mono">#' + String(o.id).padStart(4, '0') + '</td>' +
+    html += '<tr>' +
+      '<td class="num"><button class="linklike mono" data-open="' + o.id + '" ' +
+        'title="Открыть карточку заказа">#' + String(o.id).padStart(4, '0') + '</button></td>' +
       '<td class="num">' + fmtDate(o.created_at) + '</td>' +
       '<td><span class="status ' + statusClass(o.status_code) + '">' + (o.status_name || '—') + '</span></td>' +
       '<td>' + (o.customer_name || '—') + '</td>' +
       '<td class="num">' + (o.items || []).length + '</td>' +
       '<td class="num">' + fmtMoney(sum) + '</td>' +
-      '</tr>' +
-      '<tr class="detail" data-detail="' + o.id + '"' + (open ? '' : ' hidden') + '><td colspan="6">' +
-      orderDetail(o) + '</td></tr>';
+      '</tr>';
   });
   html += '</tbody></table>';
   $('orders-box').innerHTML = html;
@@ -431,12 +445,8 @@ function renderOrders() {
   $('pg-prev').disabled = page <= 1;
   $('pg-next').disabled = page >= pages;
 
-  $('orders-box').querySelectorAll('tr.order-row').forEach(r => r.onclick = () => {
-    const id = Number(r.dataset.id);
-    if (expanded.has(id)) expanded.delete(id); else expanded.add(id);
-    const d = $('orders-box').querySelector('tr[data-detail="' + id + '"]');
-    d.hidden = !expanded.has(id);
-  });
+  $('orders-box').querySelectorAll('button[data-open]').forEach(b => b.onclick = () =>
+    openOrder(Number(b.dataset.open)));
 }
 
 function orderDetail(o) {
@@ -471,6 +481,36 @@ function orderDetail(o) {
     '<tbody>' + (itemsRows || '<tr><td colspan="5">позиций нет</td></tr>') + '</tbody></table>';
 }
 
+let currentOrderId = null;
+
+function openOrder(id) {
+  currentOrderId = id;
+  renderOrderCard();
+  $('order-modal').classList.add('open');
+}
+
+function renderOrderCard() {
+  const o = (DATA.orders || []).find(x => x.id === currentOrderId);
+  if (!o) return;
+  $('order-card-title').textContent = 'Заказ #' + String(o.id).padStart(4, '0');
+  $('order-card').innerHTML = orderDetail(o);
+  syncEyeLabels();
+}
+
+// Глазик в карточке дублирует главный: состояние одно на все экраны
+function syncEyeLabels() {
+  const t = revealed ? '👁 Контакты открыты' : '👁 Контакты скрыты';
+  $('btn-eye').textContent = t;
+  const ce = $('card-eye');
+  if (ce) ce.textContent = t;
+}
+
+function toggleRevealed() {
+  revealed = !revealed;
+  syncEyeLabels();
+  if ($('order-modal').classList.contains('open')) renderOrderCard();
+}
+
 function exportCsv() {
   const list = DATA.orders || [];
   const esc = v => {
@@ -498,20 +538,26 @@ document.addEventListener('DOMContentLoaded', () => {
   $('btn-refresh').onclick = load;
   $('btn-csv').onclick = exportCsv;
   $('btn-logout').onclick = () => { sessionStorage.removeItem(SESSION_KEY); DATA = null; switchView(); };
-  $('btn-eye').onclick = () => {
-    revealed = !revealed;
-    $('btn-eye').textContent = revealed ? '👁 Контакты открыты' : '👁 Контакты скрыты';
-    renderOrders();          // раскрытые заказы остаются раскрытыми
-  };
+  $('btn-eye').onclick = toggleRevealed;
   $('search').addEventListener('input', e => { searchTerm = e.target.value.trim(); page = 1; renderOrders(); });
   $('pg-prev').onclick = () => { if (page > 1) { page--; renderOrders(); } };
   $('pg-next').onclick = () => { page++; renderOrders(); };
   $('btn-wf').onclick = () => $('wf-modal').classList.add('open');
   $('wf-close').onclick = () => $('wf-modal').classList.remove('open');
+  $('card-eye').onclick = toggleRevealed;
+  $('order-close').onclick = () => $('order-modal').classList.remove('open');
+  $('order-modal').addEventListener('click', e => {
+    if (e.target.id === 'order-modal') $('order-modal').classList.remove('open');
+  });
   $('wf-modal').addEventListener('click', e => { if (e.target.id === 'wf-modal') $('wf-modal').classList.remove('open'); });
   $('theme-toggle').onclick = () =>
     applyTheme(document.documentElement.dataset.theme === 'light' ? 'dark' : 'light');
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') $('wf-modal').classList.remove('open'); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      $('wf-modal').classList.remove('open');
+      $('order-modal').classList.remove('open');
+    }
+  });
   window.addEventListener('resize', switchView);
   switchView();
 });
