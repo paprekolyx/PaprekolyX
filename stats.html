@@ -51,7 +51,11 @@ h1.big{font-size:44px;margin:0 0 2px}
 .kpi .num.a{color:var(--accent)}.kpi .num.p{color:var(--purple)}.kpi .num.g{color:var(--ok)}.kpi .num.w{color:var(--warn)}
 .kpi .lbl{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin-top:6px}
 .bars{display:flex;align-items:flex-end;justify-content:flex-start;gap:6px;height:150px;padding-top:10px}
-.bar{flex:0 0 26px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:4px 4px 0 0;position:relative;transition:filter .2s}
+.bar{flex:0 0 26px;background:linear-gradient(180deg,var(--accent),var(--purple));border-radius:4px 4px 0 0;position:relative;transition:filter .2s;cursor:default}
+.bar:after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) scale(.9);
+  background:var(--bg-card);border:1px solid rgba(255,45,149,.35);color:var(--text);border-radius:10px;
+  padding:5px 10px;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;z-index:5}
+.bar:hover:after{opacity:1;transform:translateX(-50%) scale(1)}
 .bar:hover{filter:brightness(1.25)}
 .bar.zero{background:rgba(255,255,255,.08)}
 .rows{display:flex;flex-direction:column;gap:8px}
@@ -63,7 +67,7 @@ table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);padding:8px 10px;border-bottom:1px solid rgba(255,45,149,.18)}
 td{padding:9px 10px;border-bottom:1px solid rgba(255,45,149,.10);color:var(--dim)}
 td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
-details.note{border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);border-radius:14px;padding:14px 18px;margin-bottom:18px}
+details.note{border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.06);border-radius:14px;padding:14px 18px;margin:26px 0 18px}
 details.note summary{cursor:pointer;font-size:13px;color:var(--warn);list-style:none;display:flex;justify-content:space-between}
 details.note summary::-webkit-details-marker{display:none}
 details.note summary:after{content:'+'}
@@ -81,6 +85,9 @@ input[type=password]{background:var(--bg-soft);border:1px solid rgba(255,45,149,
 .funnel{display:grid;grid-template-columns:1fr 1fr;gap:8px 30px}
 .frow{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px}
 .fval{color:var(--dim);font-variant-numeric:tabular-nums}
+.dots{flex:1;margin:0 6px;border-bottom:2px dotted rgba(255,45,149,.30);transform:translateY(-4px)}
+[data-theme="light"] .dots{border-bottom-color:rgba(214,0,110,.30)}
+.kpi-group{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:20px 0 10px}
 .status{display:inline-block;border-radius:999px;padding:3px 12px;font-size:11px;border:1px solid}
 .st-new{color:var(--warn);border-color:currentColor}
 .st-mid{color:var(--purple);border-color:currentColor}
@@ -185,7 +192,7 @@ footer .wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:1
 
 <footer>
   <div class="wrap">
-    <span>PaprekolyX · v 1.8.0 · 18.09.2026</span>
+    <span>PaprekolyX · v 1.9.0 · 18.09.2026</span>
     <a href="orders.html">Кабинет заказов</a>
     <a href="index.html">Витрина</a>
     <a href="privacy.html">Политика ПДн</a>
@@ -276,7 +283,7 @@ function funnel(d) {
   if (!items.length) return '<div style="color:var(--dim);font-size:13px">Нет данных</div>';
   return '<div class="funnel">' + items.map(i =>
     '<div class="frow"><span class="status ' + statusClass(i.code) + '">' + i.name +
-    '</span><span class="fval">' + i.count + '</span></div>').join('') + '</div>';
+    '</span><span class="dots"></span><span class="fval">' + i.count + '</span></div>').join('') + '</div>';
 }
 
 function barRows(items, nameKey, valKey) {
@@ -289,16 +296,24 @@ function barRows(items, nameKey, valKey) {
 
 function render() {
   const d = DATA;
-  let html = '<div class="grid">' +
-    kpi(d.total, 'a', 'заявок за период') +
-    kpi(d.unique_clients, 'p', 'уникальных клиентов') +
-    kpi(d.repeat_clients, 'p', 'повторных клиентов') +
-    kpi(fmtMoney(d.avg_total), 'g', 'средняя сумма заявки') +
-    kpi(fmtMoney(d.median_total), 'g', 'медианная сумма') +
-    kpi((d.cancel_rate || 0) + '%', 'w', 'отмен и возвратов') +
-    kpi(d.avg_items, 'p', 'позиций в заявке') +
-    kpi(d.avg_days_to_deliver + ' дн.', 'g', 'путь до «доставлен»') +
-    kpi(fmtMoney(d.sum_all_time), 'a', 'сумма заказов за всё время') +
+  let html =
+    '<div class="kpi-group">Заявки и клиенты</div>' +
+    '<div class="grid">' +
+      kpi(d.total, 'a', 'заявок за период') +
+      kpi(d.unique_clients, 'a', 'уникальных клиентов') +
+      kpi(d.repeat_clients, 'a', 'повторных клиентов') +
+    '</div>' +
+    '<div class="kpi-group">Деньги заявок</div>' +
+    '<div class="grid">' +
+      kpi(fmtMoney(d.avg_total), 'g', 'средняя сумма заявки') +
+      kpi(fmtMoney(d.median_total), 'g', 'медианная сумма') +
+      kpi(fmtMoney(d.sum_all_time), 'g', 'сумма заказов за всё время') +
+    '</div>' +
+    '<div class="kpi-group">Остальная статистика</div>' +
+    '<div class="grid">' +
+      kpi((d.cancel_rate || 0) + '%', 'w', 'отмен и возвратов') +
+      kpi(d.avg_items, 'p', 'позиций в заявке') +
+      kpi(d.avg_days_to_deliver + ' дн.', 'p', 'путь до «доставлен»') +
     '</div>';
 
   html += '<div class="card" style="margin-top:16px"><div class="lbl" style="margin-bottom:6px">Заявки по дням</div>' +
@@ -328,7 +343,8 @@ function dayBars(days) {
   const max = Math.max(...days.map(d => Number(d.count) || 0), 1);
   return '<div class="bars">' + days.map(d =>
     '<span class="bar' + (Number(d.count) ? '' : ' zero') + '" style="height:' +
-    Math.max(4, Math.round(100 * (Number(d.count) || 0) / max)) + '%" title="' + d.day + ': ' + d.count + '"></span>'
+    Math.max(4, Math.round(100 * (Number(d.count) || 0) / max)) + '%" ' +
+    'data-tip="' + d.day + ' · заявок: ' + d.count + '"></span>'
   ).join('') + '</div>' +
   '<div style="display:flex;justify-content:space-between;font-size:11px;color:var(--dim);margin-top:6px">' +
   '<span>' + days[0].day + '</span><span>' + days[days.length - 1].day + '</span></div>';

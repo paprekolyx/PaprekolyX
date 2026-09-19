@@ -49,6 +49,12 @@ code{font-family:'JetBrains Mono',Consolas,monospace;font-size:12px;background:r
   color:#fff;background:linear-gradient(135deg,var(--accent),var(--purple))}
 footer{background:var(--bg-soft);border-top:1px solid rgba(255,45,149,.14);padding:26px 0;font-size:13px;color:var(--dim)}
 footer .wrap{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center}
+.layout{display:grid;grid-template-columns:250px minmax(0,1fr);gap:34px;align-items:start}
+.toc{position:sticky;top:84px;border-left:2px solid rgba(255,45,149,.25);padding-left:16px;max-height:calc(100vh - 110px);overflow:auto}
+.toc .t{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px}
+.toc a{display:block;font-size:13px;line-height:1.5;color:var(--dim);text-decoration:none;padding:5px 0;margin-left:-18px;padding-left:16px;border-left:2px solid transparent;transition:.2s}
+.toc a:hover{color:var(--accent);border-left-color:var(--accent)}
+@media (max-width:900px){.layout{grid-template-columns:1fr}.toc{display:none}}
 @media (max-width:600px){h1{font-size:30px}h2{font-size:22px}}
 </style>
 <script>
@@ -79,7 +85,7 @@ footer .wrap{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:center}
 <main><div class="wrap">
 <div class="layout"><nav class="toc"><div class="t">Содержание</div><a href="#sec-1">Что такое кастомизация</a><a href="#sec-2">Что можно менять</a><a href="#sec-3">Как описать заказ: чек-лист</a><a href="#sec-4">Путь кастомного заказа</a><a href="#sec-5">Частые вопросы</a><a href="#sec-6">Куда писать</a></nav><div class="article">
 <h1>Как сделать кастомный заказ</h1>
-<div class="meta">Что такое кастомизация и как описать идею, чтобы её поняли с первого раза<br>Версия 1.8.0 · 18.09.2026</div>
+<div class="meta">Что такое кастомизация и как описать идею, чтобы её поняли с первого раза<br>Версия 1.9.0 · 18.09.2026</div>
 
 <div class="notice">
   <div class="t">Где оформляются настоящие заказы</div>

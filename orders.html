@@ -76,6 +76,9 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .st-end{color:var(--ok);border-color:currentColor}
 .st-bad{color:#fb7185;border-color:currentColor}
 .linklike{background:none;border:0;padding:0;color:var(--accent);font-size:13px;cursor:pointer}
+.mgmt{border:1px solid rgba(255,45,149,.22);border-radius:14px;padding:14px 16px;margin-bottom:18px;background:rgba(255,45,149,.04)}
+.mgmt-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.dim-note{font-size:11px;color:var(--dim)}
 .tabs{display:flex;gap:6px;margin:4px 0 22px;border-bottom:1px solid rgba(255,45,149,.18)}
 .tab{padding:12px 26px;font-size:15px;color:var(--dim);text-decoration:none;border:1px solid transparent;border-bottom:0;border-radius:14px 14px 0 0;transition:.2s}
 .tab:hover{color:var(--accent)}
@@ -255,7 +258,7 @@ details.note li{margin-bottom:6px}
     </details>
 
 </div></main>
-<footer style="padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)"><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)"><span class="site-version">PaprekolyX · v 1.8.0 · 18.09.2026</span><a href="index.html">Витрина</a><a href="privacy.html">Политика ПДн</a><a href="custom-order.html">Кастомный заказ</a></div></footer>
+<footer style="padding:22px 0;border-top:1px solid rgba(255,45,149,.14);background:var(--bg-soft)"><div class="wrap" style="display:flex;gap:20px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)"><span class="site-version">PaprekolyX · v 1.9.0 · 18.09.2026</span><a href="index.html">Витрина</a><a href="privacy.html">Политика ПДн</a><a href="custom-order.html">Кастомный заказ</a></div></footer>
 
 <script>
 const SUPABASE_URL = 'https://wanawtemywrlpnsvwvvh.supabase.co';
@@ -469,7 +472,27 @@ function orderDetail(o) {
     '<tr><td>' + (i.name || '—') + '</td><td class="mono">' + (i.article || '') + '</td>' +
     '<td class="num">' + i.quantity + ' шт.</td><td class="num">' + fmtMoney(i.price) + '</td>' +
     '<td class="num">' + fmtMoney(Number(i.price || 0) * i.quantity) + '</td></tr>').join('');
-  return '<div class="grid2">' +
+  const paidPill = o.is_paid
+    ? '<span class="status st-end">оплачен</span>'
+    : '<span class="status st-new">не оплачен</span>';
+  const mgmt =
+    '<div class="mgmt">' +
+      '<div class="lbl">Управление заказом</div>' +
+      '<div class="mgmt-row">' +
+        '<span class="status ' + statusClass(o.status_code) + '">' + (o.status_name || '—') + '</span>' +
+        paidPill +
+        '<button class="btn" onclick="togglePaid(' + o.id + ', ' + (!o.is_paid) + ')">' +
+          (o.is_paid ? 'Снять флаг оплаты' : 'Отметить оплаченным') + '</button>' +
+      '</div>' +
+      '<div class="lbl" style="margin-top:14px">Перевести в статус</div>' +
+      '<div class="mgmt-row">' +
+        ((DATA && window.__actions && window.__actions[o.id]) || []).map(x =>
+          '<button class="btn" onclick="changeStatus(' + o.id + ', \'' + x.code + '\')">' + x.name + '</button>').join('') +
+        '<span class="dim-note">разрешённые переходы по статусной модели</span>' +
+      '</div>' +
+      '<div class="err" id="order-card-msg" hidden></div>' +
+    '</div>';
+  return mgmt + '<div class="grid2">' +
     '<div>' +
       '<div class="lbl">Контакты</div>' +
       '<div class="val">' + (o.customer_name || '—') + '<br>' +
@@ -504,9 +527,42 @@ function openOrder(id) {
   $('order-modal').classList.add('open');
 }
 
-function renderOrderCard() {
+async function loadActions(orderId) {
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  const { data, error } = await db.rpc('admin_order_actions', { p_hash_hex: hash, p_order_id: orderId });
+  window.__actions = window.__actions || {};
+  window.__actions[orderId] = error ? [] : (data.allowed || []);
+  return window.__actions[orderId];
+}
+
+async function changeStatus(orderId, code) {
+  const comment = window.prompt('Комментарий к смене статуса (необязательно):', '');
+  if (comment === null) return;
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  const { error } = await db.rpc('admin_set_status',
+    { p_hash_hex: hash, p_order_id: orderId, p_status_code: code, p_comment: comment || null, p_role: 'admin' });
+  const msg = document.getElementById('order-card-msg');
+  if (error) { msg.textContent = error.message; msg.hidden = false; return; }
+  msg.hidden = true;
+  await load();
+  renderOrderCard();
+}
+
+async function togglePaid(orderId, value) {
+  if (!value && !window.confirm('Снять флаг оплаты? Строка платежа, созданная администратором, будет удалена.')) return;
+  const hash = sessionStorage.getItem(SESSION_KEY);
+  const { error } = await db.rpc('admin_set_paid', { p_hash_hex: hash, p_order_id: orderId, p_is_paid: value, p_role: 'admin' });
+  const msg = document.getElementById('order-card-msg');
+  if (error) { msg.textContent = error.message; msg.hidden = false; return; }
+  msg.hidden = true;
+  await load();
+  renderOrderCard();
+}
+
+async function renderOrderCard() {
   const o = (DATA.orders || []).find(x => x.id === currentOrderId);
   if (!o) return;
+  await loadActions(o.id);
   $('order-card-title').textContent = 'Заказ #' + String(o.id).padStart(4, '0');
   $('order-card').innerHTML = orderDetail(o);
   syncEyeLabels();
