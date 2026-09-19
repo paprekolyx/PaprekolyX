@@ -55,7 +55,8 @@ h1.big{font-size:44px;margin:0 0 2px}
 .bar:after{content:attr(data-tip);position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) scale(.9);
   background:var(--bg-card);border:1px solid rgba(255,45,149,.35);color:var(--text);border-radius:10px;
   padding:5px 10px;font-size:11px;white-space:nowrap;opacity:0;pointer-events:none;transition:.15s;z-index:5}
-.bar:hover:after{opacity:1;transform:translateX(-50%) scale(1)}
+.bar:hover{z-index:10}
+.bar:hover:after{opacity:1;transform:translateX(-50%) scale(1);z-index:11}
 .bar:hover{filter:brightness(1.25)}
 .bar.zero{background:rgba(255,255,255,.08)}
 .rows{display:flex;flex-direction:column;gap:8px}
