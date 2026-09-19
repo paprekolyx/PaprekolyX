@@ -86,6 +86,18 @@ tr.order-row:hover td{background:rgba(255,45,149,.04)}
 .switch.on .knob{left:22px}
 [data-theme="light"] .switch{background:rgba(28,20,36,.10)}
 .switch-label{font-size:12px;color:var(--dim)}
+.card-loading{padding:26px;color:var(--dim);font-size:13px}
+.dd{position:relative;display:inline-block}
+.dd-btn{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;
+  background:var(--bg-soft);border:1px solid rgba(255,45,149,.30);border-radius:999px;
+  padding:8px 16px;color:var(--text);font-size:13px;cursor:pointer;min-width:190px;transition:.2s}
+.dd-btn:hover{border-color:var(--accent)}
+.dd-menu{position:absolute;top:calc(100% + 6px);left:0;min-width:230px;background:var(--bg-card);
+  border:1px solid rgba(255,45,149,.30);border-radius:14px;overflow:hidden;z-index:30;
+  box-shadow:0 14px 34px rgba(0,0,0,.35)}
+.dd-item{display:block;width:100%;text-align:left;padding:10px 16px;font-size:13px;
+  color:var(--text);background:transparent;border:0;cursor:pointer}
+.dd-item:hover{background:rgba(255,45,149,.10);color:var(--accent)}
 .select{background:var(--bg-soft);border:1px solid rgba(255,45,149,.30);border-radius:999px;
   padding:8px 16px;color:var(--text);font-size:13px;outline:none;cursor:pointer;min-width:190px}
 .select:focus{border-color:var(--accent)}
@@ -374,7 +386,7 @@ async function load() {
   const hash = sessionStorage.getItem(SESSION_KEY);
   if (!hash) { switchView(); return; }
   $('btn-refresh').classList.add('spin');
-  skeleton();
+  showCacheIfAny();
   const { data, error } = await db.rpc('admin_orders', { p_hash_hex: hash });
   $('btn-refresh').classList.remove('spin');
   if (error) {
@@ -386,8 +398,27 @@ async function load() {
     return;
   }
   DATA = data;
+  try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ at: new Date().toLocaleTimeString('ru-RU'), data: data })); } catch (e) {}
   $('updated-at').textContent = new Date().toLocaleTimeString('ru-RU');
   renderStats(); renderFilters(); renderWorkflow(); renderOrders();
+  if ($('order-modal').classList.contains('open')) renderOrderCard();
+}
+
+const CACHE_KEY = 'paprekolyx_admin_cache';
+
+// Мгновенно показываем последний кэш, чтобы не смотреть на скелетон
+function showCacheIfAny() {
+  try {
+    const cached = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+    if (cached && cached.data) {
+      DATA = cached.data;
+      $('updated-at').textContent = 'кэш от ' + (cached.at || '—');
+      renderStats(); renderFilters(); renderWorkflow(); renderOrders();
+      if ($('order-modal').classList.contains('open')) renderOrderCard();
+      return;
+    }
+  } catch (e) { /* повреждённый кэш игнорируем */ }
+  if (!DATA || !(DATA.orders || []).length) skeleton();
 }
 
 function renderStats() {
@@ -499,13 +530,19 @@ function orderDetail(o) {
       '</div>' +
       '<div class="lbl" style="margin-top:14px">Перевести в статус</div>' +
       '<div class="mgmt-row">' +
-        '<select id="status-select-' + o.id + '" class="select">' +
-          '<option value="">Выберите статус…</option>' +
-          (((DATA && window.__actions && window.__actions[o.id]) || []).map(x =>
-            '<option value="' + x.code + '">' + x.name + '</option>').join('')) +
-        '</select>' +
+        '<div class="dd">' +
+          '<button type="button" class="dd-btn" onclick="ddToggle(' + o.id + ')">' +
+            '<span id="dd-label-' + o.id + '">Выберите статус…</span>' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>' +
+          '</button>' +
+          '<div class="dd-menu" id="dd-menu-' + o.id + '" hidden>' +
+            (((DATA && window.__actions && window.__actions[o.id]) || []).map(x =>
+              '<button type="button" class="dd-item" onclick="ddPick(' + o.id + ',\'' + x.code + '\')">' +
+              x.name + '</button>').join('')) +
+          '</div>' +
+        '</div>' +
+        '<input class="select" id="status-comment-' + o.id + '" maxlength="200" placeholder="Комментарий (необязательно)">' +
         '<button type="button" class="btn" onclick="applyStatusChange(' + o.id + ')">Перевести</button>' +
-        '<span class="dim-note">доступны только разрешённые переходы</span>' +
       '</div>' +
       '<div class="err" id="order-card-msg" hidden></div>' +
     '</div>';
@@ -538,10 +575,14 @@ function orderDetail(o) {
 
 let currentOrderId = null;
 
-function openOrder(id) {
+async function openOrder(id) {
   currentOrderId = id;
-  renderOrderCard();
   $('order-modal').classList.add('open');
+  if (!(DATA && (DATA.orders || []).some(x => x.id === id))) {
+    $('order-card').innerHTML = '<div class="card-loading">Загрузка заказа…</div>';
+    await load();
+  }
+  renderOrderCard();
 }
 
 async function loadActions(orderId) {
@@ -552,20 +593,40 @@ async function loadActions(orderId) {
   return window.__actions[orderId];
 }
 
+window.__ddSel = window.__ddSel || {};
+
+function ddToggle(id) {
+  const m = document.getElementById('dd-menu-' + id);
+  if (m) m.hidden = !m.hidden;
+}
+function ddPick(id, code) {
+  window.__ddSel[id] = code;
+  const act = ((window.__actions || {})[id] || []).find(x => x.code === code);
+  const l = document.getElementById('dd-label-' + id);
+  if (l) l.textContent = act ? act.name : code;
+  const m = document.getElementById('dd-menu-' + id);
+  if (m) m.hidden = true;
+}
+document.addEventListener('click', e => {
+  if (!e.target.closest('.dd')) {
+    document.querySelectorAll('.dd-menu').forEach(m => m.hidden = true);
+  }
+});
+
 function applyStatusChange(orderId) {
-  const sel = document.getElementById('status-select-' + orderId);
+  const code = (window.__ddSel || {})[orderId];
   const msg = document.getElementById('order-card-msg');
-  if (!sel || !sel.value) {
+  if (!code) {
     if (msg) { msg.textContent = 'Сначала выберите статус из списка'; msg.hidden = false; }
     return;
   }
   if (msg) msg.hidden = true;
-  changeStatus(orderId, sel.value);
+  const commentEl = document.getElementById('status-comment-' + orderId);
+  changeStatus(orderId, code, commentEl ? commentEl.value.trim() : '');
 }
 
-async function changeStatus(orderId, code) {
-  const comment = window.prompt('Комментарий к смене статуса (необязательно):', '');
-  if (comment === null) return;
+async function changeStatus(orderId, code, comment) {
+  if (comment === null || comment === undefined) comment = '';
   const hash = sessionStorage.getItem(SESSION_KEY);
   const { error } = await db.rpc('admin_set_status',
     { p_hash_hex: hash, p_order_id: orderId, p_status_code: code, p_comment: comment || null, p_role: 'admin' });
