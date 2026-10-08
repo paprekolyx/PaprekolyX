@@ -1,0 +1,5 @@
+id,code,name,description,base_price,is_active,price_max
+1,pickup,Самовывоз,"м. Ховрино, бесплатно",0.00,true,0.00
+2,metro_msk,Москва (метро),"до любой станции, встреча в центре зала",300.00,true,500.00
+3,boxberry,Boxberry,до пункта выдачи по России,0.00,true,
+4,cdek,СДЭК,до пункта выдачи по России,0.00,true,
